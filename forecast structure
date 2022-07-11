@@ -1,5 +1,18 @@
-    parsed_fetch: -{
-        cnt: 40,
+    parsed_fetch_2: -{
+        city: -{
+            coord: -{
+                lat: 51.4018,
+                lon: 7.1912
+            },
+            country: "DE",
+            id: 2909230,
+            name: "Hattingen",
+            population: 56866,
+            sunrise: 1657510041,
+            sunset: 1657568738,
+            timezone: 7200
+        },
+        cnt: 5,
         cod: "200",
         list: -[
            -{
@@ -9,15 +22,15 @@
                 dt: 1657562400,
                 dt_txt: "2022-07-11 18:00:00",
                 main: -{
-                    feels_like: 293.57,
+                    feels_like: 20.96,
                     grnd_level: 1011,
-                    humidity: 66,
+                    humidity: 67,
                     pressure: 1022,
                     sea_level: 1022,
-                    temp: 293.73,
-                    temp_kf: 0.53,
-                    temp_max: 293.73,
-                    temp_min: 293.2
+                    temp: 21.05,
+                    temp_kf: 1,
+                    temp_max: 21.05,
+                    temp_min: 20.05
                 },
                 pop: 0,
                 sys: -{
@@ -26,7 +39,7 @@
                 visibility: 10000,
                 weather: -[
                    -{
-                        description: "overcast clouds",
+                        description: "Bedeckt",
                         icon: "04d",
                         id: 804,
                         main: "Clouds"
@@ -36,72 +49,5 @@
                     deg: 9,
                     gust: 2.94,
                     speed: 1.7
-                }
-            },
-           -{
-                clouds: -{
-                    all: 85
-                },
-                dt: 1657573200,
-                dt_txt: "2022-07-11 21:00:00",
-                main: -{
-                    feels_like: 290.61,
-                    grnd_level: 1012,
-                    humidity: 74,
-                    pressure: 1023,
-                    sea_level: 1023,
-                    temp: 290.85,
-                    temp_kf: 1.57,
-                    temp_max: 290.85,
-                    temp_min: 289.28
-                },
-                pop: 0,
-                sys: -{
-                    pod: "n"
-                },
-                visibility: 10000,
-                weather: -[
-                   +{4 items}
-                ],
-                wind: -{
-                    deg: 71,
-                    gust: 1.11,
-                    speed: 1.03
-                }
-            },
-           -{
-                clouds: -{
-                    all: 89
-                },
-                dt: 1657584000,
-                dt_txt: "2022-07-12 00:00:00",
-                main: -{
-                    feels_like: 287.93,
-                    grnd_level: 1012,
-                    humidity: 83,
-                    pressure: 1025,
-                    sea_level: 1025,
-                    temp: 288.2,
-                    temp_kf: 0,
-                    temp_max: 288.2,
-                    temp_min: 288.2
-                },
-                pop: 0,
-                sys: -{
-                    pod: "n"
-                },
-                visibility: 10000,
-                weather: -[
-                   -{
-                        description: "overcast clouds",
-                        icon: "04n",
-                        id: 804,
-                        main: "Clouds"
-                    }
-                ],
-                wind: -{
-                    deg: 130,
-                    gust: 1.14,
-                    speed: 1.07
                 }
             },
