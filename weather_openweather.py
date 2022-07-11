@@ -48,52 +48,18 @@ api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lo
 fetch_api_2 = requests.get(api_endpoint_2)
 parsed_fetch_2 = json.loads(fetch_api_2.text)
 
-# forecast 1
-time_1 = time.strftime('%H:%M',
-                       time.localtime(parsed_fetch_2["list"][0]["dt"]))
-temp_1 = int(parsed_fetch_2["list"][0]["main"]["temp"])
-humidity_1 = parsed_fetch_2["list"][0]["main"]["humidity"]
-clouds_1 = parsed_fetch_2["list"][0]["clouds"]["all"]
-weather_1 = parsed_fetch_2["list"][0]["weather"]["description"]
-weather_icon_1 = parsed_fetch_2["list"][0]["weather"]["icon"]
-weather_icon_1_link = f"http://openweathermap.org/img/w/{weather_icon_1}.png"
+i = 0
+forecast_data = []
+for items in parsed_fetch_2["list"]:
+    data = []
+    data.append(int(parsed_fetch_2["list"][i]["main"]["temp"]))
+    data.append(parsed_fetch_2["list"][i]["main"]["humidity"])
+    data.append(parsed_fetch_2["list"][i]["clouds"]["all"])
+    data.append(parsed_fetch_2["list"][i]["weather"][0]["description"])
+    icon_link = parsed_fetch_2["list"][i]["weather"][0]["icon"]
+    data.append(f"http://openweathermap.org/img/w/{icon_link}.png")
+    forecast_data.append(data)
+    i += 1
 
-# forecast 2
-time_2 = time.strftime('%H:%M',
-                       time.localtime(parsed_fetch_2["list"][1]["dt"]))
-temp_2 = int(parsed_fetch_2["list"][1]["main"]["temp"])
-humidity_2 = parsed_fetch_2["list"][1]["main"]["humidity"]
-clouds_2 = parsed_fetch_2["list"][1]["clouds"]["all"]
-weather_2 = parsed_fetch_2["list"][1]["weather"]["description"]
-weather_icon_2 = parsed_fetch_2["list"][1]["weather"]["icon"]
-weather_icon_2_link = f"http://openweathermap.org/img/w/{weather_icon_2}.png"
-
-# forecast 3
-time_3 = time.strftime('%H:%M',
-                       time.localtime(parsed_fetch_2["list"][2]["dt"]))
-temp_3 = int(parsed_fetch_2["list"][2]["main"]["temp"])
-humidity_3 = parsed_fetch_2["list"][2]["main"]["humidity"]
-clouds_3 = parsed_fetch_2["list"][2]["clouds"]["all"]
-weather_3 = parsed_fetch_2["list"][2]["weather"]["description"]
-weather_icon_3 = parsed_fetch_2["list"][2]["weather"]["icon"]
-weather_icon_3_link = f"http://openweathermap.org/img/w/{weather_icon_3}.png"
-
-# forecast 4
-time_4 = time.strftime('%H:%M',
-                       time.localtime(parsed_fetch_2["list"][3]["dt"]))
-temp_4 = int(parsed_fetch_2["list"][3]["main"]["temp"])
-humidity_4 = parsed_fetch_2["list"][3]["main"]["humidity"]
-clouds_4 = parsed_fetch_2["list"][3]["clouds"]["all"]
-weather_4 = parsed_fetch_2["list"][3]["weather"]["description"]
-weather_icon_4 = parsed_fetch_2["list"][3]["weather"]["icon"]
-weather_icon_4_link = f"http://openweathermap.org/img/w/{weather_icon_4}.png"
-
-# forecast 5
-time_5 = time.strftime('%H:%M',
-                       time.localtime(parsed_fetch_2["list"][4]["dt"]))
-temp_5 = int(parsed_fetch_2["list"][4]["main"]["temp"])
-humidity_5 = parsed_fetch_2["list"][4]["main"]["humidity"]
-clouds_5 = parsed_fetch_2["list"][4]["clouds"]["all"]
-weather_5 = parsed_fetch_2["list"][4]["weather"]["description"]
-weather_icon_5 = parsed_fetch_2["list"][4]["weather"]["icon"]
-weather_icon_5_link = f"http://openweathermap.org/img/w/{weather_icon_5}.png"
+for items in forecast_data:
+    print(items)
