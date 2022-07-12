@@ -1,22 +1,22 @@
-Main Top
+MAIN TOP - CURRENT WEATHER
 Temperatur
 Wetter beschreibung
 Luftfecuhtigkeit in %
 Wolken in %
 Uv in %
 
-(Oben Rechts)
+MAIN TOP RIGHT - CURRENT DAY
 Sonnenaufgang
 Sonnenuntergang
 
-Main Bottom
+MAIN BOTTOM - 5 DAY FORECAST
 5 Tageszusammenfassung mit:
 Tag & Datum
 Icon
 Temp Min
 Temp Max
 
-Bottom
+BOTTOM - 7x3hrs FORECAST
 Temperatur
 Wolken
 Regen in Prozent

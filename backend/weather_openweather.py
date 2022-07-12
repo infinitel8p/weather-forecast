@@ -1,9 +1,10 @@
 import time
 import requests
 import json
-import weather_weatherapi
 
-api_key = "ede202ebf917a17f6173ccc6cc226c7d"
+api_key_1 = "ede202ebf917a17f6173ccc6cc226c7d"
+api_key_2 = "9a5bd158b6e74039aeb121921221007"
+target = "Hattingen"
 lon = 7.1911567
 lat = 51.4018117
 
@@ -14,7 +15,7 @@ lat = 51.4018117
 
 
 # CURRENT WEATHER DATA
-api_endpoint_1 = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&lang=de&units=metric"
+api_endpoint_1 = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key_1}&lang=de&units=metric"
 
 
 class WeatherData:
@@ -59,7 +60,7 @@ class WeatherData:
 
 
 # FORECAST WEATHER DATA
-api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key}&lang=de&units=metric&cnt=7"
+api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key_1}&lang=de&units=metric&cnt=7"
 forecast_data = []
 
 
@@ -85,19 +86,38 @@ def gather_forecast_data():
         print(items)
 
 
+# ADDITIONAL DATA
+api_endpoint_3 = f"http://api.weatherapi.com/v1/forecast.json?key={api_key_2}&q={target}&days=1&aqi=no&alerts=yes"
+
+
+def gather_additional_data():
+    fetch_api_3 = requests.get(api_endpoint_3)
+    parsed_fetch_3 = json.loads(fetch_api_3.text)
+
+    location_name = parsed_fetch_3["location"]["name"]
+    location_time = parsed_fetch_3["location"]["localtime"]
+    location_current_temp = parsed_fetch_3["current"]["temp_c"]
+    location_current_condition = parsed_fetch_3["current"]["condition"]["text"]
+    location_cloudyness = parsed_fetch_3["current"]["cloud"]
+    location_humidity = parsed_fetch_3["current"]["humidity"]
+
+    forecast = parsed_fetch_3["forecast"]["forecastday"][0]
+    sun_rise = forecast["astro"]["sunrise"]
+    sun_set = forecast["astro"]["sunset"]
+
+    forecast_avg_temp = forecast["day"]["avgtemp_c"]
+    forecast_min_temp = forecast["day"]["mintemp_c"]
+    forecast_max_temp = forecast["day"]["maxtemp_c"]
+    forecast_uv = forecast["day"]["uv"]
+    forecast_rain = forecast["day"]["daily_will_it_rain"]
+    forecast_rain_chance = forecast["day"]["daily_chance_of_rain"]
+    forecast_snow = forecast["day"]["daily_will_it_snow"]
+    forecast_snow_chance = forecast["day"]["daily_chance_of_snow"]
+
+
 if __name__ == "__main__":
-    do_i_want_a_infinite_loop = True
-    i_want_a_infinite_loop = do_i_want_a_infinite_loop
     gather_forecast_data()
-    print(weather_weatherapi.forecast_uv)
 
-    while i_want_a_infinite_loop:
-        current_weather = WeatherData()
-        if current_weather.parsed_fetch['cod'] != 200:
-            raise Exception(current_weather.parsed_fetch['message'])
-
-        print(
-            f"Current temperature: {current_weather.gather_temperature_data()[0]} - Last Updated:", current_weather.last_update())
-
-        for i in range(99, 0, -1):
-            time.sleep(1)
+    current_weather = WeatherData()
+    if current_weather.parsed_fetch['cod'] != 200:
+        raise Exception(current_weather.parsed_fetch['message'])
