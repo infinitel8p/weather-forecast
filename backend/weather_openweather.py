@@ -65,6 +65,7 @@ forecast_data = []
 
 
 def gather_forecast_data():
+    forecast_data = []
     fetch_api_2 = requests.get(api_endpoint_2)
     parsed_fetch_2 = json.loads(fetch_api_2.text)
 
@@ -102,8 +103,6 @@ def gather_additional_data():
     location_humidity = parsed_fetch_3["current"]["humidity"]
 
     forecast = parsed_fetch_3["forecast"]["forecastday"][0]
-    sun_rise = forecast["astro"]["sunrise"]
-    sun_set = forecast["astro"]["sunset"]
 
     forecast_avg_temp = forecast["day"]["avgtemp_c"]
     forecast_min_temp = forecast["day"]["mintemp_c"]
@@ -116,8 +115,10 @@ def gather_additional_data():
 
 
 if __name__ == "__main__":
-    gather_forecast_data()
-
     current_weather = WeatherData()
     if current_weather.parsed_fetch['cod'] != 200:
         raise Exception(current_weather.parsed_fetch['message'])
+    gather_forecast_data()
+    gather_additional_data()
+
+current_weather.city_sunset
