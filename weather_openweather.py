@@ -12,54 +12,89 @@ lat = 51.4018117
 # https://openweathermap.org/current
 
 
-# Temperature in Kelvin (273.15)
-# Time in Unix-Epoch Timeformat
-
 # CURRENT WEATHER DATA
 api_endpoint_1 = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&lang=de&units=metric"
-fetch_api = requests.get(api_endpoint_1)
-parsed_fetch = json.loads(fetch_api.text)
 
-last_update = time.strftime('%H:%M:%S',
-                            time.localtime(parsed_fetch["dt"]))
 
-# general information
-city_name = parsed_fetch["name"]
-city_sunrise = time.strftime('%H:%M',
-                             time.localtime(parsed_fetch["sys"]["sunrise"]))
-city_sunset = time.strftime('%H:%M',
-                            time.localtime(parsed_fetch["sys"]["sunset"]))
+class WeatherData:
+    def __init__(self):
+        self.fetch_api = requests.get(api_endpoint_1)
+        self.parsed_fetch = json.loads(self.fetch_api.text)
 
-# temperature information
-temp_current = int(parsed_fetch["main"]["temp"])
-temp_current_feel = int(parsed_fetch["main"]["feels_like"])
-temp_min = int(parsed_fetch["main"]["temp_min"])
-temp_max = int(parsed_fetch["main"]["temp_max"])
+        self.update_time = time.strftime('%H:%M:%S',
+                                         time.localtime(self.parsed_fetch["dt"]))
 
-# additional information
-humidity_current = parsed_fetch["main"]["humidity"]
-clouds_current = parsed_fetch["clouds"]["all"]
-weather_current = parsed_fetch["weather"][0]["description"]
-weather_icon_current = parsed_fetch["weather"][0]["icon"]
-weather_icon_current_link = f"http://openweathermap.org/img/w/{weather_icon_current}.png"
+        # general information
+        self.city_name = self.parsed_fetch["name"]
+        self.city_sunrise = time.strftime('%H:%M',
+                                          time.localtime(self.parsed_fetch["sys"]["sunrise"]))
+        self.city_sunset = time.strftime('%H:%M',
+                                         time.localtime(self.parsed_fetch["sys"]["sunset"]))
+
+        # temperature information
+        self.temp_current = int(self.parsed_fetch["main"]["temp"])
+        self.temp_current_feel = int(self.parsed_fetch["main"]["feels_like"])
+        self.temp_min = int(self.parsed_fetch["main"]["temp_min"])
+        self.temp_max = int(self.parsed_fetch["main"]["temp_max"])
+
+        # additional information
+        self.humidity_current = self.parsed_fetch["main"]["humidity"]
+        self.clouds_current = self.parsed_fetch["clouds"]["all"]
+        self.weather_current = self.parsed_fetch["weather"][0]["description"]
+        self.weather_icon_current = self.parsed_fetch["weather"][0]["icon"]
+        self.weather_icon_current_link = f"http://openweathermap.org/img/w/{self.weather_icon_current}.png"
+
+    def last_update(self):
+        return self.update_time
+
+    def gather_general_data(self):
+        return self.city_name, self.city_sunrise, self.city_sunset
+
+    def gather_temperature_data(self):
+        return self.temp_current, self.temp_current_feel, self.temp_min, self.temp_max
+
+    def gather_additional_data(self):
+        return self.humidity_current, self.clouds_current, self.weather_current, self.weather_icon_current_link
+
 
 # FORECAST WEATHER DATA
-api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key}&lang=de&units=metric&cnt=5"
-fetch_api_2 = requests.get(api_endpoint_2)
-parsed_fetch_2 = json.loads(fetch_api_2.text)
-
-i = 0
+api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key}&lang=de&units=metric&cnt=7"
 forecast_data = []
-for items in parsed_fetch_2["list"]:
-    data = []
-    data.append(int(parsed_fetch_2["list"][i]["main"]["temp"]))
-    data.append(parsed_fetch_2["list"][i]["main"]["humidity"])
-    data.append(parsed_fetch_2["list"][i]["clouds"]["all"])
-    data.append(parsed_fetch_2["list"][i]["weather"][0]["description"])
-    icon_link = parsed_fetch_2["list"][i]["weather"][0]["icon"]
-    data.append(f"http://openweathermap.org/img/w/{icon_link}.png")
-    forecast_data.append(data)
-    i += 1
 
-for items in forecast_data:
-    print(items)
+
+def gather_forecast_data():
+    fetch_api_2 = requests.get(api_endpoint_2)
+    parsed_fetch_2 = json.loads(fetch_api_2.text)
+
+    i = 0
+    for items in parsed_fetch_2["list"]:
+        data = []
+        data.append(time.strftime('%H:%M',
+                                  time.localtime(parsed_fetch_2["list"][i]["dt"])))
+        data.append(int(parsed_fetch_2["list"][i]["main"]["temp"]))
+        data.append(parsed_fetch_2["list"][i]["main"]["humidity"])
+        data.append(parsed_fetch_2["list"][i]["clouds"]["all"])
+        data.append(parsed_fetch_2["list"][i]["weather"][0]["description"])
+        icon_link = parsed_fetch_2["list"][i]["weather"][0]["icon"]
+        data.append(f"http://openweathermap.org/img/w/{icon_link}.png")
+        forecast_data.append(data)
+        i += 1
+
+    for items in forecast_data:
+        print(items)
+
+
+if __name__ == "__main__":
+    current_weather = WeatherData()
+    gather_forecast_data()
+
+    print(
+        f"Current temperature: {current_weather.gather_temperature_data()[0]}", current_weather.last_update())
+
+    for i in range(1000, 0, -1):
+        print(f"{i}", end="\r", flush=True)
+        time.sleep(1)
+
+    current_weather = WeatherData()
+    print(
+        f"Current temperature: {current_weather.gather_temperature_data()[0]}", current_weather.last_update())
