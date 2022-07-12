@@ -1,6 +1,7 @@
 import time
 import requests
 import json
+import weather_weatherapi
 
 api_key = "ede202ebf917a17f6173ccc6cc226c7d"
 lon = 7.1911567
@@ -85,16 +86,16 @@ def gather_forecast_data():
 
 
 if __name__ == "__main__":
-    current_weather = WeatherData()
+    do_i_want_a_infinite_loop = True
+    i_want_a_infinite_loop = do_i_want_a_infinite_loop
     gather_forecast_data()
+    print(weather_weatherapi.forecast_uv)
 
-    print(
-        f"Current temperature: {current_weather.gather_temperature_data()[0]}", current_weather.last_update())
+    while i_want_a_infinite_loop:
+        current_weather = WeatherData()
 
-    for i in range(1000, 0, -1):
-        print(f"{i}", end="\r", flush=True)
-        time.sleep(1)
+        print(
+            f"Current temperature: {current_weather.gather_temperature_data()[0]} - Last Updated:", current_weather.last_update())
 
-    current_weather = WeatherData()
-    print(
-        f"Current temperature: {current_weather.gather_temperature_data()[0]}", current_weather.last_update())
+        for i in range(99, 0, -1):
+            time.sleep(1)
