@@ -93,6 +93,8 @@ if __name__ == "__main__":
 
     while i_want_a_infinite_loop:
         current_weather = WeatherData()
+        if current_weather.parsed_fetch['cod'] != 200:
+            raise Exception(current_weather.parsed_fetch['message'])
 
         print(
             f"Current temperature: {current_weather.gather_temperature_data()[0]} - Last Updated:", current_weather.last_update())
