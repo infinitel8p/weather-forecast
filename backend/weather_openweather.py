@@ -49,18 +49,9 @@ class WeatherData:
     def last_update(self):
         return self.update_time
 
-    def gather_general_data(self):
-        return self.city_name, self.city_sunrise, self.city_sunset
-
-    def gather_temperature_data(self):
-        return self.temp_current, self.temp_current_feel, self.temp_min, self.temp_max
-
-    def gather_additional_data(self):
-        return self.humidity_current, self.clouds_current, self.weather_current, self.weather_icon_current_link
-
 
 # FORECAST WEATHER DATA
-api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key_1}&lang=de&units=metric&cnt=7"
+api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key_1}&lang=de&units=metric&cnt=8"
 forecast_data = []
 
 
@@ -97,29 +88,16 @@ class AdditionalData:
         self.parsed_fetch_3 = json.loads(self.fetch_api_3.text)
 
         self.forecast = self.parsed_fetch_3["forecast"]["forecastday"][0]
-
-        forecast_avg_temp = self.forecast["day"]["avgtemp_c"]
-        forecast_min_temp = self.forecast["day"]["mintemp_c"]
-        forecast_max_temp = self.forecast["day"]["maxtemp_c"]
-        forecast_uv = self.forecast["day"]["uv"]
-        forecast_rain = self.forecast["day"]["daily_will_it_rain"]
-        forecast_rain_chance = self.forecast["day"]["daily_chance_of_rain"]
-        forecast_snow = self.forecast["day"]["daily_will_it_snow"]
-        forecast_snow_chance = self.forecast["day"]["daily_chance_of_snow"]
-
-    def forecast_comparison(self):
-        print(self.forecast["hour"][17]["time"], int(self.forecast["hour"][17]["temp_c"]),
-              self.forecast["hour"][17]["humidity"], self.forecast["hour"][17]["cloud"], self.forecast["hour"][17]["condition"]["text"], self.forecast["hour"][17]["condition"]["icon"])
+        self.uv_current = int(self.parsed_fetch_3["current"]["uv"])
+        # todo add hourly chance of rain
+        # self.forecast_rain_chance = self.forecast["day"]["daily_chance_of_rain"]
 
 
 if __name__ == "__main__":
     current_weather = WeatherData()
-    if current_weather.parsed_fetch['cod'] != 200:
-        raise Exception(current_weather.parsed_fetch['message'])
+    # if current_weather.parsed_fetch['cod'] != 200:
+    #    raise Exception(current_weather.parsed_fetch['message'])
 
     forecast_weather = ForecastData()
-    print(forecast_data[0][0], forecast_data[0][1], forecast_data[0]
-          [2], forecast_data[0][3], forecast_data[0][4], forecast_data[0][5])
 
     additional_weather = AdditionalData()
-    additional_weather.forecast_comparison()

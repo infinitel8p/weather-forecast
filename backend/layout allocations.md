@@ -8,7 +8,7 @@
 - current_weather.weather_current
 - current_weather.humidity_current
 - current_weather.clouds_current
-- Uv in %
+- additional_weather.uv_current
 
 #### MAIN TOP RIGHT - CURRENT DAY
 
