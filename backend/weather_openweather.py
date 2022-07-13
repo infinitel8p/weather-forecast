@@ -63,8 +63,8 @@ class ForecastData:
         self.i = 0
         for items in self.parsed_fetch_2["list"]:
             data = []
-            data.append(time.strftime('%H:%M',
-                                      time.localtime(self.parsed_fetch_2["list"][self.i]["dt"])))
+            # data.append(time.strftime('%H:%M',time.localtime(self.parsed_fetch_2["list"][self.i]["dt"])))
+            data.append(self.parsed_fetch_2["list"][self.i]["dt_txt"])
             data.append(
                 int(self.parsed_fetch_2["list"][self.i]["main"]["temp"]))
             data.append(self.parsed_fetch_2["list"]
@@ -77,9 +77,13 @@ class ForecastData:
             forecast_data.append(data)
             self.i += 1
 
+    def test_function(self):
+        for i in forecast_data:
+            print(i)
+
 
 # ADDITIONAL DATA
-api_endpoint_3 = f"http://api.weatherapi.com/v1/forecast.json?key={api_key_2}&q={target}&days=1&aqi=no&alerts=yes"
+api_endpoint_3 = f"http://api.weatherapi.com/v1/forecast.json?key={api_key_2}&q={target}&days=2&aqi=no&alerts=yes"
 
 
 class AdditionalData:
@@ -87,17 +91,33 @@ class AdditionalData:
         self.fetch_api_3 = requests.get(api_endpoint_3)
         self.parsed_fetch_3 = json.loads(self.fetch_api_3.text)
 
-        self.forecast = self.parsed_fetch_3["forecast"]["forecastday"][0]
         self.uv_current = int(self.parsed_fetch_3["current"]["uv"])
+
         # todo add hourly chance of rain
-        # self.forecast_rain_chance = self.forecast["day"]["daily_chance_of_rain"]
+        self.rain_forecast_1 = self.parsed_fetch_3["forecast"]["forecastday"][0]["hour"]
+        self.rain_forecast_2 = self.parsed_fetch_3["forecast"]["forecastday"][1]["hour"]
+
+    def test_function(self):
+        print("\nDaily Chance of rain",
+              self.parsed_fetch_3["forecast"]["forecastday"][0]["day"]["daily_chance_of_rain"], "\n")
 
 
 if __name__ == "__main__":
     current_weather = WeatherData()
-    # if current_weather.parsed_fetch['cod'] != 200:
-    #    raise Exception(current_weather.parsed_fetch['message'])
+    """if current_weather.parsed_fetch['cod'] != 200:
+        raise Exception(current_weather.parsed_fetch['message'])"""
 
     forecast_weather = ForecastData()
+    forecast_weather.test_function()
 
     additional_weather = AdditionalData()
+    additional_weather.test_function()
+
+    for i in additional_weather.rain_forecast_1:
+        for i2 in forecast_data:
+            if i["time"] in str(i2[0]):
+                print(i["time"], i["chance_of_rain"])
+    for i in additional_weather.rain_forecast_2:
+        for i2 in forecast_data:
+            if i["time"] in str(i2[0]):
+                print(i["time"], i["chance_of_rain"])
