@@ -108,8 +108,8 @@ class AdditionalData:
         forecast_snow_chance = self.forecast["day"]["daily_chance_of_snow"]
 
     def forecast_comparison(self):
-        print(self.forecast["hour"][11]["time"], int(self.forecast["hour"][11]["temp_c"]),
-              self.forecast["hour"][11]["humidity"], self.forecast["hour"][11]["cloud"], self.forecast["hour"][11]["condition"]["text"], self.forecast["hour"][11]["condition"]["icon"])
+        print(self.forecast["hour"][17]["time"], int(self.forecast["hour"][17]["temp_c"]),
+              self.forecast["hour"][17]["humidity"], self.forecast["hour"][17]["cloud"], self.forecast["hour"][17]["condition"]["text"], self.forecast["hour"][17]["condition"]["icon"])
 
 
 if __name__ == "__main__":
