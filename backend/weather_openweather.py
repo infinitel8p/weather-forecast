@@ -64,61 +64,62 @@ api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lo
 forecast_data = []
 
 
-def gather_forecast_data():
-    forecast_data = []
-    fetch_api_2 = requests.get(api_endpoint_2)
-    parsed_fetch_2 = json.loads(fetch_api_2.text)
+class ForecastData:
+    def __init__(self):
+        self.fetch_api_2 = requests.get(api_endpoint_2)
+        self.parsed_fetch_2 = json.loads(self.fetch_api_2.text)
 
-    i = 0
-    for items in parsed_fetch_2["list"]:
-        data = []
-        data.append(time.strftime('%H:%M',
-                                  time.localtime(parsed_fetch_2["list"][i]["dt"])))
-        data.append(int(parsed_fetch_2["list"][i]["main"]["temp"]))
-        data.append(parsed_fetch_2["list"][i]["main"]["humidity"])
-        data.append(parsed_fetch_2["list"][i]["clouds"]["all"])
-        data.append(parsed_fetch_2["list"][i]["weather"][0]["description"])
-        icon_link = parsed_fetch_2["list"][i]["weather"][0]["icon"]
-        data.append(f"http://openweathermap.org/img/w/{icon_link}.png")
-        forecast_data.append(data)
-        i += 1
-
-    for items in forecast_data:
-        print(items)
+        self.i = 0
+        for items in self.parsed_fetch_2["list"]:
+            data = []
+            data.append(time.strftime('%H:%M',
+                                      time.localtime(self.parsed_fetch_2["list"][self.i]["dt"])))
+            data.append(
+                int(self.parsed_fetch_2["list"][self.i]["main"]["temp"]))
+            data.append(self.parsed_fetch_2["list"]
+                        [self.i]["main"]["humidity"])
+            data.append(self.parsed_fetch_2["list"][self.i]["clouds"]["all"])
+            data.append(self.parsed_fetch_2["list"]
+                        [self.i]["weather"][0]["description"])
+            icon_link = self.parsed_fetch_2["list"][self.i]["weather"][0]["icon"]
+            data.append(f"http://openweathermap.org/img/w/{icon_link}.png")
+            forecast_data.append(data)
+            self.i += 1
 
 
 # ADDITIONAL DATA
 api_endpoint_3 = f"http://api.weatherapi.com/v1/forecast.json?key={api_key_2}&q={target}&days=1&aqi=no&alerts=yes"
 
 
-def gather_additional_data():
-    fetch_api_3 = requests.get(api_endpoint_3)
-    parsed_fetch_3 = json.loads(fetch_api_3.text)
+class AdditionalData:
+    def __init__(self):
+        self.fetch_api_3 = requests.get(api_endpoint_3)
+        self.parsed_fetch_3 = json.loads(self.fetch_api_3.text)
 
-    location_name = parsed_fetch_3["location"]["name"]
-    location_time = parsed_fetch_3["location"]["localtime"]
-    location_current_temp = parsed_fetch_3["current"]["temp_c"]
-    location_current_condition = parsed_fetch_3["current"]["condition"]["text"]
-    location_cloudyness = parsed_fetch_3["current"]["cloud"]
-    location_humidity = parsed_fetch_3["current"]["humidity"]
+        self.forecast = self.parsed_fetch_3["forecast"]["forecastday"][0]
 
-    forecast = parsed_fetch_3["forecast"]["forecastday"][0]
+        forecast_avg_temp = self.forecast["day"]["avgtemp_c"]
+        forecast_min_temp = self.forecast["day"]["mintemp_c"]
+        forecast_max_temp = self.forecast["day"]["maxtemp_c"]
+        forecast_uv = self.forecast["day"]["uv"]
+        forecast_rain = self.forecast["day"]["daily_will_it_rain"]
+        forecast_rain_chance = self.forecast["day"]["daily_chance_of_rain"]
+        forecast_snow = self.forecast["day"]["daily_will_it_snow"]
+        forecast_snow_chance = self.forecast["day"]["daily_chance_of_snow"]
 
-    forecast_avg_temp = forecast["day"]["avgtemp_c"]
-    forecast_min_temp = forecast["day"]["mintemp_c"]
-    forecast_max_temp = forecast["day"]["maxtemp_c"]
-    forecast_uv = forecast["day"]["uv"]
-    forecast_rain = forecast["day"]["daily_will_it_rain"]
-    forecast_rain_chance = forecast["day"]["daily_chance_of_rain"]
-    forecast_snow = forecast["day"]["daily_will_it_snow"]
-    forecast_snow_chance = forecast["day"]["daily_chance_of_snow"]
+    def forecast_comparison(self):
+        print(self.forecast["hour"][11]["time"], int(self.forecast["hour"][11]["temp_c"]),
+              self.forecast["hour"][11]["humidity"], self.forecast["hour"][11]["cloud"], self.forecast["hour"][11]["condition"]["text"], self.forecast["hour"][11]["condition"]["icon"])
 
 
 if __name__ == "__main__":
     current_weather = WeatherData()
     if current_weather.parsed_fetch['cod'] != 200:
         raise Exception(current_weather.parsed_fetch['message'])
-    gather_forecast_data()
-    gather_additional_data()
 
-current_weather.city_sunset
+    forecast_weather = ForecastData()
+    print(forecast_data[0][0], forecast_data[0][1], forecast_data[0]
+          [2], forecast_data[0][3], forecast_data[0][4], forecast_data[0][5])
+
+    additional_weather = AdditionalData()
+    additional_weather.forecast_comparison()
