@@ -60,23 +60,18 @@ class ForecastData:
         self.fetch_api_2 = requests.get(api_endpoint_2)
         self.parsed_fetch_2 = json.loads(self.fetch_api_2.text)
 
-        self.i = 0
-        for items in self.parsed_fetch_2["list"]:
+        for item in self.parsed_fetch_2["list"]:
             data = []
             # data.append(time.strftime('%H:%M',time.localtime(self.parsed_fetch_2["list"][self.i]["dt"])))
-            data.append(self.parsed_fetch_2["list"][self.i]["dt_txt"])
-            data.append(
-                int(self.parsed_fetch_2["list"][self.i]["main"]["temp"]))
-            data.append(self.parsed_fetch_2["list"]
-                        [self.i]["main"]["humidity"])
-            data.append(self.parsed_fetch_2["list"][self.i]["clouds"]["all"])
-            data.append(self.parsed_fetch_2["list"]
-                        [self.i]["weather"][0]["description"])
-            icon_link = self.parsed_fetch_2["list"][self.i]["weather"][0]["icon"]
+            data.append(item["dt_txt"])
+            data.append(int(item["main"]["temp"]))
+            data.append(item["main"]["humidity"])
+            data.append(item["clouds"]["all"])
+            data.append(item["weather"][0]["description"])
+            icon_link = item["weather"][0]["icon"]
             # old link http://openweathermap.org/img/w/{icon_link}.png
             data.append(f"http://openweathermap.org/img/wn/{icon_link}@4x.png")
             forecast_data.append(data)
-            self.i += 1
 
     def test_function(self):
         for i in forecast_data:
