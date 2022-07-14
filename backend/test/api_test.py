@@ -101,6 +101,16 @@ class AdditionalData:
               self.parsed_fetch_3["forecast"]["forecastday"][0]["day"]["daily_chance_of_rain"], "\n")
 
 
+class TestUpdates:
+    def __init__(self):
+        self.fetch_time = requests.get(
+            'http://worldtimeapi.org/api/timezone/Europe/London')
+        self.parsed_time = json.loads(self.fetch_time.text)['datetime']
+
+    def get_time(self):
+        return self.parsed_time
+
+
 forecast_weather = ForecastData()
 additional_weather = AdditionalData()
 app = FastAPI()
@@ -108,12 +118,14 @@ app = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    current_weather = WeatherData()
+    return {"forecast_data": f"{current_weather.last_update()}"}
 
 
 @app.get("/test")
 async def root():
-    return {"forecast_data": f"{forecast_data}"}
+    test_time = TestUpdates()
+    return {"test_the_time": f"{test_time.get_time()}"}
 
 # uvicorn backend.test.api_test:app --reload
 # http://127.0.0.1:8000/docs
