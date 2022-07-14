@@ -90,6 +90,15 @@ class AdditionalData:
         self.rain_forecast_1 = self.parsed_fetch_3["forecast"]["forecastday"][0]["hour"]
         self.rain_forecast_2 = self.parsed_fetch_3["forecast"]["forecastday"][1]["hour"]
 
+        for i in self.rain_forecast_1:
+            for i2 in forecast_data:
+                if i["time"] in str(i2[0]):
+                    i2.insert(4, i["chance_of_rain"])
+        for i in self.rain_forecast_2:
+            for i2 in forecast_data:
+                if i["time"] in str(i2[0]):
+                    i2.insert(4, i["chance_of_rain"])
+
     def test_function(self):
         print("\nDaily Chance of rain",
               self.parsed_fetch_3["forecast"]["forecastday"][0]["day"]["daily_chance_of_rain"], "\n")
@@ -102,15 +111,6 @@ if __name__ == "__main__":
 
     forecast_weather = ForecastData()
     additional_weather = AdditionalData()
-
-    for i in additional_weather.rain_forecast_1:
-        for i2 in forecast_data:
-            if i["time"] in str(i2[0]):
-                i2.insert(4, i["chance_of_rain"])
-    for i in additional_weather.rain_forecast_2:
-        for i2 in forecast_data:
-            if i["time"] in str(i2[0]):
-                i2.insert(4, i["chance_of_rain"])
 
     forecast_weather.test_function()
     additional_weather.test_function()
