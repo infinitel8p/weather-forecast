@@ -73,7 +73,8 @@ class ForecastData:
             data.append(self.parsed_fetch_2["list"]
                         [self.i]["weather"][0]["description"])
             icon_link = self.parsed_fetch_2["list"][self.i]["weather"][0]["icon"]
-            data.append(f"http://openweathermap.org/img/w/{icon_link}.png")
+            # old link http://openweathermap.org/img/w/{icon_link}.png
+            data.append(f"http://openweathermap.org/img/wn/{icon_link}@4x.png")
             forecast_data.append(data)
             self.i += 1
 
@@ -90,10 +91,7 @@ class AdditionalData:
     def __init__(self):
         self.fetch_api_3 = requests.get(api_endpoint_3)
         self.parsed_fetch_3 = json.loads(self.fetch_api_3.text)
-
         self.uv_current = int(self.parsed_fetch_3["current"]["uv"])
-
-        # todo add hourly chance of rain
         self.rain_forecast_1 = self.parsed_fetch_3["forecast"]["forecastday"][0]["hour"]
         self.rain_forecast_2 = self.parsed_fetch_3["forecast"]["forecastday"][1]["hour"]
 
@@ -108,16 +106,16 @@ if __name__ == "__main__":
         raise Exception(current_weather.parsed_fetch['message'])"""
 
     forecast_weather = ForecastData()
-    forecast_weather.test_function()
-
     additional_weather = AdditionalData()
-    additional_weather.test_function()
 
     for i in additional_weather.rain_forecast_1:
         for i2 in forecast_data:
             if i["time"] in str(i2[0]):
-                print(i["time"], i["chance_of_rain"])
+                i2.insert(4, i["chance_of_rain"])
     for i in additional_weather.rain_forecast_2:
         for i2 in forecast_data:
             if i["time"] in str(i2[0]):
-                print(i["time"], i["chance_of_rain"])
+                i2.insert(4, i["chance_of_rain"])
+
+    forecast_weather.test_function()
+    additional_weather.test_function()
