@@ -27,8 +27,9 @@
 
 #### BOTTOM - 7x3hrs FORECAST
 
-- Temperatur
-- Wolken
-- Regen in Prozent
-- Icons
-- Uhrzeit der Predicition
+- forecast_data[i][0]
+- forecast_data[i][1]
+- forecast_data[i][2]
+- forecast_data[i][3]
+- forecast_data[i][4]
+- forecast_data[i][6]

@@ -27,8 +27,9 @@
 
 #### BOTTOM - 7x3hrs FORECAST
 
+- Uhrzeit der Predicition
 - Temperatur
+- Luftfeuchtigkeit
 - Wolken
 - Regen in Prozent
 - Icons
-- Uhrzeit der Predicition
