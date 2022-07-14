@@ -1,0 +1,32 @@
+<!-- TODO add working website build with text from api-->
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>jQuery.getJSON demo</title>
+		<style>
+			img {
+				height: 100px;
+				float: left;
+			}
+		</style>
+		<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+	</head>
+	<body>
+		<div id="images"></div>
+
+		<script>
+			(function () {
+				var testAPI = 'http://127.0.0.1:8000/test';
+				$.getJSON(testAPI).done(function (data) {
+					$.each(data.items, function (i, item) {
+						$('<h1>').attr(item).appendTo('#images');
+						if (i === 3) {
+							return false;
+						}
+					});
+				});
+			})();
+		</script>
+	</body>
+</html>
