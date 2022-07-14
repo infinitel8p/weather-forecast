@@ -8,7 +8,7 @@
 - current_weather.weather_current
 - current_weather.humidity_current
 - current_weather.clouds_current
-- Uv in %
+- additional_weather.uv_current
 
 #### MAIN TOP RIGHT - CURRENT DAY
 
@@ -27,8 +27,9 @@
 
 #### BOTTOM - 7x3hrs FORECAST
 
-- Temperatur
-- Wolken
-- Regen in Prozent
-- Icons
-- Uhrzeit der Predicition
+- forecast_data[i][0]
+- forecast_data[i][1]
+- forecast_data[i][2]
+- forecast_data[i][3]
+- forecast_data[i][4]
+- forecast_data[i][6]
