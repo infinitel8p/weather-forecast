@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="styles/style.css" />
+		<title>Weather Forecast</title>
+	</head>
+	<body>
+		<div class="main-top">
+			<div class="left">
+				<p class="temperature" id="temperature">14°C</p>
+				<p class="temperatur-feels-like" id="temperatur-feels-like">
+					Gefühlt: 14°C
+				</p>
+				<p class="weather-description" id="weather-description">
+					Teilweise bewölkt
+				</p>
+				<p class="humidity" id="humidity">Luftfeuchtigkeit: 10%</p>
+				<p class="cloudy" id="cloudy">Wolken: 10%</p>
+				<p class="uv" id="uv">UV: 100%</p>
+			</div>
+			<div class="right">
+				<h1 class="city" id="city">Hattingen</h1>
+				<p class="last-update" id="last-update">
+					<svg
+						stroke="currentColor"
+						fill="currentColor"
+						stroke-width="0"
+						viewBox="0 0 24 24"
+						height="1em"
+						width="1em"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							fill="none"
+							stroke="#000"
+							stroke-width="2"
+							d="M1.7507,16.0022 C3.3517,20.0982 7.3367,23.0002 11.9997,23.0002 C18.0747,23.0002 22.9997,18.0752 22.9997,12.0002 M22.2497,7.9982 C20.6487,3.9012 16.6627,1.0002 11.9997,1.0002 C5.9247,1.0002 0.9997,5.9252 0.9997,12.0002 M8.9997,16.0002 L0.9997,16.0002 L0.9997,24.0002 M22.9997,0.0002 L22.9997,8.0002 L14.9997,8.0002"
+						></path>
+					</svg>
+					12:00
+				</p>
+				<p class="sunrise" id="sunrise">
+					<svg
+						stroke="currentColor"
+						fill="none"
+						stroke-width="2"
+						viewBox="0 0 24 24"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						height="1em"
+						width="1em"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path d="M17 18a5 5 0 0 0-10 0"></path>
+						<line x1="12" y1="2" x2="12" y2="9"></line>
+						<line x1="4.22" y1="10.22" x2="5.64" y2="11.64"></line>
+						<line x1="1" y1="18" x2="3" y2="18"></line>
+						<line x1="21" y1="18" x2="23" y2="18"></line>
+						<line x1="18.36" y1="11.64" x2="19.78" y2="10.22"></line>
+						<line x1="23" y1="22" x2="1" y2="22"></line>
+						<polyline points="8 6 12 2 16 6"></polyline>
+					</svg>
+					12:00
+				</p>
+				<p class="sunset" id="sunset">
+					<svg
+						stroke="currentColor"
+						fill="none"
+						stroke-width="2"
+						viewBox="0 0 24 24"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						height="1em"
+						width="1em"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path d="M17 18a5 5 0 0 0-10 0"></path>
+						<line x1="12" y1="9" x2="12" y2="2"></line>
+						<line x1="4.22" y1="10.22" x2="5.64" y2="11.64"></line>
+						<line x1="1" y1="18" x2="3" y2="18"></line>
+						<line x1="21" y1="18" x2="23" y2="18"></line>
+						<line x1="18.36" y1="11.64" x2="19.78" y2="10.22"></line>
+						<line x1="23" y1="22" x2="1" y2="22"></line>
+						<polyline points="16 5 12 9 8 5"></polyline>
+					</svg>
+					12:00
+				</p>
+			</div>
+		</div>
+		<script>
+			async function fetchText() {
+				let response = await fetch('http://127.0.0.1:8000/test');
+
+				console.log(response.status); // 200
+				console.log(response.statusText); // OK
+
+				if (response.status === 200) {
+					var data = await response.text();
+					// handle data
+					// convert var data to json object
+					data = JSON.parse(data);
+					console.log(data);
+					// change text of element (short version)
+					document.getElementById('city').innerHTML = data.city;
+					document.getElementById('temperature').innerHTML = data.temperature;
+					document.getElementById('temperatur-feels-like').innerHTML =
+						data.temperatur_feels_like;
+					document.getElementById('weather-description').innerHTML =
+						data.weather_description;
+					document.getElementById('humidity').innerHTML = data.humidity;
+					document.getElementById('cloudy').innerHTML = data.cloudy;
+					document.getElementById('uv').innerHTML = data.uv;
+					document.getElementById('last-update').innerHTML = data.last_update;
+					document.getElementById('sunrise').innerHTML = data.sunrise;
+					document.getElementById('sunset').innerHTML = data.sunset;
+				}
+			}
+			fetchText();
+		</script>
+		<div class="main-bottom">
+			<div class="day one">
+				<h1 class="day-pred">Tag 1</h1>
+				<p class="date">1.1.22</p>
+				<p class="icon">Icon</p>
+				<p class="temp-min">TempMin</p>
+				<p class="temp-max">TempMax</p>
+			</div>
+			<div class="day two">
+				<h1 class="day-pred">Tag 2</h1>
+				<p class="date">1.1.22</p>
+				<p class="icon">Icon</p>
+				<p class="temp-min">TempMin</p>
+				<p class="temp-max">TempMax</p>
+			</div>
+			<div class="day three">
+				<h1 class="day-pred">Tag 3</h1>
+				<p class="date">1.1.22</p>
+				<p class="icon">Icon</p>
+				<p class="temp-min">TempMin</p>
+				<p class="temp-max">TempMax</p>
+			</div>
+			<div class="day four">
+				<h1 class="day-pred">Tag 4</h1>
+				<p class="date">1.1.22</p>
+				<p class="icon">Icon</p>
+				<p class="temp-min">TempMin</p>
+				<p class="temp-max">TempMax</p>
+			</div>
+			<div class="day five">
+				<h1 class="day-pred">Tag 5</h1>
+				<p class="date">1.1.22</p>
+				<p class="icon">Icon</p>
+				<p class="temp-min">TempMin</p>
+				<p class="temp-max">TempMax</p>
+			</div>
+		</div>
+		<div class="bottom"></div>
+	</body>
+</html>

@@ -23,12 +23,11 @@
 				data = JSON.parse(data);
 				console.log(data);
 				// change text of element (short version)
-				var change_text = document.getElementById('p1');
-				change_text.innerHTML = data.item_id;
+				var change_text = (document.getElementById('p1').innerHTML = data.city);
 				// change text of element  (long version)
 				var change_text = document.getElementById('p2');
 				change_text.innerHTML = '';
-				change_text.appendChild(document.createTextNode(data.last_updated));
+				change_text.appendChild(document.createTextNode(data.city));
 			}
 		}
 		fetchText();

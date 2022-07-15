@@ -114,8 +114,6 @@ class TestUpdates:
         return self.parsed_time
 
 
-forecast_weather = ForecastData()
-additional_weather = AdditionalData()
 app = FastAPI()
 
 origins = [
@@ -133,17 +131,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+forecast_weather = ForecastData()
+
 
 @app.get("/")
 async def root():
     current_weather = WeatherData()
-    return {"forecast_data": f"{current_weather.last_update()}"}
+    test_time = TestUpdates()
+    return {"last_update": f"{current_weather.last_update()}", "current_time": test_time.get_time()}
 
 
 @app.get("/test")
 async def root():
-    test_time = TestUpdates()
-    return JSONResponse(content={"item_id": "Foo", "last_updated": test_time.get_time()}, media_type="application/json")
+    additional_weather = AdditionalData()
+    current_weather = WeatherData()
+    return JSONResponse(media_type="application/json", content={"city": current_weather.city_name,
+                                                                "temperature": current_weather.temp_current,
+                                                                "temperatur_feels_like": current_weather.temp_current_feel,
+                                                                "weather_description": current_weather.weather_current,
+                                                                "humidity": current_weather.humidity_current,
+                                                                "cloudy": current_weather.clouds_current,
+                                                                "uv": additional_weather.uv_current,
+                                                                "last_update": current_weather.update_time,
+                                                                "sunrise": current_weather.city_sunrise,
+                                                                "sunset": current_weather.city_sunset
+                                                                })
 
 # python -m uvicorn backend.test.api_test:app --reload
 # http://127.0.0.1:8000/docs
