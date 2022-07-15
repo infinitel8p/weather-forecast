@@ -1,6 +1,7 @@
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 import time
 import requests
 import json
@@ -117,20 +118,32 @@ forecast_weather = ForecastData()
 additional_weather = AdditionalData()
 app = FastAPI()
 
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+    "http://127.0.0.1:5500",
+    "null"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/")
 async def root():
     current_weather = WeatherData()
     return {"forecast_data": f"{current_weather.last_update()}"}
 
-# todo return json not string to maybe fix error in fetch with js
-
 
 @app.get("/test")
 async def root():
     test_time = TestUpdates()
-    test_time.get_time()
-    return JSONResponse(content=forecast_data)
+    return JSONResponse(content={"item_id": "Foo", "last_updated": test_time.get_time()}, media_type="application/json")
 
 # python -m uvicorn backend.test.api_test:app --reload
 # http://127.0.0.1:8000/docs
