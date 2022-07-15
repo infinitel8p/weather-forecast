@@ -102,18 +102,77 @@
 					// convert var data to json object
 					data = JSON.parse(data);
 					console.log(data);
-					// change text of element (short version)
+					console.log(
+						'Changing',
+						document.getElementById('city').innerHTML,
+						'to',
+						data.city
+					);
 					document.getElementById('city').innerHTML = data.city;
+					console.log(
+						'Changing',
+						document.getElementById('temperature').innerHTML,
+						'to',
+						data.temperature
+					);
 					document.getElementById('temperature').innerHTML = data.temperature;
+					console.log(
+						'Changing',
+						document.getElementById('temperatur-feels-like').innerHTML,
+						'to',
+						data.temperatur_feels_like
+					);
 					document.getElementById('temperatur-feels-like').innerHTML =
 						data.temperatur_feels_like;
+					console.log(
+						'Changing',
+						document.getElementById('weather-description').innerHTML,
+						'to',
+						data.weather_description
+					);
 					document.getElementById('weather-description').innerHTML =
 						data.weather_description;
+					console.log(
+						'Changing',
+						document.getElementById('humidity').innerHTML,
+						'to',
+						data.humidity
+					);
 					document.getElementById('humidity').innerHTML = data.humidity;
+					console.log(
+						'Changing',
+						document.getElementById('cloudy').innerHTML,
+						'to',
+						data.cloudy
+					);
 					document.getElementById('cloudy').innerHTML = data.cloudy;
+					console.log(
+						'Changing',
+						document.getElementById('uv').innerHTML,
+						'to',
+						data.uv
+					);
 					document.getElementById('uv').innerHTML = data.uv;
+					console.log(
+						'Changing',
+						document.getElementById('last-update').innerHTML,
+						'to',
+						data.last_update
+					);
 					document.getElementById('last-update').innerHTML = data.last_update;
+					console.log(
+						'Changing',
+						document.getElementById('sunrise').innerHTML,
+						'to',
+						data.sunrise
+					);
 					document.getElementById('sunrise').innerHTML = data.sunrise;
+					console.log(
+						'Changing',
+						document.getElementById('sunset').innerHTML,
+						'to',
+						data.sunset
+					);
 					document.getElementById('sunset').innerHTML = data.sunset;
 				}
 			}
