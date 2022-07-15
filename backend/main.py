@@ -101,7 +101,7 @@ class AdditionalData:
 
     def test_function(self):
         print("\nDaily Chance of rain",
-              self.parsed_fetch_3["forecast"]["forecastday"][0]["day"]["daily_chance_of_rain"], "\n")
+              self.parsed_fetch_3["forecast"]["forecastday"][0]["day"]["daily_chance_of_rain"], self.parsed_fetch_3["forecast"]["forecastday"][0]["date"], "\n")
 
 
 if __name__ == "__main__":
