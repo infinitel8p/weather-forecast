@@ -1,4 +1,6 @@
+from fastapi.encoders import jsonable_encoder
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 import time
 import requests
 import json
@@ -121,13 +123,16 @@ async def root():
     current_weather = WeatherData()
     return {"forecast_data": f"{current_weather.last_update()}"}
 
+# todo return json not string to maybe fix error in fetch with js
+
 
 @app.get("/test")
 async def root():
     test_time = TestUpdates()
-    return {"test_the_time": f"{test_time.get_time()}"}
+    test_time.get_time()
+    return JSONResponse(content=forecast_data)
 
-# uvicorn backend.test.api_test:app --reload
+# python -m uvicorn backend.test.api_test:app --reload
 # http://127.0.0.1:8000/docs
 # http://127.0.0.1:8000/redoc
 # https://fastapi.tiangolo.com/
