@@ -232,5 +232,13 @@
 			fetchForecastWeatherWeek();
 		</script>
 		<div class="bottom"></div>
+		<script>
+			// Call a function every 600000 milliseconds (10min)
+			window.setInterval('refresh()', 600000);
+			// Refresh or reload page.
+			function refresh() {
+				window.location.reload();
+			}
+		</script>
 	</body>
 </html>
