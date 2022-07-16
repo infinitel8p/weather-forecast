@@ -9,19 +9,15 @@
 	<body>
 		<div class="main-top">
 			<div class="left">
-				<p class="temperature" id="temperature">14°C</p>
-				<p class="temperatur-feels-like" id="temperatur-feels-like">
-					Gefühlt: 14°C
-				</p>
-				<p class="weather-description" id="weather-description">
-					Teilweise bewölkt
-				</p>
-				<p class="humidity" id="humidity">Luftfeuchtigkeit: 10%</p>
-				<p class="cloudy" id="cloudy">Wolken: 10%</p>
-				<p class="uv" id="uv">UV: 100%</p>
+				<p class="temperature" id="temperature"></p>
+				<p class="temperatur-feels-like" id="temperatur-feels-like"></p>
+				<p class="weather-description" id="weather-description"></p>
+				<p class="humidity" id="humidity"></p>
+				<p class="cloudy" id="cloudy"></p>
+				<p class="uv" id="uv"></p>
 			</div>
 			<div class="right">
-				<h1 class="city" id="city">Hattingen</h1>
+				<h1 class="city" id="city"></h1>
 				<p class="last-update" id="last-update">
 					<svg
 						stroke="currentColor"
@@ -39,7 +35,6 @@
 							d="M1.7507,16.0022 C3.3517,20.0982 7.3367,23.0002 11.9997,23.0002 C18.0747,23.0002 22.9997,18.0752 22.9997,12.0002 M22.2497,7.9982 C20.6487,3.9012 16.6627,1.0002 11.9997,1.0002 C5.9247,1.0002 0.9997,5.9252 0.9997,12.0002 M8.9997,16.0002 L0.9997,16.0002 L0.9997,24.0002 M22.9997,0.0002 L22.9997,8.0002 L14.9997,8.0002"
 						></path>
 					</svg>
-					12:00
 				</p>
 				<p class="sunrise" id="sunrise">
 					<svg
@@ -62,7 +57,6 @@
 						<line x1="23" y1="22" x2="1" y2="22"></line>
 						<polyline points="8 6 12 2 16 6"></polyline>
 					</svg>
-					12:00
 				</p>
 				<p class="sunset" id="sunset">
 					<svg
@@ -85,12 +79,11 @@
 						<line x1="23" y1="22" x2="1" y2="22"></line>
 						<polyline points="16 5 12 9 8 5"></polyline>
 					</svg>
-					12:00
 				</p>
 			</div>
 		</div>
 		<script>
-			async function fetchText() {
+			async function fetchCurrentWeather() {
 				let response = await fetch('http://127.0.0.1:8000/current_weather');
 
 				console.log(response.status, response.statusText); // 200 OK
@@ -101,17 +94,45 @@
 					// convert var data to json object
 					data = JSON.parse(data);
 					console.log(data);
-					document.getElementById('city').innerHTML = data.city;
-					document.getElementById('temperature').innerHTML = data.temperature;
-					document.getElementById('temperatur-feels-like').innerHTML =
-						data.temperatur_feels_like;
-					document.getElementById('weather-description').innerHTML =
+					document.getElementById('city').textContent = data.city;
+					document.getElementById('temperature').textContent =
+						'Temperatur: ' + data.temperature + '°C';
+					document.getElementById('temperatur-feels-like').textContent =
+						'Gefühlt: ' + data.temperatur_feels_like + '°C';
+					document.getElementById('weather-description').textContent =
 						data.weather_description;
-					document.getElementById('humidity').innerHTML = data.humidity;
-					document.getElementById('cloudy').innerHTML = data.cloudy;
-					document.getElementById('last-update').innerHTML = data.last_update;
-					document.getElementById('sunrise').innerHTML = data.sunrise;
-					document.getElementById('sunset').innerHTML = data.sunset;
+					document.getElementById('humidity').textContent =
+						'Luftfeuchtigkeit: ' + data.humidity + '%';
+					document.getElementById('cloudy').textContent =
+						'Wolken: ' + data.cloudy + '%';
+					document.getElementById('last-update').textContent =
+						' ' + data.last_update;
+					document.getElementById('sunrise').textContent = ' ' + data.sunrise;
+					document.getElementById('sunset').textContent = ' ' + data.sunset;
+
+					var img = document.createElement('img');
+					img.src =
+						'C:/Users/Ludo/Desktop/weather forecast/resources/sun icons/sync.png';
+					var div = document.getElementById('last-update');
+					div.prepend(img);
+					img.style.height = '20px';
+					img.style.width = 'auto';
+
+					var img = document.createElement('img');
+					img.src =
+						'C:/Users/Ludo/Desktop/weather forecast/resources/sun icons/Ebene 2.png';
+					var div = document.getElementById('sunrise');
+					div.prepend(img);
+					img.style.height = 'auto';
+					img.style.width = '24px';
+
+					var img = document.createElement('img');
+					img.src =
+						'C:/Users/Ludo/Desktop/weather forecast/resources/sun icons/Ebene 1.png';
+					var div = document.getElementById('sunset');
+					div.prepend(img);
+					img.style.height = 'auto';
+					img.style.width = '24px';
 				}
 			}
 			async function fetchUv() {
@@ -125,34 +146,34 @@
 					// convert var data to json object
 					data = JSON.parse(data);
 					console.log(data);
-					document.getElementById('uv').innerHTML = data.uv;
+					document.getElementById('uv').textContent = 'UV Index: ' + data.uv;
 				}
 			}
-			fetchText();
+			fetchCurrentWeather();
 			fetchUv();
 		</script>
 
 		<div class="main-bottom">
 			<div class="day one">
-				<h1 class="day-pred" id="day_pred_1">Tag 1</h1>
-				<p class="date" id="date_1">1.1.22</p>
-				<p class="icon"><img id="icon_1" src="" alt="Icon" /></p>
-				<p class="temp-min" id="temp_min_1">TempMin</p>
-				<p class="temp-max" id="temp_max_1">TempMax</p>
+				<h1 class="day-pred" id="day_pred_1"></h1>
+				<p class="date" id="date_1"></p>
+				<img id="icon_1" src="" alt="" />
+				<p class="temp-min" id="temp_min_1"></p>
+				<p class="temp-max" id="temp_max_1"></p>
 			</div>
 			<div class="day two">
-				<h1 class="day-pred" id="day_pred_2">Tag 2</h1>
-				<p class="date" id="date_2">1.1.22</p>
-				<p class="icon"><img id="icon_2" src="" alt="Icon" /></p>
-				<p class="temp-min" id="temp_min_2">TempMin</p>
-				<p class="temp-max" id="temp_max_2">TempMax</p>
+				<h1 class="day-pred" id="day_pred_2"></h1>
+				<p class="date" id="date_2"></p>
+				<img id="icon_2" src="" alt="" />
+				<p class="temp-min" id="temp_min_2"></p>
+				<p class="temp-max" id="temp_max_2"></p>
 			</div>
 			<div class="day three">
-				<h1 class="day-pred" id="day_pred_3">Tag 3</h1>
-				<p class="date" id="date_3">1.1.22</p>
-				<p class="icon"><img id="icon_3" src="" alt="Icon" /></p>
-				<p class="temp-min" id="temp_min_3">TempMin</p>
-				<p class="temp-max" id="temp_max_3">TempMax</p>
+				<h1 class="day-pred" id="day_pred_3"></h1>
+				<p class="date" id="date_3"></p>
+				<img id="icon_3" src="" alt="" />
+				<p class="temp-min" id="temp_min_3"></p>
+				<p class="temp-max" id="temp_max_3"></p>
 			</div>
 			<div class="day four">
 				<h1 class="day-pred">Tag 4</h1>
@@ -170,7 +191,7 @@
 			</div>
 		</div>
 		<script>
-			async function fetchText() {
+			async function fetchForecastWeatherWeek() {
 				let response = await fetch(
 					'http://127.0.0.1:8000/forecast_weather_week'
 				);
@@ -183,28 +204,41 @@
 					// convert var data to json object
 					data = JSON.parse(data);
 					console.log(data);
-					document.getElementById('day_pred_1').innerHTML = data.day1.day;
-					document.getElementById('date_1').innerHTML = data.day1.date;
+					document.getElementById('day_pred_1').textContent = data.day1.day;
+					document.getElementById('date_1').textContent = data.day1.date;
 					document.getElementById('icon_1').src = data.day1.icon;
-					document.getElementById('temp_min_1').innerHTML = data.day1.temp_min;
-					document.getElementById('temp_max_1').innerHTML = data.day1.temp_max;
+					document.getElementById('temp_min_1').textContent =
+						data.day1.temp_min;
+					document.getElementById('temp_max_1').textContent =
+						data.day1.temp_max;
 
-					document.getElementById('day_pred_2').innerHTML = data.day2.day;
-					document.getElementById('date_2').innerHTML = data.day2.date;
+					document.getElementById('day_pred_2').textContent = data.day2.day;
+					document.getElementById('date_2').textContent = data.day2.date;
 					document.getElementById('icon_2').src = data.day2.icon;
-					console.log(data.day1.icon);
-					document.getElementById('temp_min_2').innerHTML = data.day2.temp_min;
-					document.getElementById('temp_max_2').innerHTML = data.day2.temp_max;
+					document.getElementById('temp_min_2').textContent =
+						data.day2.temp_min;
+					document.getElementById('temp_max_2').textContent =
+						data.day2.temp_max;
 
-					document.getElementById('day_pred_3').innerHTML = data.day3.day;
-					document.getElementById('date_3').innerHTML = data.day3.date;
+					document.getElementById('day_pred_3').textContent = data.day3.day;
+					document.getElementById('date_3').textContent = data.day3.date;
 					document.getElementById('icon_3').src = data.day3.icon;
-					document.getElementById('temp_min_3').innerHTML = data.day3.temp_min;
-					document.getElementById('temp_max_3').innerHTML = data.day3.temp_max;
+					document.getElementById('temp_min_3').textContent =
+						data.day3.temp_min;
+					document.getElementById('temp_max_3').textContent =
+						data.day3.temp_max;
 				}
 			}
-			fetchText();
+			fetchForecastWeatherWeek();
 		</script>
 		<div class="bottom"></div>
+		<script>
+			// Call a function every 600000 milliseconds (10min)
+			window.setInterval('refresh()', 600000);
+			// Refresh or reload page.
+			function refresh() {
+				window.location.reload();
+			}
+		</script>
 	</body>
 </html>
