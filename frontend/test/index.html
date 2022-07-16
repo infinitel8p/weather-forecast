@@ -91,10 +91,9 @@
 		</div>
 		<script>
 			async function fetchText() {
-				let response = await fetch('http://127.0.0.1:8000/test');
+				let response = await fetch('http://127.0.0.1:8000/current_weather');
 
-				console.log(response.status); // 200
-				console.log(response.statusText); // OK
+				console.log(response.status, response.statusText); // 200 OK
 
 				if (response.status === 200) {
 					var data = await response.text();
@@ -102,103 +101,58 @@
 					// convert var data to json object
 					data = JSON.parse(data);
 					console.log(data);
-					console.log(
-						'Changing',
-						document.getElementById('city').innerHTML,
-						'to',
-						data.city
-					);
 					document.getElementById('city').innerHTML = data.city;
-					console.log(
-						'Changing',
-						document.getElementById('temperature').innerHTML,
-						'to',
-						data.temperature
-					);
 					document.getElementById('temperature').innerHTML = data.temperature;
-					console.log(
-						'Changing',
-						document.getElementById('temperatur-feels-like').innerHTML,
-						'to',
-						data.temperatur_feels_like
-					);
 					document.getElementById('temperatur-feels-like').innerHTML =
 						data.temperatur_feels_like;
-					console.log(
-						'Changing',
-						document.getElementById('weather-description').innerHTML,
-						'to',
-						data.weather_description
-					);
 					document.getElementById('weather-description').innerHTML =
 						data.weather_description;
-					console.log(
-						'Changing',
-						document.getElementById('humidity').innerHTML,
-						'to',
-						data.humidity
-					);
 					document.getElementById('humidity').innerHTML = data.humidity;
-					console.log(
-						'Changing',
-						document.getElementById('cloudy').innerHTML,
-						'to',
-						data.cloudy
-					);
 					document.getElementById('cloudy').innerHTML = data.cloudy;
-					console.log(
-						'Changing',
-						document.getElementById('uv').innerHTML,
-						'to',
-						data.uv
-					);
-					document.getElementById('uv').innerHTML = data.uv;
-					console.log(
-						'Changing',
-						document.getElementById('last-update').innerHTML,
-						'to',
-						data.last_update
-					);
 					document.getElementById('last-update').innerHTML = data.last_update;
-					console.log(
-						'Changing',
-						document.getElementById('sunrise').innerHTML,
-						'to',
-						data.sunrise
-					);
 					document.getElementById('sunrise').innerHTML = data.sunrise;
-					console.log(
-						'Changing',
-						document.getElementById('sunset').innerHTML,
-						'to',
-						data.sunset
-					);
 					document.getElementById('sunset').innerHTML = data.sunset;
 				}
 			}
+			async function fetchUv() {
+				let response = await fetch('http://127.0.0.1:8000/additional_weather');
+
+				console.log(response.status, response.statusText); // 200 OK
+
+				if (response.status === 200) {
+					var data = await response.text();
+					// handle data
+					// convert var data to json object
+					data = JSON.parse(data);
+					console.log(data);
+					document.getElementById('uv').innerHTML = data.uv;
+				}
+			}
 			fetchText();
+			fetchUv();
 		</script>
+
 		<div class="main-bottom">
 			<div class="day one">
-				<h1 class="day-pred">Tag 1</h1>
-				<p class="date">1.1.22</p>
-				<p class="icon">Icon</p>
-				<p class="temp-min">TempMin</p>
-				<p class="temp-max">TempMax</p>
+				<h1 class="day-pred" id="day_pred_1">Tag 1</h1>
+				<p class="date" id="date_1">1.1.22</p>
+				<p class="icon"><img id="icon_1" src="" alt="Icon" /></p>
+				<p class="temp-min" id="temp_min_1">TempMin</p>
+				<p class="temp-max" id="temp_max_1">TempMax</p>
 			</div>
 			<div class="day two">
-				<h1 class="day-pred">Tag 2</h1>
-				<p class="date">1.1.22</p>
-				<p class="icon">Icon</p>
-				<p class="temp-min">TempMin</p>
-				<p class="temp-max">TempMax</p>
+				<h1 class="day-pred" id="day_pred_2">Tag 2</h1>
+				<p class="date" id="date_2">1.1.22</p>
+				<p class="icon"><img id="icon_2" src="" alt="Icon" /></p>
+				<p class="temp-min" id="temp_min_2">TempMin</p>
+				<p class="temp-max" id="temp_max_2">TempMax</p>
 			</div>
 			<div class="day three">
-				<h1 class="day-pred">Tag 3</h1>
-				<p class="date">1.1.22</p>
-				<p class="icon">Icon</p>
-				<p class="temp-min">TempMin</p>
-				<p class="temp-max">TempMax</p>
+				<h1 class="day-pred" id="day_pred_3">Tag 3</h1>
+				<p class="date" id="date_3">1.1.22</p>
+				<p class="icon"><img id="icon_3" src="" alt="Icon" /></p>
+				<p class="temp-min" id="temp_min_3">TempMin</p>
+				<p class="temp-max" id="temp_max_3">TempMax</p>
 			</div>
 			<div class="day four">
 				<h1 class="day-pred">Tag 4</h1>
@@ -215,6 +169,42 @@
 				<p class="temp-max">TempMax</p>
 			</div>
 		</div>
+		<script>
+			async function fetchText() {
+				let response = await fetch(
+					'http://127.0.0.1:8000/forecast_weather_week'
+				);
+
+				console.log(response.status, response.statusText); // 200 OK
+
+				if (response.status === 200) {
+					var data = await response.text();
+					// handle data
+					// convert var data to json object
+					data = JSON.parse(data);
+					console.log(data);
+					document.getElementById('day_pred_1').innerHTML = data.day1.day;
+					document.getElementById('date_1').innerHTML = data.day1.date;
+					document.getElementById('icon_1').src = data.day1.icon;
+					document.getElementById('temp_min_1').innerHTML = data.day1.temp_min;
+					document.getElementById('temp_max_1').innerHTML = data.day1.temp_max;
+
+					document.getElementById('day_pred_2').innerHTML = data.day2.day;
+					document.getElementById('date_2').innerHTML = data.day2.date;
+					document.getElementById('icon_2').src = data.day2.icon;
+					console.log(data.day1.icon);
+					document.getElementById('temp_min_2').innerHTML = data.day2.temp_min;
+					document.getElementById('temp_max_2').innerHTML = data.day2.temp_max;
+
+					document.getElementById('day_pred_3').innerHTML = data.day3.day;
+					document.getElementById('date_3').innerHTML = data.day3.date;
+					document.getElementById('icon_3').src = data.day3.icon;
+					document.getElementById('temp_min_3').innerHTML = data.day3.temp_min;
+					document.getElementById('temp_max_3').innerHTML = data.day3.temp_max;
+				}
+			}
+			fetchText();
+		</script>
 		<div class="bottom"></div>
 	</body>
 </html>
