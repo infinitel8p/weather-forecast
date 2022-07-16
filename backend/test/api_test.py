@@ -160,4 +160,3 @@ async def root():
 # python -m uvicorn backend.test.api_test:app --reload
 # http://127.0.0.1:8000/docs
 # http://127.0.0.1:8000/redoc
-# https://fastapi.tiangolo.com/
