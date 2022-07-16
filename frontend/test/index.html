@@ -10,8 +10,8 @@
 		<div class="main-top">
 			<div class="left">
 				<p class="temperature" id="temperature"></p>
-				<p class="temperatur-feels-like" id="temperatur-feels-like"></p>
-				<p class="weather-description" id="weather-description"></p>
+				<p class="temperatur_feels_like" id="temperatur_feels_like"></p>
+				<p class="weather_description" id="weather_description"></p>
 				<p class="humidity" id="humidity"></p>
 				<p class="cloudy" id="cloudy"></p>
 				<p class="uv" id="uv"></p>
@@ -23,7 +23,7 @@
 				</div>
 				<div>
 					<h1 class="city" id="city"></h1>
-					<p class="last-update" id="last-update">
+					<p class="last_update" id="last_update">
 						<svg
 							stroke="currentColor"
 							fill="currentColor"
@@ -91,25 +91,25 @@
 
 		<div class="main-bottom">
 			<div class="day one">
-				<h1 class="day-pred" id="day_pred_1"></h1>
+				<h1 class="day_pred" id="day_pred_1"></h1>
 				<p class="date" id="date_1"></p>
 				<img id="icon_1" src="" alt="" />
-				<p class="temp-min" id="temp_min_1"></p>
-				<p class="temp-max" id="temp_max_1"></p>
+				<p class="temp_min" id="temp_min_1"></p>
+				<p class="temp_max" id="temp_max_1"></p>
 			</div>
 			<div class="day two">
-				<h1 class="day-pred" id="day_pred_2"></h1>
+				<h1 class="day_pred" id="day_pred_2"></h1>
 				<p class="date" id="date_2"></p>
 				<img id="icon_2" src="" alt="" />
-				<p class="temp-min" id="temp_min_2"></p>
-				<p class="temp-max" id="temp_max_2"></p>
+				<p class="temp_min" id="temp_min_2"></p>
+				<p class="temp_max" id="temp_max_2"></p>
 			</div>
 			<div class="day three">
-				<h1 class="day-pred" id="day_pred_3"></h1>
+				<h1 class="day_pred" id="day_pred_3"></h1>
 				<p class="date" id="date_3"></p>
 				<img id="icon_3" src="" alt="" />
-				<p class="temp-min" id="temp_min_3"></p>
-				<p class="temp-max" id="temp_max_3"></p>
+				<p class="temp_min" id="temp_min_3"></p>
+				<p class="temp_max" id="temp_max_3"></p>
 			</div>
 			<div class="day four">
 				<h1 class="day-pred">Tag 4</h1>
@@ -126,6 +126,9 @@
 				<p class="temp-max">TempMax</p>
 			</div>
 		</div>
+
+		<div class="bottom"></div>
+
 		<script>
 			async function fetchCurrentWeather() {
 				let response = await fetch('http://127.0.0.1:8000/current_weather');
@@ -141,15 +144,15 @@
 					document.getElementById('city').textContent = data.city;
 					document.getElementById('temperature').textContent =
 						'Temperatur: ' + data.temperature + '°C';
-					document.getElementById('temperatur-feels-like').textContent =
+					document.getElementById('temperatur_feels_like').textContent =
 						'Gefühlt: ' + data.temperatur_feels_like + '°C';
-					document.getElementById('weather-description').textContent =
+					document.getElementById('weather_description').textContent =
 						data.weather_description;
 					document.getElementById('humidity').textContent =
 						'Luftfeuchtigkeit: ' + data.humidity + '%';
 					document.getElementById('cloudy').textContent =
 						'Wolken: ' + data.cloudy + '%';
-					document.getElementById('last-update').textContent =
+					document.getElementById('last_update').textContent =
 						' ' + data.last_update;
 					document.getElementById('sunrise').textContent = ' ' + data.sunrise;
 					document.getElementById('sunset').textContent = ' ' + data.sunset;
@@ -161,7 +164,7 @@
 					var img = document.createElement('img');
 					img.src =
 						'https://raw.githubusercontent.com/infinitel8p/weather-forecast/master/resources/sun%20icons/sync.png?token=GHSAT0AAAAAABTPNK6IW4CWUXI2JPTYAT5CYWTEYOA';
-					var div = document.getElementById('last-update');
+					var div = document.getElementById('last_update');
 					div.prepend(img);
 					img.style.height = '15px';
 					img.style.width = 'auto';
@@ -239,8 +242,6 @@
 			fetchUv();
 			fetchForecastWeatherWeek();
 		</script>
-		<div class="bottom"></div>
-
 		<!-- * Script to reload Page -->
 		<script>
 			// Call a function every 600000 milliseconds (10min)
