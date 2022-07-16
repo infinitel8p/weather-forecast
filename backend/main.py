@@ -49,7 +49,7 @@ class WeatherData:
         self.clouds_current = self.parsed_fetch["clouds"]["all"]
         self.weather_current = self.parsed_fetch["weather"][0]["description"]
         self.weather_icon_current = self.parsed_fetch["weather"][0]["icon"]
-        self.weather_icon_current_link = f"http://openweathermap.org/img/w/{self.weather_icon_current}.png"
+        self.weather_icon_current_link = f"http://openweathermap.org/img/wn/{self.weather_icon_current}@4x.png"
 
     def last_update(self):
         return self.update_time
@@ -178,6 +178,7 @@ async def root():
 @app.get("/current_weather")
 async def root():
     current_weather = WeatherData()
+    print(current_weather.weather_icon_current_link)
     return JSONResponse(media_type="application/json", content={"city": current_weather.city_name,
                                                                 "temperature": current_weather.temp_current,
                                                                 "temperatur_feels_like": current_weather.temp_current_feel,
@@ -186,7 +187,8 @@ async def root():
                                                                 "cloudy": current_weather.clouds_current,
                                                                 "last_update": current_weather.update_time,
                                                                 "sunrise": current_weather.city_sunrise,
-                                                                "sunset": current_weather.city_sunset
+                                                                "sunset": current_weather.city_sunset,
+                                                                "icon": current_weather.weather_icon_current_link
                                                                 })
 
 

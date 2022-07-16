@@ -111,6 +111,13 @@
 					document.getElementById('sunset').textContent = ' ' + data.sunset;
 
 					var img = document.createElement('img');
+					img.src = data.icon;
+					var div = document.getElementById('city');
+					div.prepend(img);
+					img.style.height = '40px';
+
+					img.style.width = 'auto';
+					var img = document.createElement('img');
 					img.src =
 						'C:/Users/Ludo/Desktop/weather forecast/resources/sun icons/sync.png';
 					var div = document.getElementById('last-update');
