@@ -20,7 +20,8 @@
 
 5 Tageszusammenfassung mit:
 
-- Tag & Datum
+- Tag
+- Datum
 - Icon
 - Temp Min
 - Temp Max

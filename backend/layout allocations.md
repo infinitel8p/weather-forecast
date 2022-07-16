@@ -20,16 +20,17 @@
 
 5 Tageszusammenfassung mit:
 
-- Tag & Datum
+- Tag
+- Datum
 - Icon
 - Temp Min
 - Temp Max
 
 #### BOTTOM - 7x3hrs FORECAST
 
-- forecast_data[i][0]
-- forecast_data[i][1]
-- forecast_data[i][2]
-- forecast_data[i][3]
-- forecast_data[i][4]
-- forecast_data[i][6]
+- forecast_weather.forecast_data[i][0]
+- forecast_weather.forecast_data[i][1]
+- forecast_weather.forecast_data[i][2]
+- forecast_weather.forecast_data[i][3]
+- forecast_weather.forecast_data[i][4]
+- forecast_weather.forecast_data[i][6]
