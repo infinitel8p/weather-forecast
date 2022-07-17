@@ -28,7 +28,7 @@ class WeatherData:
         self.fetch_api = requests.get(api_endpoint_1)
         self.parsed_fetch = json.loads(self.fetch_api.text)
 
-        self.update_time = time.strftime('%H:%M:%S',
+        self.update_time = time.strftime('%H:%M',
                                          time.localtime(self.parsed_fetch["dt"]))
 
         # general information
@@ -178,7 +178,6 @@ async def root():
 @app.get("/current_weather")
 async def root():
     current_weather = WeatherData()
-    print(current_weather.weather_icon_current_link)
     return JSONResponse(media_type="application/json", content={"city": current_weather.city_name,
                                                                 "temperature": current_weather.temp_current,
                                                                 "temperatur_feels_like": current_weather.temp_current_feel,
