@@ -94,6 +94,31 @@ async function fetchForecastWeatherWeek() {
 		document.getElementById('temp_max_3').textContent = data.day3.temp_max;
 	}
 }
+async function fetchForecastWeatherWeek2() {
+	let response = await fetch('http://127.0.0.1:8000/test');
+
+	console.log(response.status, response.statusText); // 200 OK
+
+	if (response.status === 200) {
+		var data = await response.text();
+		// handle data
+		// convert var data to json object
+		data = JSON.parse(data);
+		console.log(data);
+		document.getElementById('day_pred_1').textContent = data.day1.day;
+		document.getElementById('temp_min_1').textContent = data.day1.temp;
+		document.getElementById('temp_max_1').textContent = data.day1.condition;
+
+		document.getElementById('day_pred_2').textContent = data.day2.day;
+		document.getElementById('temp_min_2').textContent = data.day2.temp;
+		document.getElementById('temp_max_2').textContent = data.day2.condition;
+
+		document.getElementById('day_pred_3').textContent = data.day3.day;
+		document.getElementById('temp_min_3').textContent = data.day3.temp;
+		document.getElementById('temp_max_3').textContent = data.day3.condition;
+	}
+}
 fetchCurrentWeather();
 fetchUv();
 fetchForecastWeatherWeek();
+fetchForecastWeatherWeek2();

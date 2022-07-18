@@ -27,6 +27,7 @@ span_text = []
 for text in span:
     if text.text != '':
         span_text.append(text.text)
+print(span_text)
 
 # get <svg> in <ul>
 svg_html = []

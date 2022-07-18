@@ -1,14 +1,14 @@
+import os
+import json
+import requests
+import time
+import locale
 from selenium import webdriver
 from fake_useragent import UserAgent
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-import os
-import json
-import requests
-import time
-import locale
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse, HTMLResponse
@@ -169,6 +169,7 @@ forecast_weather_week = ForecastDataWeek()
 
 @app.get("/test", response_class=HTMLResponse)
 async def root():
+
     omw = "https://openweathermap.org/city/2909230"
     ua = UserAgent()
 
@@ -177,21 +178,57 @@ async def root():
     chrome_options.add_argument(f"user-agent={ua.random}")
     browser = webdriver.Chrome(service=Service(
         ChromeDriverManager().install()), options=chrome_options)
+    browser.implicitly_wait(10)
 
     browser.get(omw)
-    time.sleep(7)
 
     # get <ul>
-    ul = browser.find_element(
-        By.CLASS_NAME, "day-list")
+    ul = browser.find_element(By.CLASS_NAME, "day-list")
     # get <span> in <ul>
     span = ul.find_elements(By.TAG_NAME, "span")
-    # get all <span> in <li>
+    # get all text in <span>
     span_text = []
     for text in span:
         if text.text != '':
             span_text.append(text.text)
-    return JSONResponse(media_type="application/json", content={"test": span_text})
+
+    # get <svg> in <ul>
+    svg_html = []
+    svg = ul.find_elements(By.CLASS_NAME, "owm-weather-icon")
+    for objects in svg:
+        svg_html.append(objects.get_attribute('outerHTML'))
+    return JSONResponse(media_type="application/json", content={"day1": {"day": span_text[0],
+                                                                         "temp": span_text[1],
+                                                                         "condition": span_text[2]
+                                                                         },
+                                                                "day2": {"day": span_text[3],
+                                                                         "temp": span_text[4],
+                                                                         "condition": span_text[5]
+                                                                         },
+                                                                "day3": {"day": span_text[6],
+                                                                         "temp": span_text[7],
+                                                                         "condition": span_text[8]
+                                                                         },
+                                                                "day4": {"day": span_text[9],
+                                                                         "temp": span_text[10],
+                                                                         "condition": span_text[11]
+                                                                         },
+                                                                "day5": {"day": span_text[12],
+                                                                         "temp": span_text[13],
+                                                                         "condition": span_text[14]
+                                                                         },
+                                                                "day6": {"day": span_text[15],
+                                                                         "temp": span_text[16],
+                                                                         "condition": span_text[17]
+                                                                         },
+                                                                "day7": {"day": span_text[18],
+                                                                         "temp": span_text[19],
+                                                                         "condition": span_text[20]
+                                                                         },
+                                                                "day8": {"day": span_text[21],
+                                                                         "temp": span_text[22],
+                                                                         "condition": span_text[23]
+                                                                         }})
 
 
 @app.get("/index.html", response_class=HTMLResponse)
