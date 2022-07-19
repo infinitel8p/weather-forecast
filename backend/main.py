@@ -191,7 +191,7 @@ async def root():
     chrome_options.add_argument(f"user-agent={ua.random}")
     if platform.system() == "Linux" and platform.machine() == "armv7l":
         # if raspi
-        service = Service("/usr/bin/chromedriver")
+        service = Service(executable_path="/usr/bin/chromedriver")
         chrome_options.BinaryLocation = ("/usr/bin/chromium-browser")
         browser = webdriver.Chrome(service=service, options=chrome_options)
     else:
