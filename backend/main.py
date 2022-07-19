@@ -2,7 +2,12 @@ import os
 import json
 import requests
 import time
-import locale
+from selenium import webdriver
+from fake_useragent import UserAgent
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse, HTMLResponse
@@ -19,8 +24,8 @@ lat = 51.4018117
 # https://openweathermap.org/current
 
 
-# CURRENT WEATHER DATA
-api_endpoint_1 = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key_1}&lang=de&units=metric"
+# CURRENT WEATHER DATA //&lang=de
+api_endpoint_1 = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key_1}&units=metric"
 
 
 class WeatherData:
@@ -55,8 +60,8 @@ class WeatherData:
         return self.update_time
 
 
-# FORECAST WEATHER DATA DAY
-api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key_1}&lang=de&units=metric&cnt=8"
+# FORECAST WEATHER DATA DAY //lang=de
+api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key_1}&units=metric&cnt=8"
 forecast_data = []
 
 
@@ -81,42 +86,6 @@ class ForecastDataDay():
 
         global forecast_data
         forecast_data = self.forecast_data
-
-
-# FORECAST WEATHER DATA DAY
-api_endpoint_3 = f"http://api.weatherapi.com/v1/forecast.json?key={api_key_2}&q={target}&days=3&aqi=no&alerts=yes"
-
-
-class ForecastDataWeek:
-    def __init__(self):
-        self.fetch_api_3 = requests.get(api_endpoint_3)
-        self.parsed_fetch_3 = json.loads(self.fetch_api_3.text)
-        # todo add name of day
-        locale.setlocale(locale.LC_ALL, "german")
-        # Day1
-        self.date_1 = self.parsed_fetch_3["forecast"]["forecastday"][0]["date"]
-        self.day_1 = time.strftime('%A', time.localtime(
-            self.parsed_fetch_3["forecast"]["forecastday"][0]["date_epoch"]))
-        self.icon_1 = "https:" + \
-            self.parsed_fetch_3["forecast"]["forecastday"][0]["day"]["condition"]["icon"]
-        self.mintemp_c_1 = self.parsed_fetch_3["forecast"]["forecastday"][0]["day"]["mintemp_c"]
-        self.maxtemp_c_1 = self.parsed_fetch_3["forecast"]["forecastday"][0]["day"]["maxtemp_c"]
-        # Day2
-        self.date_2 = self.parsed_fetch_3["forecast"]["forecastday"][1]["date"]
-        self.day_2 = time.strftime('%A', time.localtime(
-            self.parsed_fetch_3["forecast"]["forecastday"][1]["date_epoch"]))
-        self.icon_2 = "https:" + \
-            self.parsed_fetch_3["forecast"]["forecastday"][1]["day"]["condition"]["icon"]
-        self.mintemp_c_2 = self.parsed_fetch_3["forecast"]["forecastday"][1]["day"]["mintemp_c"]
-        self.maxtemp_c_2 = self.parsed_fetch_3["forecast"]["forecastday"][1]["day"]["maxtemp_c"]
-        # Day3
-        self.date_3 = self.parsed_fetch_3["forecast"]["forecastday"][2]["date"]
-        self.day_3 = time.strftime('%A', time.localtime(
-            self.parsed_fetch_3["forecast"]["forecastday"][2]["date_epoch"]))
-        self.icon_3 = "https:" + \
-            self.parsed_fetch_3["forecast"]["forecastday"][2]["day"]["condition"]["icon"]
-        self.mintemp_c_3 = self.parsed_fetch_3["forecast"]["forecastday"][2]["day"]["mintemp_c"]
-        self.maxtemp_c_3 = self.parsed_fetch_3["forecast"]["forecastday"][2]["day"]["maxtemp_c"]
 
 
 # ADDITIONAL DATA
@@ -158,15 +127,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-forecast_weather_week = ForecastDataWeek()
-
-
-@app.get("/", response_class=HTMLResponse)
-async def root():
-    landingpage = open(os.path.dirname(__file__) + "/.."
-                       "/frontend/test/fastapi_landingpage.html", "r", encoding='utf-8').read()
-    return landingpage
-
 
 @app.get("/index.html", response_class=HTMLResponse)
 async def root():
@@ -194,81 +154,71 @@ async def root():
 @app.get("/forecast_weather_day")
 async def root():
     forecast_weather = ForecastDataDay()
+    # ! additional_weather has to be left in since it provides rain percentage
     additional_weather = AdditionalData()
-    return JSONResponse(media_type="application/json", content={"forecast1": {"time": forecast_weather.forecast_data[0][0],
-                                                                              "temp": forecast_weather.forecast_data[0][1],
-                                                                              "humidity": forecast_weather.forecast_data[0][2],
-                                                                              "clouds": forecast_weather.forecast_data[0][3],
-                                                                              "rain": forecast_weather.forecast_data[0][4],
-                                                                              "icon": forecast_weather.forecast_data[0][6]},
-                                                                "forecast2": {"time": forecast_weather.forecast_data[1][0],
-                                                                              "temp": forecast_weather.forecast_data[1][1],
-                                                                              "humidity": forecast_weather.forecast_data[1][2],
-                                                                              "clouds": forecast_weather.forecast_data[1][3],
-                                                                              "rain": forecast_weather.forecast_data[1][4],
-                                                                              "icon": forecast_weather.forecast_data[1][6]},
-                                                                "forecast3": {"time": forecast_weather.forecast_data[2][0],
-                                                                              "temp": forecast_weather.forecast_data[2][1],
-                                                                              "humidity": forecast_weather.forecast_data[2][2],
-                                                                              "clouds": forecast_weather.forecast_data[2][3],
-                                                                              "rain": forecast_weather.forecast_data[2][4],
-                                                                              "icon": forecast_weather.forecast_data[2][6]},
-                                                                "forecast4": {"time": forecast_weather.forecast_data[3][0],
-                                                                              "temp": forecast_weather.forecast_data[3][3],
-                                                                              "humidity": forecast_weather.forecast_data[3][2],
-                                                                              "clouds": forecast_weather.forecast_data[3][1],
-                                                                              "rain": forecast_weather.forecast_data[3][4],
-                                                                              "icon": forecast_weather.forecast_data[3][6]},
-                                                                "forecast5": {"time": forecast_weather.forecast_data[4][0],
-                                                                              "temp": forecast_weather.forecast_data[4][1],
-                                                                              "humidity": forecast_weather.forecast_data[4][2],
-                                                                              "clouds": forecast_weather.forecast_data[4][3],
-                                                                              "rain": forecast_weather.forecast_data[4][4],
-                                                                              "icon": forecast_weather.forecast_data[4][6]},
-                                                                "forecast6": {"time": forecast_weather.forecast_data[5][0],
-                                                                              "temp": forecast_weather.forecast_data[5][1],
-                                                                              "humidity": forecast_weather.forecast_data[5][2],
-                                                                              "clouds": forecast_weather.forecast_data[5][3],
-                                                                              "rain": forecast_weather.forecast_data[5][4],
-                                                                              "icon": forecast_weather.forecast_data[5][6]},
-                                                                "forecast7": {"time": forecast_weather.forecast_data[6][0],
-                                                                              "temp": forecast_weather.forecast_data[6][1],
-                                                                              "humidity": forecast_weather.forecast_data[6][2],
-                                                                              "clouds": forecast_weather.forecast_data[6][3],
-                                                                              "rain": forecast_weather.forecast_data[6][4],
-                                                                              "icon": forecast_weather.forecast_data[6][6]},
-                                                                "forecast8": {"time": forecast_weather.forecast_data[7][0],
-                                                                              "temp": forecast_weather.forecast_data[7][1],
-                                                                              "humidity": forecast_weather.forecast_data[7][2],
-                                                                              "clouds": forecast_weather.forecast_data[7][3],
-                                                                              "rain": forecast_weather.forecast_data[7][4],
-                                                                              "icon": forecast_weather.forecast_data[7][6]}})
+
+    # create output
+    forecast_weather_day = {}
+
+    for i in range(1, 9):
+        forecast_weather_day[f"forecast{i}"] = {}
+        forecast_weather_day[f"forecast{i}"]["time"] = forecast_weather.forecast_data[i-1][0]
+        forecast_weather_day[f"forecast{i}"]["temp"] = forecast_weather.forecast_data[i-1][1]
+        forecast_weather_day[f"forecast{i}"]["humidity"] = forecast_weather.forecast_data[i-1][2]
+        forecast_weather_day[f"forecast{i}"]["clouds"] = forecast_weather.forecast_data[i-1][3]
+        forecast_weather_day[f"forecast{i}"]["rain"] = forecast_weather.forecast_data[i-1][4]
+        forecast_weather_day[f"forecast{i}"]["icon"] = forecast_weather.forecast_data[i-1][6]
+
+    return JSONResponse(media_type="application/json", content=forecast_weather_day)
 
 
-@app.get("/forecast_weather_week")
+@ app.get("/forecast_weather_week", response_class=HTMLResponse)
 async def root():
-    forecast_weather_week = ForecastDataWeek()
-    return JSONResponse(media_type="application/json", content={"day1": {"date": forecast_weather_week.date_1,
-                                                                         "day": forecast_weather_week.day_1,
-                                                                         "icon": forecast_weather_week.icon_1,
-                                                                         "temp_min": forecast_weather_week.mintemp_c_1,
-                                                                         "temp_max": forecast_weather_week.maxtemp_c_1},
-                                                                "day2": {"date": forecast_weather_week.date_2,
-                                                                         "day": forecast_weather_week.day_2,
-                                                                         "icon": forecast_weather_week.icon_2,
-                                                                         "temp_min": forecast_weather_week.mintemp_c_2,
-                                                                         "temp_max": forecast_weather_week.maxtemp_c_2},
-                                                                "day3": {"date": forecast_weather_week.date_3,
-                                                                         "day": forecast_weather_week.day_3,
-                                                                         "icon": forecast_weather_week.icon_3,
-                                                                         "temp_min": forecast_weather_week.mintemp_c_3,
-                                                                         "temp_max": forecast_weather_week.maxtemp_c_3}})
+
+    omw = "https://openweathermap.org/city/2909230"
+    ua = UserAgent()
+
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument(f"user-agent={ua.random}")
+    browser = webdriver.Chrome(service=Service(
+        ChromeDriverManager().install()), options=chrome_options)
+    browser.implicitly_wait(10)
+
+    browser.get(omw)
+
+    # get <ul>
+    ul = browser.find_element(By.CLASS_NAME, "day-list")
+    # get <span> in <ul>
+    span = ul.find_elements(By.TAG_NAME, "span")
+    # get all text in <span>
+    span_text = []
+    for text in span:
+        if text.text != '':
+            span_text.append(text.text)
+
+    # get <svg> in <ul>
+    svg_html = []
+    svg = ul.find_elements(By.CLASS_NAME, "owm-weather-icon")
+    for objects in svg:
+        svg_html.append(objects.get_attribute('outerHTML'))
+
+    # create output
+    forecast_weather_week = {}
+    index = 0
+
+    for i in range(1, 9):
+        forecast_weather_week[f"day{i}"] = {}
+        forecast_weather_week[f"day{i}"]["day"] = span_text[index]
+        forecast_weather_week[f"day{i}"]["temp"] = span_text[index+1]
+        forecast_weather_week[f"day{i}"]["condition"] = span_text[index+2]
+        forecast_weather_week[f"day{i}"]["svg"] = svg_html[i-1]
+        index += 3
+
+    return JSONResponse(media_type="application/json", content=forecast_weather_week)
 
 
-@app.get("/additional_weather")
+@ app.get("/additional_weather")
 async def root():
     additional_weather = AdditionalData()
     return JSONResponse(media_type="application/json", content={"uv": additional_weather.uv_current})
-
-
-# python -m uvicorn backend.main:app --reload
