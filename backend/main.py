@@ -1,15 +1,16 @@
 import os
+import time
 import json
 import requests
-import time
+import platform
 from selenium import webdriver
-from fake_useragent import UserAgent
 from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from fastapi.middleware.cors import CORSMiddleware
+from webdriver_manager.chrome import ChromeDriverManager
+from fake_useragent import UserAgent
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, HTMLResponse
 
 api_key_1 = "ede202ebf917a17f6173ccc6cc226c7d"
@@ -188,8 +189,14 @@ async def root():
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument(f"user-agent={ua.random}")
-    browser = webdriver.Chrome(service=Service(
-        ChromeDriverManager().install()), options=chrome_options)
+    if platform.system() == "Linux" and platform.machine() == "armv7l":
+        # if raspi
+        service = Service("/usr/bin/chromedriver")
+        chrome_options.BinaryLocation = ("/usr/bin/chromium-browser")
+        browser = webdriver.Chrome(service=service, options=chrome_options)
+    else:
+        browser = webdriver.Chrome(service=Service(
+            ChromeDriverManager().install()), options=chrome_options)
     browser.implicitly_wait(10)
 
     browser.get(omw)
