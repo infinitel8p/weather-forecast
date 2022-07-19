@@ -1,6 +1,6 @@
 requests
 fastapi
 uvicorn
-selenium
+selenium==4.3.0
 webdriver_manager
 fake-useragent
