@@ -33,6 +33,7 @@ async function fetchCurrentWeather() {
 		div.prepend(img);
 		img.style.height = '15px';
 		img.style.width = 'auto';
+		img.alt = '';
 
 		var img = document.createElement('img');
 		img.src = 'styles/icons/sunrise.png';
@@ -40,6 +41,7 @@ async function fetchCurrentWeather() {
 		div.prepend(img);
 		img.style.height = 'auto';
 		img.style.width = '20px';
+		img.alt = '';
 
 		var img = document.createElement('img');
 		img.src = 'styles/icons/sunset.png';
@@ -47,6 +49,7 @@ async function fetchCurrentWeather() {
 		div.prepend(img);
 		img.style.height = 'auto';
 		img.style.width = '20px';
+		img.alt = '';
 	}
 }
 async function fetchUv() {
