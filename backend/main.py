@@ -128,6 +128,13 @@ app.add_middleware(
 )
 
 
+@app.get("/", response_class=HTMLResponse)
+async def root():
+    landingpage = open(os.path.dirname(__file__) + "/.."
+                       "/frontend/test/fastapi_landingpage.html", "r", encoding='utf-8').read()
+    return landingpage
+
+
 @app.get("/index.html", response_class=HTMLResponse)
 async def root():
     landingpage = open(os.path.dirname(__file__) + "/.."
