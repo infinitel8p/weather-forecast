@@ -217,6 +217,7 @@ async def root():
     for objects in svg:
         svg_html.append(objects.get_attribute('outerHTML'))
 
+    browser.quit()
     # create output
     forecast_weather_week = {}
     index = 0
