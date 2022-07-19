@@ -8,18 +8,13 @@
 	</head>
 	<body>
 		<script>
+			// load script.js into site
 			function load_js() {
 				var script = document.createElement('script');
 				script.src = 'script.js';
 				document.body.appendChild(script);
 			}
 			load_js();
-			// Call every 600000 milliseconds (10min)
-			window.setInterval('refresh()', 600000);
-			// Refresh or reload page.
-			function refresh() {
-				window.location.reload();
-			}
 		</script>
 		<div class="main-top">
 			<div class="left">
@@ -84,4 +79,10 @@
 
 		<div class="bottom"></div>
 	</body>
+	<script>
+		// Call every 600000 milliseconds (10min)
+		setInterval('fetchCurrentWeather()', 600000);
+		setInterval('fetchUv()', 600000);
+		setInterval('fetchForecastWeatherWeek()', 600000);
+	</script>
 </html>
