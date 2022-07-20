@@ -151,7 +151,7 @@ async def root():
                                                                 "temperatur_feels_like": current_weather.temp_current_feel,
                                                                 "weather_description": current_weather.weather_current,
                                                                 "humidity": current_weather.humidity_current,
-                                                                "cloudy": current_weather.clouds_current,
+                                                                "clouds": current_weather.clouds_current,
                                                                 "last_update": current_weather.update_time,
                                                                 "sunrise": current_weather.city_sunrise,
                                                                 "sunset": current_weather.city_sunset,
@@ -175,6 +175,7 @@ async def root():
         forecast_weather_day[f"forecast{i}"]["humidity"] = forecast_weather.forecast_data[i-1][2]
         forecast_weather_day[f"forecast{i}"]["clouds"] = forecast_weather.forecast_data[i-1][3]
         forecast_weather_day[f"forecast{i}"]["rain"] = forecast_weather.forecast_data[i-1][4]
+        forecast_weather_day[f"forecast{i}"]["description"] = forecast_weather.forecast_data[i-1][5]
         forecast_weather_day[f"forecast{i}"]["icon"] = forecast_weather.forecast_data[i-1][6]
 
     return JSONResponse(media_type="application/json", content=forecast_weather_day)

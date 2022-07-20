@@ -13,9 +13,9 @@ def install_requirements():
 
 def open_browser():
     if platform.system() == "Linux" and platform.machine() == "armv7l":
-        path = subprocess.getoutput('pwd')+"/frontend/test/index.html"
+        path = subprocess.getoutput('pwd')+"/frontend/index.html"
     else:
-        path = subprocess.getoutput('cd')+"\\frontend\\test\\index.html"
+        path = subprocess.getoutput('cd')+"\\frontend\\index.html"
     webbrowser.open("http://127.0.0.1:8000", new=0, autoraise=True)
     webbrowser.open(path, new=0, autoraise=True)
 
