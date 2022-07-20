@@ -18,13 +18,14 @@ body {
 }
 
 .right {
-	text-align: end;
+	text-align: center;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	padding-right: 5vw;
 }
 
 .main-bottom {
+	text-align: center;
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 }
