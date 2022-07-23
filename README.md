@@ -11,6 +11,9 @@ weather-forecast is a simple weather dashboard that retrieves data from OpenWeat
 third-party APIs that allow developers to access their data and functionality.  
 This app will run through JavaScript dynamically updated HTML and CSS powered by a python backend.
 
+![screely-1658573073760](https://user-images.githubusercontent.com/50703696/180601859-65737609-5cad-483e-8116-2bc777a08030.png)
+
+
 #### Contents:
 
 - [How to setup](https://github.com/infinitel8p/PokeDex#how-to-setup)
