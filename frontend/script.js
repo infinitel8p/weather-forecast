@@ -85,9 +85,14 @@ async function fetchForecastWeatherWeek() {
 				data[`day${i}`].temp;
 			document.getElementById('temp_max_' + i).textContent =
 				data[`day${i}`].condition;
-			document.getElementById('icon_' + i).outerHTML = data[`day${i}`].svg;
 		}
 
+		var svg = document.querySelectorAll('svg');
+		let i_svg = 1;
+		for (const element of svg) {
+			element.outerHTML = data[`day${i_svg}`].svg;
+			i_svg++;
+		}
 		var svg = document.querySelectorAll('svg');
 		for (const element of svg) {
 			element.setAttribute('height', '150px');

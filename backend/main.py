@@ -63,11 +63,12 @@ class WeatherData:
 
 # FORECAST WEATHER DATA DAY //lang=de
 api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key_1}&units=metric&cnt=8"
-forecast_data = []
 
 
 class ForecastDataDay():
     def __init__(self):
+        global forecast_data
+        forecast_data = []
         self.fetch_api_2 = requests.get(api_endpoint_2)
         self.parsed_fetch_2 = json.loads(self.fetch_api_2.text)
         self.forecast_data = []
@@ -85,7 +86,6 @@ class ForecastDataDay():
             data.append(f"http://openweathermap.org/img/wn/{icon_link}@4x.png")
             self.forecast_data.append(data)
 
-        global forecast_data
         forecast_data = self.forecast_data
 
 
