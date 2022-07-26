@@ -120,13 +120,13 @@ async function fetchForecastWeatherDay() {
 			document.getElementById('icon_hrs_' + i).setAttribute('width', '125px');
 			document.getElementById('weather_description_' + i).textContent =
 				data[`forecast${i}`].description;
-			document.getElementById('temp_' + i).outerHTML =
+			document.getElementById('temp_' + i).textContent =
 				'temp:' + data[`forecast${i}`].temp;
 			document.getElementById('humidity_' + i).textContent =
 				'humi:' + data[`forecast${i}`].humidity;
 			document.getElementById('rain_' + i).textContent =
 				'rain:' + data[`forecast${i}`].rain;
-			document.getElementById('clouds_' + i).outerHTML =
+			document.getElementById('clouds_' + i).textContent =
 				'cloud:' + data[`forecast${i}`].clouds;
 		}
 	}
