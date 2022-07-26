@@ -132,3 +132,8 @@ fetchCurrentWeather()
 fetchUv()
 fetchForecastWeatherWeek()
 fetchForecastWeatherDay()
+
+setInterval(fetchCurrentWeather, 600000)
+setInterval(fetchUv, 600000)
+setInterval(fetchForecastWeatherWeek, 600000)
+setInterval(fetchForecastWeatherDay, 600000)
