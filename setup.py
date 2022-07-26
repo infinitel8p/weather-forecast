@@ -33,7 +33,7 @@ if __name__ == "__main__":
     t1.join()
     t2.join()
 
-    if platform.system() == "Linux" and platform.machine() == "armv7l":
+    if platform.system() == "Linux" and platform.machine() == "armv7l" or platform.system() == "Darwin":
         os.system("python3 -m uvicorn backend.main:app --reload")
     else:
         os.system("python -m uvicorn backend.main:app --reload")
