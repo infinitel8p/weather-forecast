@@ -3,6 +3,7 @@ import platform
 import threading
 import webbrowser
 import subprocess
+import time
 
 
 def install_requirements():
@@ -12,17 +13,14 @@ def install_requirements():
 
 
 def open_browser():
-    if platform.system() == "Linux" and platform.machine() == "armv7l":
-        cur_dir = subprocess.getoutput('pwd')
-        path = cur_dir + "/frontend/index.html"
-    if platform.system() == "Darwin":
-        cur_dir = subprocess.getoutput('cd')
-        path = cur_dir + "/frontend/index.html"
-    else:
-        cur_dir = subprocess.getoutput('cd')
-        path = cur_dir + "\\frontend\\index.html"
-
     webbrowser.open("http://127.0.0.1:8000", new=0, autoraise=True)
+    if platform.system() == "Linux" and platform.machine() == "armv7l":
+        path = subprocess.getoutput('pwd') + "/frontend/index.html"
+    elif platform.system() == "Darwin":
+        path = subprocess.getoutput('cd') + "/frontend/index.html"
+    else:
+        path = subprocess.getoutput('cd') + "\\frontend\\index.html"
+
     webbrowser.open(path, new=0, autoraise=True)
 
 
