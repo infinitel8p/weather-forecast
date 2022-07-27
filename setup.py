@@ -3,7 +3,6 @@ import platform
 import threading
 import webbrowser
 import subprocess
-import time
 
 
 def install_requirements():
