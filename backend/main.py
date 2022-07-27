@@ -74,8 +74,7 @@ class ForecastDataDay():
         self.forecast_data = []
         for item in self.parsed_fetch_2["list"]:
             data = []
-            # data.append(time.strftime('%H:%M',time.localtime(self.parsed_fetch_2["list"][self.i]["dt"])))
-            data.append(item["dt_txt"])
+            data.append(f"{item['dt_txt'].split(' ')[0].split('-')[2]}.{item['dt_txt'].split(' ')[0].split('-')[1]} - {item['dt_txt'].split(' ')[1].split(':')[0]}:{item['dt_txt'].split(' ')[1].split(':')[1]}")
             data.append(int(item["main"]["temp"]))
             data.append(item["main"]["humidity"])
             data.append(item["clouds"]["all"])
@@ -103,12 +102,10 @@ class AdditionalData:
 
         for i in self.rain_forecast_1:
             for i2 in forecast_data:
-                if i["time"] in str(i2[0]):
-                    i2[4] = i["chance_of_rain"]
+                i2[4] = i["chance_of_rain"]
         for i in self.rain_forecast_2:
             for i2 in forecast_data:
-                if i["time"] in str(i2[0]):
-                    i2[4] = i["chance_of_rain"]
+                i2[4] = i["chance_of_rain"]
 
 
 app = FastAPI()
