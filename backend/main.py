@@ -100,12 +100,21 @@ class AdditionalData:
         self.rain_forecast_1 = self.parsed_fetch_3["forecast"]["forecastday"][0]["hour"]
         self.rain_forecast_2 = self.parsed_fetch_3["forecast"]["forecastday"][1]["hour"]
 
+        # go through items of rain api
         for i in self.rain_forecast_1:
+            # for every item of rain api check the items of the forecast
             for i2 in forecast_data:
-                i2[4] = i["chance_of_rain"]
+                # check if the day is in the current item of the forecast
+                if i["time"].split(" ")[0].split("-")[2] + "." + i["time"].split(" ")[0].split("-")[1] in i2[0]:
+                    # if the day was in the forecast check if time of the current rain forecast item is in the current forecast
+                    if i["time"].split(" ")[1] in i2[0]:
+                        # set value 1337 of rain in forecast to rain api value
+                        i2[4] = i["chance_of_rain"]
         for i in self.rain_forecast_2:
             for i2 in forecast_data:
-                i2[4] = i["chance_of_rain"]
+                if i["time"].split(" ")[0].split("-")[2] + "." + i["time"].split(" ")[0].split("-")[1] in i2[0]:
+                    if i["time"].split(" ")[1] in i2[0]:
+                        i2[4] = i["chance_of_rain"]
 
 
 app = FastAPI()
