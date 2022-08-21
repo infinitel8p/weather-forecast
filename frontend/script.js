@@ -128,7 +128,18 @@ async function fetchForecastWeatherDay() {
 		}
 	}
 }
+async function getLocation() {
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(showPosition);
+	}
+}
 
+function showPosition(position) {
+	console.log('Latitude: ' + position.coords.latitude);
+	console.log('Longitude: ' + position.coords.longitude);
+}
+
+getLocation();
 fetchCurrentWeather();
 fetchUv();
 fetchForecastWeatherWeek();
