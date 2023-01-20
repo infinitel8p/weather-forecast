@@ -116,12 +116,12 @@ class AdditionalData:
 
 app = FastAPI()
 
-origins = [
-    "http://localhost",
-    "http://localhost:8080",
-    "http://127.0.0.1:5500",
-    "null",
-]
+origins = ["*",
+           "http://localhost",
+           "http://localhost:8080",
+           "http://127.0.0.1:5500",
+           "null",
+           ]
 
 app.add_middleware(
     CORSMiddleware,
@@ -130,6 +130,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@ app.get("/", response_class=HTMLResponse)
+async def root():
+    landingpage = open(os.path.dirname(__file__) + "/.."
+                       "/frontend/test/fastapi_landingpage.html", "r", encoding='utf-8').read()
+    return landingpage
 
 
 @app.post("/get_location")
@@ -143,13 +150,6 @@ async def get_location(request: Request):
     current_weather = WeatherData(api_endpoint_1)
     forecast_weather = ForecastDataDay(api_endpoint_2)
     return {"status": "success"}
-
-
-@ app.get("/", response_class=HTMLResponse)
-async def root():
-    landingpage = open(os.path.dirname(__file__) + "/.."
-                       "/frontend/test/fastapi_landingpage.html", "r", encoding='utf-8').read()
-    return landingpage
 
 
 @ app.get("/index.html", response_class=HTMLResponse)
