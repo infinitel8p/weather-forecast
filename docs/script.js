@@ -123,13 +123,9 @@ async function getLocation() {
 				headers: { 'Content-Type': 'application/json' },
 			});
 			if (response.status === 200) {
-				await sleep(500);
 				fetchCurrentWeather();
-				await sleep(500);
 				fetchForecastWeatherDay();
-				await sleep(500);
 				fetchForecastWeatherWeek();
-				await sleep(500);
 				fetchUv();
 			}
 		});

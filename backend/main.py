@@ -1,5 +1,4 @@
 import traceback
-import os
 import time
 import json
 import requests
@@ -7,6 +6,9 @@ import requests
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, HTMLResponse
+
+lat = 0
+lon = 0
 
 api_key_1 = "OpenWeatherMap_APIKey"
 api_key_2 = "WeatherAPI_APIKey"
@@ -52,7 +54,6 @@ class WeatherData:
 
 class ForecastDataDay():
     def __init__(self, api):
-        global forecast_data
         self.fetch_api_2 = requests.get(api)
         self.parsed_fetch_2 = json.loads(self.fetch_api_2.text)
         self.forecast_data = []
@@ -178,25 +179,29 @@ app.middleware('http')(catch_exceptions_middleware)
 
 @app.post("/get_location")
 async def get_location(request: Request):
-    global current_weather, forecast_weather, forecast_weather_2, additional_weather
-
     position = await request.json()
+    global lat, lon, current_weather, forecast_weather, forecast_weather_2, additional_weather
     lat = position['latitude']
     lon = position['longitude']
+
     api_endpoint_1 = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key_1}&units=metric"
     current_weather = WeatherData(api_endpoint_1)
+
     api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key_1}&units=metric&cnt=8"
     forecast_weather = ForecastDataDay(api_endpoint_2)
+
     api_endpoint_3 = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto"
     forecast_weather_2 = ForecastDataWeek(api_endpoint_3)
+
     api_endpoint_4 = f"http://api.weatherapi.com/v1/forecast.json?key={api_key_2}&q={current_weather.city_name}&days=2&aqi=no&alerts=yes"
     additional_weather = AdditionalData(api_endpoint_4)
-
+    print(lat, lon)
     return {"status": "success"}
 
 
 @ app.get("/current_weather")
 async def root():
+    print(lat, lon)
     return JSONResponse(media_type="application/json", content={"city": current_weather.city_name,
                                                                 "temperature": current_weather.temp_current,
                                                                 "temperatur_feels_like": current_weather.temp_current_feel,
@@ -212,6 +217,7 @@ async def root():
 
 @ app.get("/forecast_weather_day")
 async def root():
+    print(lat, lon)
     # create output
     forecast_weather_day = {}
 
@@ -229,6 +235,7 @@ async def root():
 
 @ app.get("/forecast_weather_week", response_class=HTMLResponse)
 async def root():
+    print(lat, lon)
     # create output
     forecast_weather_week = {}
 
@@ -238,11 +245,10 @@ async def root():
         forecast_weather_week[f"day{i+1}"]["temp"] = f"{forecast_weather_2.forecast_data[i][2]} / {forecast_weather_2.forecast_data[i][3]}"
         forecast_weather_week[f"day{i+1}"]["condition"] = forecast_weather_2.forecast_data[i][4]
         forecast_weather_week[f"day{i+1}"]["icon"] = forecast_weather_2.forecast_data[i][5]
-
-    print(forecast_weather_week)
     return JSONResponse(media_type="application/json", content=forecast_weather_week)
 
 
 @ app.get("/additional_weather")
 async def root():
+    print(lat, lon)
     return JSONResponse(media_type="application/json", content={"uv": additional_weather.uv_current})
