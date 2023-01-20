@@ -78,16 +78,8 @@ async function fetchForecastWeatherWeek() {
 			document.getElementById('day_pred_' + i).textContent = data[`day${i}`].day;
 			document.getElementById('temp_min_' + i).textContent = data[`day${i}`].temp;
 			document.getElementById('temp_max_' + i).textContent = data[`day${i}`].condition;
+			document.getElementById('icon' + i).src = data[`day${i}`].icon;
 		}
-
-		const iconWrappers = document.querySelectorAll('.icon-wrapper');
-		iconWrappers.forEach((iconWrapper, i) => {
-			iconWrapper.innerHTML = data[`day${i + 1}`].svg;
-			const icon = iconWrapper.querySelector('svg');
-			icon.setAttribute('height', '125');
-			icon.setAttribute('width', '125');
-			icon.removeAttribute('data-v-5ed3171e');
-		});
 	}
 }
 
