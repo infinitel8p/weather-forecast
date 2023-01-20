@@ -9,15 +9,13 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from fake_useragent import UserAgent
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, HTMLResponse
 
 api_key_1 = "ede202ebf917a17f6173ccc6cc226c7d"
 api_key_2 = "9a5bd158b6e74039aeb121921221007"
 target = "Hattingen"
-lon = 7.1911567
-lat = 51.4018117
 
 # 5 day / 3 hour forecast data
 # https://openweathermap.org/forecast5#limit
@@ -26,12 +24,11 @@ lat = 51.4018117
 
 
 # CURRENT WEATHER DATA //&lang=de
-api_endpoint_1 = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key_1}&units=metric"
 
 
 class WeatherData:
-    def __init__(self):
-        self.fetch_api = requests.get(api_endpoint_1)
+    def __init__(self, api):
+        self.fetch_api = requests.get(api)
         self.parsed_fetch = json.loads(self.fetch_api.text)
 
         self.update_time = time.strftime('%H:%M',
@@ -39,6 +36,7 @@ class WeatherData:
 
         # general information
         self.city_name = self.parsed_fetch["name"]
+        self.city_id = self.parsed_fetch["id"]
         self.city_sunrise = time.strftime('%H:%M',
                                           time.localtime(self.parsed_fetch["sys"]["sunrise"]))
         self.city_sunset = time.strftime('%H:%M',
@@ -62,14 +60,13 @@ class WeatherData:
 
 
 # FORECAST WEATHER DATA DAY //lang=de
-api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key_1}&units=metric&cnt=8"
 forecast_data = []
 
 
 class ForecastDataDay():
-    def __init__(self):
+    def __init__(self, api):
         global forecast_data
-        self.fetch_api_2 = requests.get(api_endpoint_2)
+        self.fetch_api_2 = requests.get(api)
         self.parsed_fetch_2 = json.loads(self.fetch_api_2.text)
         self.forecast_data = []
         for item in self.parsed_fetch_2["list"]:
@@ -89,12 +86,12 @@ class ForecastDataDay():
 
 
 # ADDITIONAL DATA
-api_endpoint_4 = f"http://api.weatherapi.com/v1/forecast.json?key={api_key_2}&q={target}&days=2&aqi=no&alerts=yes"
+api_endpoint_3 = f"http://api.weatherapi.com/v1/forecast.json?key={api_key_2}&q={target}&days=2&aqi=no&alerts=yes"
 
 
 class AdditionalData:
-    def __init__(self):
-        self.fetch_api_3 = requests.get(api_endpoint_4)
+    def __init__(self, api):
+        self.fetch_api_3 = requests.get(api)
         self.parsed_fetch_3 = json.loads(self.fetch_api_3.text)
         self.uv_current = int(self.parsed_fetch_3["current"]["uv"])
         self.rain_forecast_1 = self.parsed_fetch_3["forecast"]["forecastday"][0]["hour"]
@@ -135,23 +132,35 @@ app.add_middleware(
 )
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.post("/get_location")
+async def get_location(request: Request):
+    position = await request.json()
+    lat = position['latitude']
+    lon = position['longitude']
+    api_endpoint_1 = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key_1}&units=metric"
+    api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key_1}&units=metric&cnt=8"
+    global current_weather, forecast_weather
+    current_weather = WeatherData(api_endpoint_1)
+    forecast_weather = ForecastDataDay(api_endpoint_2)
+    return {"status": "success"}
+
+
+@ app.get("/", response_class=HTMLResponse)
 async def root():
     landingpage = open(os.path.dirname(__file__) + "/.."
                        "/frontend/test/fastapi_landingpage.html", "r", encoding='utf-8').read()
     return landingpage
 
 
-@app.get("/index.html", response_class=HTMLResponse)
+@ app.get("/index.html", response_class=HTMLResponse)
 async def root():
     landingpage = open(os.path.dirname(__file__) + "/.."
                        "/frontend/test/index.html", "r", encoding='utf-8').read()
     return landingpage
 
 
-@app.get("/current_weather")
+@ app.get("/current_weather")
 async def root():
-    current_weather = WeatherData()
     return JSONResponse(media_type="application/json", content={"city": current_weather.city_name,
                                                                 "temperature": current_weather.temp_current,
                                                                 "temperatur_feels_like": current_weather.temp_current_feel,
@@ -165,12 +174,8 @@ async def root():
                                                                 })
 
 
-@app.get("/forecast_weather_day")
+@ app.get("/forecast_weather_day")
 async def root():
-    forecast_weather = ForecastDataDay()
-    # ! additional_weather has to be left in since it provides rain percentage
-    additional_weather = AdditionalData()
-
     # create output
     forecast_weather_day = {}
 
@@ -190,7 +195,7 @@ async def root():
 @ app.get("/forecast_weather_week", response_class=HTMLResponse)
 async def root():
 
-    omw = "https://openweathermap.org/city/2909230"
+    omw = f"https://openweathermap.org/city/{current_weather.city_id}"
     ua = UserAgent()
 
     chrome_options = Options()
@@ -242,5 +247,5 @@ async def root():
 
 @ app.get("/additional_weather")
 async def root():
-    additional_weather = AdditionalData()
+    additional_weather = AdditionalData(api_endpoint_3)
     return JSONResponse(media_type="application/json", content={"uv": additional_weather.uv_current})

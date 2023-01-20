@@ -10,22 +10,17 @@ async function fetchCurrentWeather() {
 		data = JSON.parse(data);
 		console.log(data);
 		document.getElementById('city').textContent = data.city;
-		document.getElementById('temperature').textContent =
-			'Temperatur: ' + data.temperature + '°C';
+		document.getElementById('temperature').textContent = 'Temperatur: ' + data.temperature + '°C';
 		document.getElementById('temperatur_feels_like').textContent =
 			'Gefühlt: ' + data.temperatur_feels_like + '°C';
-		document.getElementById('weather_description').textContent =
-			data.weather_description;
-		document.getElementById('humidity').textContent =
-			'Luftfeuchtigkeit: ' + data.humidity + '%';
-		document.getElementById('clouds').textContent =
-			'Wolken: ' + data.clouds + '%';
+		document.getElementById('weather_description').textContent = data.weather_description;
+		document.getElementById('humidity').textContent = 'Luftfeuchtigkeit: ' + data.humidity + '%';
+		document.getElementById('clouds').textContent = 'Wolken: ' + data.clouds + '%';
 		document.getElementById('last_update').textContent = ' ' + data.last_update;
 		document.getElementById('sunrise').textContent = ' ' + data.sunrise;
 		document.getElementById('sunset').textContent = ' ' + data.sunset;
 		document.getElementById('icon_current').src = data.icon;
-		document.getElementById('current_weather').textContent =
-			data.weather_description;
+		document.getElementById('current_weather').textContent = data.weather_description;
 
 		var img = document.createElement('img');
 		img.src = 'styles/icons/sync.png';
@@ -52,6 +47,7 @@ async function fetchCurrentWeather() {
 		img.alt = '';
 	}
 }
+
 async function fetchUv() {
 	let response = await fetch('http://127.0.0.1:8000/additional_weather');
 
@@ -79,12 +75,9 @@ async function fetchForecastWeatherWeek() {
 		data = JSON.parse(data);
 		console.log(data);
 		for (let i = 1; i < 6; i++) {
-			document.getElementById('day_pred_' + i).textContent =
-				data[`day${i}`].day;
-			document.getElementById('temp_min_' + i).textContent =
-				data[`day${i}`].temp;
-			document.getElementById('temp_max_' + i).textContent =
-				data[`day${i}`].condition;
+			document.getElementById('day_pred_' + i).textContent = data[`day${i}`].day;
+			document.getElementById('temp_min_' + i).textContent = data[`day${i}`].temp;
+			document.getElementById('temp_max_' + i).textContent = data[`day${i}`].condition;
 		}
 
 		const iconWrappers = document.querySelectorAll('.icon-wrapper');
@@ -110,29 +103,48 @@ async function fetchForecastWeatherDay() {
 		data = JSON.parse(data);
 		console.log(data);
 		for (let i = 1; i < 9; i++) {
-			document.getElementById('time_' + i).textContent =
-				data[`forecast${i}`].time;
+			document.getElementById('time_' + i).textContent = data[`forecast${i}`].time;
 			document.getElementById('icon_hrs_' + i).src = data[`forecast${i}`].icon;
 			document.getElementById('icon_hrs_' + i).setAttribute('height', '100px');
 			document.getElementById('icon_hrs_' + i).setAttribute('width', '100px');
 			document.getElementById('weather_description_' + i).textContent =
 				data[`forecast${i}`].description;
-			document.getElementById('temp_' + i).textContent =
-				'temp:' + data[`forecast${i}`].temp;
+			document.getElementById('temp_' + i).textContent = 'temp:' + data[`forecast${i}`].temp;
 			document.getElementById('humidity_' + i).textContent =
 				'humi:' + data[`forecast${i}`].humidity;
-			document.getElementById('rain_' + i).textContent =
-				'rain:' + data[`forecast${i}`].rain;
-			document.getElementById('clouds_' + i).textContent =
-				'cloud:' + data[`forecast${i}`].clouds;
+			document.getElementById('rain_' + i).textContent = 'rain:' + data[`forecast${i}`].rain;
+			document.getElementById('clouds_' + i).textContent = 'cloud:' + data[`forecast${i}`].clouds;
 		}
 	}
 }
 
-fetchCurrentWeather();
-fetchUv();
-fetchForecastWeatherWeek();
-fetchForecastWeatherDay();
+async function getLocation() {
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(async function (position) {
+			const data = {
+				latitude: position.coords.latitude,
+				longitude: position.coords.longitude,
+			};
+			const response = await fetch('http://localhost:8000/get_location', {
+				method: 'POST',
+				body: JSON.stringify(data),
+				headers: { 'Content-Type': 'application/json' },
+			});
+			if (response.status === 200) {
+				fetchCurrentWeather();
+				fetchUv();
+				fetchForecastWeatherWeek();
+				fetchForecastWeatherDay();
+			}
+		});
+	}
+}
+
+function sleep(ms) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+getLocation();
 
 setInterval(fetchCurrentWeather, 600000);
 setInterval(fetchUv, 600000);
