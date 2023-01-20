@@ -1,25 +1,31 @@
 import os
 import platform
 import threading
-import webbrowser
 import subprocess
+import webbrowser
 
 
 def install_requirements():
-    os.system("pip3 install -r requirements.txt")
+    """Installs missing packages from `requirements.txt`
+    """
+
+    try:
+        subprocess.check_call(["pip", "install", "-r", "requirements.txt"])
+    except subprocess.CalledProcessError as e:
+        print("Error: ", e)
+
     if platform.system() == "Linux" and platform.machine() == "armv7l":
         os.system("sudo apt-get install chromium-chromedriver")
 
 
 def open_browser():
-    webbrowser.open("http://127.0.0.1:8000", new=0, autoraise=True)
-    if platform.system() == "Linux" and platform.machine() == "armv7l":
-        path = subprocess.getoutput('pwd') + "/frontend/index.html"
-    elif platform.system() == "Darwin":
-        path = subprocess.getoutput('cd') + "/frontend/index.html"
-    else:
-        path = subprocess.getoutput('cd') + "\\frontend\\index.html"
+    """Opens `localhost` and `index.html` in webbrowser
+    """
 
+    webbrowser.open("http://127.0.0.1:8000", new=0, autoraise=True)
+
+    path = os.path.join(os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), "frontend"), "index.html")
     webbrowser.open(path, new=0, autoraise=True)
 
 
