@@ -124,9 +124,9 @@ async function getLocation() {
 			});
 			if (response.status === 200) {
 				fetchCurrentWeather();
-				fetchUv();
-				fetchForecastWeatherWeek();
 				fetchForecastWeatherDay();
+				fetchForecastWeatherWeek();
+				fetchUv();
 			}
 		});
 	}
@@ -139,6 +139,6 @@ function sleep(ms) {
 getLocation();
 
 setInterval(fetchCurrentWeather, 600000);
-setInterval(fetchUv, 600000);
-setInterval(fetchForecastWeatherWeek, 600000);
 setInterval(fetchForecastWeatherDay, 600000);
+setInterval(fetchForecastWeatherWeek, 600000);
+setInterval(fetchUv, 600000);
