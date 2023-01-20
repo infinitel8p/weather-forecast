@@ -78,7 +78,7 @@ async function fetchForecastWeatherWeek() {
 			document.getElementById('day_pred_' + i).textContent = data[`day${i}`].day;
 			document.getElementById('temp_min_' + i).textContent = data[`day${i}`].temp;
 			document.getElementById('temp_max_' + i).textContent = data[`day${i}`].condition;
-			document.getElementById('icon' + i).src = data[`day${i}`].icon;
+			document.getElementById('icon_' + i).src = data[`day${i}`].icon;
 		}
 	}
 }
@@ -124,11 +124,8 @@ async function getLocation() {
 			});
 			if (response.status === 200) {
 				fetchCurrentWeather();
-				await sleep(5000);
 				fetchForecastWeatherDay();
-				await sleep(5000);
 				fetchForecastWeatherWeek();
-				await sleep(5000);
 				fetchUv();
 			}
 		});
