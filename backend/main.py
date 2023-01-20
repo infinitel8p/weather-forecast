@@ -1,3 +1,4 @@
+import traceback
 import os
 import time
 import json
@@ -132,11 +133,19 @@ app.add_middleware(
 )
 
 
+async def catch_exceptions_middleware(request: Request, call_next):
+    try:
+        return await call_next(request)
+    except Exception as e:
+        err = traceback.format_exception(type(e), e, e.__traceback__)
+        return JSONResponse(content={"traceback": err}, status_code=500)
+
+app.middleware('http')(catch_exceptions_middleware)
+
+
 @ app.get("/", response_class=HTMLResponse)
 async def root():
-    landingpage = open(os.path.dirname(__file__) + "/.."
-                       "/frontend/test/fastapi_landingpage.html", "r", encoding='utf-8').read()
-    return landingpage
+    return "nuffin to see here"
 
 
 @app.post("/get_location")
@@ -154,9 +163,7 @@ async def get_location(request: Request):
 
 @ app.get("/index.html", response_class=HTMLResponse)
 async def root():
-    landingpage = open(os.path.dirname(__file__) + "/.."
-                       "/frontend/test/index.html", "r", encoding='utf-8').read()
-    return landingpage
+    return "nuffin to see here"
 
 
 @ app.get("/current_weather")

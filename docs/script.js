@@ -1,5 +1,5 @@
 async function fetchCurrentWeather() {
-	let response = await fetch('http://127.0.0.1:8000/current_weather');
+	let response = await fetch('https://aexgj5.deta.dev/current_weather');
 
 	console.log(response.status, response.statusText); // 200 OK
 
@@ -49,7 +49,7 @@ async function fetchCurrentWeather() {
 }
 
 async function fetchUv() {
-	let response = await fetch('http://127.0.0.1:8000/additional_weather');
+	let response = await fetch('https://aexgj5.deta.dev/additional_weather');
 
 	console.log(response.status, response.statusText); // 200 OK
 
@@ -64,7 +64,7 @@ async function fetchUv() {
 }
 
 async function fetchForecastWeatherWeek() {
-	let response = await fetch('http://127.0.0.1:8000/forecast_weather_week');
+	let response = await fetch('https://aexgj5.deta.dev/forecast_weather_week');
 
 	console.log(response.status, response.statusText); // 200 OK
 
@@ -92,7 +92,7 @@ async function fetchForecastWeatherWeek() {
 }
 
 async function fetchForecastWeatherDay() {
-	let response = await fetch('http://127.0.0.1:8000/forecast_weather_day');
+	let response = await fetch('https://aexgj5.deta.dev/forecast_weather_day');
 
 	console.log(response.status, response.statusText); // 200 OK
 
@@ -125,7 +125,7 @@ async function getLocation() {
 				latitude: position.coords.latitude,
 				longitude: position.coords.longitude,
 			};
-			const response = await fetch('http://localhost:8000/get_location', {
+			const response = await fetch('https://aexgj5.deta.dev/get_location', {
 				method: 'POST',
 				body: JSON.stringify(data),
 				headers: { 'Content-Type': 'application/json' },
