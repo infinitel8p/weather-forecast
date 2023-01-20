@@ -124,8 +124,11 @@ async function getLocation() {
 			});
 			if (response.status === 200) {
 				fetchCurrentWeather();
+				await sleep(5000);
 				fetchForecastWeatherDay();
+				await sleep(5000);
 				fetchForecastWeatherWeek();
+				await sleep(5000);
 				fetchUv();
 			}
 		});
