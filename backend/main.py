@@ -3,25 +3,13 @@ import os
 import time
 import json
 import requests
-import platform
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from fake_useragent import UserAgent
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, HTMLResponse
 
-api_key_1 = "ede202ebf917a17f6173ccc6cc226c7d"
-api_key_2 = "9a5bd158b6e74039aeb121921221007"
-target = "Hattingen"
-
-# 5 day / 3 hour forecast data
-# https://openweathermap.org/forecast5#limit
-# current data
-# https://openweathermap.org/current
+api_key_1 = "OpenWeatherMap_APIKey"
+api_key_2 = "WeatherAPI_APIKey"
 
 
 # CURRENT WEATHER DATA //&lang=de
@@ -54,15 +42,13 @@ class WeatherData:
         self.clouds_current = self.parsed_fetch["clouds"]["all"]
         self.weather_current = self.parsed_fetch["weather"][0]["description"]
         self.weather_icon_current = self.parsed_fetch["weather"][0]["icon"]
-        self.weather_icon_current_link = f"http://openweathermap.org/img/wn/{self.weather_icon_current}@4x.png"
+        self.weather_icon_current_link = f"https://openweathermap.org/img/wn/{self.weather_icon_current}@4x.png"
 
     def last_update(self):
         return self.update_time
 
 
 # FORECAST WEATHER DATA DAY //lang=de
-forecast_data = []
-
 
 class ForecastDataDay():
     def __init__(self, api):
@@ -79,24 +65,71 @@ class ForecastDataDay():
             data.append(1337)
             data.append(item["weather"][0]["description"])
             icon_link = item["weather"][0]["icon"]
-            # old link http://openweathermap.org/img/w/{icon_link}.png
-            data.append(f"http://openweathermap.org/img/wn/{icon_link}@4x.png")
+            # old link https://openweathermap.org/img/w/{icon_link}.png
+            data.append(
+                f"https://openweathermap.org/img/wn/{icon_link}@4x.png")
             self.forecast_data.append(data)
 
-        forecast_data = self.forecast_data
+
+class ForecastDataWeek():
+    def __init__(self, api):
+        self.fetch_api_3 = requests.get(api)
+        self.parsed_fetch = json.loads(self.fetch_api_3.text)
+        self.forecast_data = []
+        self.wmo_codes = {
+            0: ["Clear sky", "01d"],
+            1: ["Mainly clear", "02d"],
+            2: ["Partly cloudy", "03d"],
+            3: ["Overcast", "04d"],
+            45: ["Fog", "50d"],
+            48: ["Depositing rime fog", "50d"],
+            51: ["Light drizzle", "09d"],
+            53: ["Moderate drizzle", "09d"],
+            55: ["Dense drizzle", "09d"],
+            56: ["Light freezing drizzle", "01d"],
+            57: ["Dense freezing drizzle", "01d"],
+            61: ["Slight rain", "10d"],
+            63: ["Moderate rain", "10d"],
+            65: ["Heavy rain", "10d"],
+            66: ["Light freezing rain", "13d"],
+            67: ["Heavy freezing rain", "13d"],
+            71: ["Slight snow", "13d"],
+            73: ["Moderate snow", "13d"],
+            75: ["Heavy snow", "13d"],
+            77: ["Snow grains", "13d"],
+            80: ["Slight rain showers", "09d"],
+            81: ["Moderate rain showers", "09d"],
+            82: ["Violent rain showers", "09d"],
+            85: ["Slight snow showers", "13d"],
+            86: ["Heavy snow showers", "13d"],
+            95: ["Slight thunderstorm", "01d"],
+            96: ["Thunderstorm with slight hail", "11d"],
+            99: ["Thunderstorm with heavy hail", "11d"],
+        }
+        for i in range(0, 5):
+            data = []
+            data.append(self.parsed_fetch["daily"]["time"][i])
+            data.append(self.parsed_fetch["daily"]["weathercode"][i])
+            data.append(self.parsed_fetch["daily"]["temperature_2m_min"][i])
+            data.append(self.parsed_fetch["daily"]["temperature_2m_max"][i])
+            data.append(
+                self.wmo_codes[self.parsed_fetch["daily"]["weathercode"][i]][0])
+            data.append(
+                f'https://openweathermap.org/img/wn/{self.wmo_codes[self.parsed_fetch["daily"]["weathercode"][i]][1]}@4x.png')
+            self.forecast_data.append(data)
 
 
 # ADDITIONAL DATA
-api_endpoint_3 = f"http://api.weatherapi.com/v1/forecast.json?key={api_key_2}&q={target}&days=2&aqi=no&alerts=yes"
-
 
 class AdditionalData:
     def __init__(self, api):
-        self.fetch_api_3 = requests.get(api)
-        self.parsed_fetch_3 = json.loads(self.fetch_api_3.text)
-        self.uv_current = int(self.parsed_fetch_3["current"]["uv"])
-        self.rain_forecast_1 = self.parsed_fetch_3["forecast"]["forecastday"][0]["hour"]
-        self.rain_forecast_2 = self.parsed_fetch_3["forecast"]["forecastday"][1]["hour"]
+        self.fetch_api_4 = requests.get(api)
+        self.parsed_fetch_4 = json.loads(self.fetch_api_4.text)
+        self.uv_current = int(self.parsed_fetch_4["current"]["uv"])
+        """
+        self.rain_forecast_1 = self.parsed_fetch_4["forecast"]["forecastday"][0]["hour"]
+        self.rain_forecast_2 = self.parsed_fetch_4["forecast"]["forecastday"][1]["hour"]
+
 
         # go through items of rain api
         for i in self.rain_forecast_1:
@@ -112,7 +145,7 @@ class AdditionalData:
             for i2 in forecast_data:
                 if i["time"].split(" ")[0].split("-")[2] + "." + i["time"].split(" ")[0].split("-")[1] in i2[0]:
                     if i["time"].split(" ")[1] in i2[0]:
-                        i2[4] = i["chance_of_rain"]
+                        i2[4] = i["chance_of_rain"]"""
 
 
 app = FastAPI()
@@ -143,27 +176,23 @@ async def catch_exceptions_middleware(request: Request, call_next):
 app.middleware('http')(catch_exceptions_middleware)
 
 
-@ app.get("/", response_class=HTMLResponse)
-async def root():
-    return "nuffin to see here"
-
-
 @app.post("/get_location")
 async def get_location(request: Request):
+    global current_weather, forecast_weather, forecast_weather_2, additional_weather
+
     position = await request.json()
     lat = position['latitude']
     lon = position['longitude']
     api_endpoint_1 = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key_1}&units=metric"
-    api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key_1}&units=metric&cnt=8"
-    global current_weather, forecast_weather
     current_weather = WeatherData(api_endpoint_1)
+    api_endpoint_2 = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key_1}&units=metric&cnt=8"
     forecast_weather = ForecastDataDay(api_endpoint_2)
+    api_endpoint_3 = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto"
+    forecast_weather_2 = ForecastDataWeek(api_endpoint_3)
+    api_endpoint_4 = f"http://api.weatherapi.com/v1/forecast.json?key={api_key_2}&q={current_weather.city_name}&days=2&aqi=no&alerts=yes"
+    additional_weather = AdditionalData(api_endpoint_4)
+
     return {"status": "success"}
-
-
-@ app.get("/index.html", response_class=HTMLResponse)
-async def root():
-    return "nuffin to see here"
 
 
 @ app.get("/current_weather")
@@ -195,64 +224,25 @@ async def root():
         forecast_weather_day[f"forecast{i}"]["rain"] = forecast_weather.forecast_data[i-1][4]
         forecast_weather_day[f"forecast{i}"]["description"] = forecast_weather.forecast_data[i-1][5]
         forecast_weather_day[f"forecast{i}"]["icon"] = forecast_weather.forecast_data[i-1][6]
-
     return JSONResponse(media_type="application/json", content=forecast_weather_day)
 
 
 @ app.get("/forecast_weather_week", response_class=HTMLResponse)
 async def root():
-
-    omw = f"https://openweathermap.org/city/{current_weather.city_id}"
-    ua = UserAgent()
-
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument(f"user-agent={ua.random}")
-    if platform.system() == "Linux" and platform.machine() == "armv7l":
-        # if raspi
-        service = Service(executable_path="/usr/bin/chromedriver")
-        chrome_options.BinaryLocation = ("/usr/bin/chromium-browser")
-        browser = webdriver.Chrome(service=service, options=chrome_options)
-    else:
-        browser = webdriver.Chrome(service=Service(
-            ChromeDriverManager().install()), options=chrome_options)
-    browser.implicitly_wait(10)
-
-    browser.get(omw)
-
-    # get <ul>
-    ul = browser.find_element(By.CLASS_NAME, "day-list")
-    # get <span> in <ul>
-    span = ul.find_elements(By.TAG_NAME, "span")
-    # get all text in <span>
-    span_text = []
-    for text in span:
-        if text.text != '':
-            span_text.append(text.text)
-
-    # get <svg> in <ul>
-    svg_html = []
-    svg = ul.find_elements(By.CLASS_NAME, "owm-weather-icon")
-    for objects in svg:
-        svg_html.append(objects.get_attribute('outerHTML'))
-
-    browser.quit()
     # create output
     forecast_weather_week = {}
-    index = 0
 
-    for i in range(1, 9):
-        forecast_weather_week[f"day{i}"] = {}
-        forecast_weather_week[f"day{i}"]["day"] = span_text[index]
-        forecast_weather_week[f"day{i}"]["temp"] = span_text[index+1]
-        forecast_weather_week[f"day{i}"]["condition"] = span_text[index+2]
-        forecast_weather_week[f"day{i}"]["svg"] = svg_html[i-1]
-        index += 3
+    for i in range(0, 5):
+        forecast_weather_week[f"day{i+1}"] = {}
+        forecast_weather_week[f"day{i+1}"]["day"] = forecast_weather_2.forecast_data[i][0]
+        forecast_weather_week[f"day{i+1}"]["temp"] = f"{forecast_weather_2.forecast_data[i][2]} / {forecast_weather_2.forecast_data[i][3]}"
+        forecast_weather_week[f"day{i+1}"]["condition"] = forecast_weather_2.forecast_data[i][4]
+        forecast_weather_week[f"day{i+1}"]["icon"] = forecast_weather_2.forecast_data[i][5]
 
+    print(forecast_weather_week)
     return JSONResponse(media_type="application/json", content=forecast_weather_week)
 
 
 @ app.get("/additional_weather")
 async def root():
-    additional_weather = AdditionalData(api_endpoint_3)
     return JSONResponse(media_type="application/json", content={"uv": additional_weather.uv_current})

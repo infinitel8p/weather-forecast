@@ -124,9 +124,9 @@ async function getLocation() {
 			});
 			if (response.status === 200) {
 				fetchCurrentWeather();
-				fetchUv();
-				fetchForecastWeatherWeek();
 				fetchForecastWeatherDay();
+				fetchForecastWeatherWeek();
+				fetchUv();
 			}
 		});
 	}
