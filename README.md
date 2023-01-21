@@ -11,6 +11,8 @@ weather-forecast is a simple weather dashboard that retrieves data from OpenWeat
 third-party APIs that allow developers to access their data and functionality.  
 This app will run through JavaScript dynamically updated HTML and CSS powered by a python backend.
 
+💻 live preview! [infinitel8p.github.io/weather-forecast/](https://infinitel8p.github.io/weather-forecast/)
+
 ![preview](https://user-images.githubusercontent.com/50703696/181757623-5fc4b6ee-7c6a-466a-b248-1e42a1dd528c.png)
 
 
