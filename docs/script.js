@@ -5,7 +5,7 @@ async function getLocation() {
 				latitude: position.coords.latitude,
 				longitude: position.coords.longitude,
 			};
-			let response = await fetch('http://127.0.0.1:8000/get_location', {
+			let response = await fetch('https://aexgj5.deta.dev/get_location', {
 				method: 'POST',
 				body: JSON.stringify(location),
 				headers: { 'Content-Type': 'application/json' },
