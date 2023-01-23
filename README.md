@@ -15,7 +15,6 @@ This app will run through JavaScript dynamically updated HTML and CSS powered by
 
 ![preview](https://user-images.githubusercontent.com/50703696/181757623-5fc4b6ee-7c6a-466a-b248-1e42a1dd528c.png)
 
-
 #### Contents:
 
 - [How to setup](https://github.com/infinitel8p/PokeDex#how-to-setup)
@@ -24,9 +23,9 @@ This app will run through JavaScript dynamically updated HTML and CSS powered by
 
 ###### :snake: Please make sure that python is installed, [added to path](https://datatofish.com/add-python-to-windows-path/) and that pip is running correctly before you run the app this way for the first time!
 
-1. Click `clone or download` and choose to download the ZIP file (If you only want the necessary files download the `weather-forecast.zip` from the [Releases](https://github.com/infinitel8p/weather-forecast/releases))
-2. Extract the folder from the ZIP file
-3. Run the `setup.py`
+1.  Click `clone or download` and choose to download the ZIP file (If you only want the necessary files download the `weather-forecast.zip` from the [Releases](https://github.com/infinitel8p/weather-forecast/releases))
+2.  Extract the folder from the ZIP file
+3.  Run the `setup.py`
 
 ```shell
 python C:\Users\USER\Desktop\weather-forecast\setup.py
