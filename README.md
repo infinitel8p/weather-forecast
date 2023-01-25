@@ -1,6 +1,7 @@
 # weather-forecast
 
-[![Codacy Badge](https://img.shields.io/codacy/grade/weather-forecast)](https://github.com/infinitel8p/weather-forecast)
+![Codacy grade](https://img.shields.io/codacy/grade/cb5b81c74c324312ab5381133e2cb660)
+[![pages-build-deployment](https://github.com/infinitel8p/weather-forecast/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/infinitel8p/weather-forecast/actions/workflows/pages/pages-build-deployment)
 [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/infinitel8p/weather-forecast)](https://img.shields.io/github/languages/code-size/infinitel8p/weather-forecast)
 [![Github last commit](https://img.shields.io/github/last-commit/infinitel8p/weather-forecast)](https://img.shields.io/github/last-commit/infinitel8p/weather-forecast)
 [![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/infinitel8p/weather-forecast)](https://github.com/infinitel8p/weather-forecast/issues?q=is%3Aissue+is%3Aclosed)
