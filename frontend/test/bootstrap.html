@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Weather Forecast</title>
+</head>
+<body>
+    <script defer src="script.js"></script>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm main-top">
+                <div class="row">
+                    <div class="col-sm left">
+                        <p class="temperature" id="temperature"></p>
+                        <p class="temperatur_feels_like" id="temperatur_feels_like"></p>
+                        <p class="weather_description" id="weather_description"></p>
+                        <p class="humidity" id="humidity"></p>
+                        <p class="clouds" id="clouds"></p>
+                        <p class="uv" id="uv"></p>
+                    </div>
+                    <div class="col-sm right">
+                        <div>
+                            <img id="icon_current" src="" alt="" />
+                            <p id="current_weather"></p>
+                        </div>
+                        <div>
+                            <h1 class="city" id="city"></h1>
+                            <p class="last_update" id="last_update"></p>
+                            <p class="sunrise" id="sunrise"></p>
+                            <p class="sunset" id="sunset"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm main-bottom">
+                <div class="row">
+                    <div class="col-sm day one">
+                        <h2 class="day_pred" id="day_pred_1"></h2>
+                        <p class="date" id="date_1"></p>
+                        <img id="icon_1" src="" alt=""></p>
+                        <p class="temp_min" id="temp_min_1"></p>
+                        <p class="temp_max" id="temp_max_1"></p>
+                    </div>
+                    <div class="col-sm day two">
+                        <h2 class="day_pred" id="day_pred_2"></h2>
+                        <p class="date" id="date_2"></p>
+                        <img id="icon_2" src="" alt=""></p>
+                        <p class="temp_min" id="temp_min_2"></p>
+                        <p class="temp_max" id="temp_max_2"></p>
+                    </div>
+                    <div class="col-sm day three">
+                        <h2 class="day_pred" id="day_pred_3"></h2>
+                        <p class="date" id="date_3"></p>
+                        <img id="icon_3" src="" alt=""></p>
+                        <p class="temp_min" id="temp_min_3"></p>
+                        <p class="temp_max" id="temp_max_3"></p>
+                    </div>
+                    <div class="col-sm day four">
+                        <h2 class="day_pred" id="day_pred_4"></h2>
+                        <p class="date" id="date_4"></p>
+                        <img id="icon_4" src="" alt=""></p>
+                        <p class="temp_min" id="temp_min_4"></p>
+                        <p class="temp_max" id="temp_max_4"></p>
+                    </div>
+                    <div class="col-sm day five">
+                        <h2 class="day_pred" id="day_pred_5"></h2>
+                        <p class="date" id="date_5"></p>
+                        <img id="icon_5" src="" alt=""></p>
+                        <p class="temp_min" id="temp_min_5"></p>
+                        <p class="temp_max" id="temp_max_5"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+        <div class="col-sm bottom">
+            <div class="row bottom">
+                <div class="col-sm hourly_forecast one">
+                    <h3 class="time" id="time_1"></h3>
+                    <img id="icon_hrs_1" src="" alt="" width="" height="" />
+                    <p class="weather_description" id="weather_description_1"></p>
+                    <p class="temp" id="temp_1"></p>
+                    <p class="humidity" id="humidity_1"></p>
+                    <p class="rain" id="rain_1"></p>
+                    <p class="clouds" id="clouds_1"></p>
+                </div>
+                <div class="col-sm hourly_forecast two">
+                    <h3 class="time" id="time_2"></h3>
+                    <img id="icon_hrs_2" src="" alt="" width="" height="" />
+                    <p class="weather_description" id="weather_description_2"></p>
+                    <p class="temp" id="temp_2"></p>
+                    <p class="humidity" id="humidity_2"></p>
+                    <p class="rain" id="rain_2"></p>
+                    <p class="clouds" id="clouds_2"></p>
+                </div>
+                <div class="col-sm hourly_forecast three">
+                    <h3 class="time" id="time_3"></h3>
+                    <img id="icon_hrs_3" src="" alt="" width="" height="" />
+                    <p class="weather_description" id="weather_description_3"></p>
+                    <p class="temp" id="temp_3"></p>
+                    <p class="humidity" id="humidity_3"></p>
+                    <p class="rain" id="rain_3"></p>
+                    <p class="clouds" id="clouds_3"></p>
+                </div>
+                <div class="col-sm hourly_forecast four">
+                    <h3 class="time" id="time_4"></h3>
+                    <img id="icon_hrs_4" src="" alt="" width="" height="" />
+                    <p class="weather_description" id="weather_description_4"></p>
+                    <p class="temp" id="temp_4"></p>
+                    <p class="humidity" id="humidity_4"></p>
+                    <p class="rain" id="rain_4"></p>
+                    <p class="clouds" id="clouds_4"></p>
+                </div>
+                <div class="col-sm hourly_forecast five">
+                    <h3 class="time" id="time_5"></h3>
+                    <img id="icon_hrs_5" src="" alt="" width="" height="" />
+                    <p class="weather_description" id="weather_description_5"></p>
+                    <p class="temp" id="temp_5"></p>
+                    <p class="humidity" id="humidity_5"></p>
+                    <p class="rain" id="rain_5"></p>
+                    <p class="clouds" id="clouds_5"></p>
+                </div>
+                <div class="col-sm hourly_forecast six">
+                    <h3 class="time" id="time_6"></h3>
+                    <img id="icon_hrs_6" src="" alt="" width="" height="" />
+                    <p class="weather_description" id="weather_description_6"></p>
+                    <p class="temp" id="temp_6"></p>
+                    <p class="humidity" id="humidity_6"></p>
+                    <p class="rain" id="rain_6"></p>
+                    <p class="clouds" id="clouds_6"></p>
+                </div>
+                <div class="col-sm hourly_forecast seven">
+                    <h3 class="time" id="time_7"></h3>
+                    <img id="icon_hrs_7" src="" alt="" width="" height="" />
+                    <p class="weather_description" id="weather_description_7"></p>
+                    <p class="temp" id="temp_7"></p>
+                    <p class="humidity" id="humidity_7"></p>
+                    <p class="rain" id="rain_7"></p>
+                    <p class="clouds" id="clouds_7"></p>
+                </div>
+                <div class="col-sm hourly_forecast eight">
+                    <h3 class="time" id="time_8"></h3>
+                    <img id="icon_hrs_8" src="" alt="" width="" height="" />
+                    <p class="weather_description" id="weather_description_8"></p>
+                    <p class="temp" id="temp_8"></p>
+                    <p class="humidity" id="humidity_8"></p>
+                    <p class="rain" id="rain_8"></p>
+                    <p class="clouds" id="clouds_8"></p>
+                </div>
+		    </div>
+		</div>
+	</div>
+</body>
+</html>
+

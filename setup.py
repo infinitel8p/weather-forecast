@@ -19,11 +19,8 @@ def install_requirements():
 
 
 def open_browser():
-    """Opens `localhost` and `index.html` in webbrowser
+    """Opens `index.html` in webbrowser
     """
-
-    webbrowser.open("http://127.0.0.1:8000", new=0, autoraise=True)
-
     path = os.path.join(os.path.join(os.path.dirname(
         os.path.abspath(__file__)), "frontend"), "index.html")
     webbrowser.open(path, new=0, autoraise=True)

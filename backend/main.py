@@ -1,5 +1,6 @@
 import traceback
 import time
+import os
 import json
 import requests
 
@@ -7,9 +8,12 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-api_key_1 = "OpenWeatherMap_APIKey"
-api_key_2 = "WeatherAPI_APIKey"
+api_key_1 = os.environ['API_KEY1']
+api_key_2 = os.environ['API_KEY2']
 
+# Remove environment variables
+os.environ.pop('API_KEY1', None)
+os.environ.pop('API_KEY2', None)
 
 # CURRENT WEATHER DATA //&lang=de
 
