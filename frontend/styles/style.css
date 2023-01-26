@@ -1,9 +1,37 @@
+/* CSS Reset */
+html {
+	box-sizing: border-box;
+	font-size: 16px;
+}
+
+  *, *:before, *:after {
+	box-sizing: inherit;
+}
+
+body, h1, h2, h3, h4, h5, h6, p, ol, ul {
+	margin: 0;
+	padding: 0;
+}
+
+ol, ul {
+	list-style: none;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+/* Custom styles */
 body {
+	width: 100vw;
 	font-family: sans-serif;
 	font-size: x-large;
 	line-height: 0.585;
-	padding: 0;
-	margin: 0;
+	padding: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .main-top > div {
@@ -13,6 +41,7 @@ body {
 .main-top {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
+	height: 32%;
 }
 
 .left {
@@ -30,16 +59,23 @@ body {
 	text-align: center;
 	display: grid;
 	grid-template-columns: repeat(5, 1fr);
+	height: 32%;
 }
 
 .bottom {
 	text-align: center;
 	display: grid;
 	grid-template-columns: repeat(8, 1fr);
+	height: 32%;
 }
 
 .day {
 	border: 1px solid black;
+	padding: 10px;
+}
+
+.day_pred {
+	margin: 0 auto;
 }
 
 .hourly_forecast {
