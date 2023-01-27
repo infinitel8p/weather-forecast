@@ -39,29 +39,29 @@ async function getLocation() {
 					data["current"].weather_description;
 				document.getElementById("uv").textContent = "UV Index: " + data.uv;
 
-				var img = document.createElement("img");
-				img.src = "styles/icons/sync.png";
-				var div = document.getElementById("last_update");
-				div.prepend(img);
-				img.style.height = "15px";
-				img.style.width = "auto";
-				img.alt = "";
+				var img_sync = document.createElement("img");
+				img_sync.src = "styles/icons/sync.png";
+				var div_sync = document.getElementById("last_update");
+				div_sync.prepend(img_sync);
+				img_sync.style.height = "15px";
+				img_sync.style.width = "auto";
+				img_sync.alt = "";
 
-				var img = document.createElement("img");
-				img.src = "styles/icons/sunrise.png";
-				var div = document.getElementById("sunrise");
-				div.prepend(img);
-				img.style.height = "auto";
-				img.style.width = "20px";
-				img.alt = "";
+				var img_sunrise = document.createElement("img");
+				img_sunrise.src = "styles/icons/sunrise.png";
+				var div_sunrise = document.getElementById("sunrise");
+				div_sunrise.prepend(img_sunrise);
+				img_sunrise.style.height = "auto";
+				img_sunrise.style.width = "20px";
+				img_sunrise.alt = "";
 
-				var img = document.createElement("img");
-				img.src = "styles/icons/sunset.png";
-				var div = document.getElementById("sunset");
-				div.prepend(img);
-				img.style.height = "auto";
-				img.style.width = "20px";
-				img.alt = "";
+				var img_sunset = document.createElement("img");
+				img_sunset.src = "styles/icons/sunset.png";
+				var div_sunset = document.getElementById("sunset");
+				div_sunset.prepend(img_sunset);
+				img_sunset.style.height = "auto";
+				img_sunset.style.width = "20px";
+				img_sunset.alt = "";
 
 				// Data for the day
 				for (let i = 1; i < 9; i++) {
@@ -72,13 +72,13 @@ async function getLocation() {
 					document.getElementById("weather_description_" + i).textContent =
 						data["day"][`forecast${i}`].description;
 					document.getElementById("temp_" + i).textContent =
-						"temp:" + data["day"][`forecast${i}`].temp;
+						"temp: " + data["day"][`forecast${i}`].temp + "°C";
 					document.getElementById("humidity_" + i).textContent =
-						"humi:" + data["day"][`forecast${i}`].humidity;
+						"humi: " + data["day"][`forecast${i}`].humidity;
 					document.getElementById("rain_" + i).textContent =
-						"rain:" + data["day"][`forecast${i}`].rain;
+						"rain: " + data["day"][`forecast${i}`].rain;
 					document.getElementById("clouds_" + i).textContent =
-						"cloud:" + data["day"][`forecast${i}`].clouds;
+						"cloud: " + data["day"][`forecast${i}`].clouds;
 				}
 
 				// Data for the week
@@ -91,10 +91,6 @@ async function getLocation() {
 			}
 		});
 	}
-}
-
-function sleep(ms) {
-	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 getLocation();
