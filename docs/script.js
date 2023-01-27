@@ -1,98 +1,214 @@
+function _0x4b21(_0x36fd74, _0x4d0982) {
+	var _0x19c6a5 = _0x19c6();
+	return (
+		(_0x4b21 = function (_0x4b2166, _0x3e006d) {
+			_0x4b2166 = _0x4b2166 - 0x1ea;
+			var _0x31a52f = _0x19c6a5[_0x4b2166];
+			return _0x31a52f;
+		}),
+		_0x4b21(_0x36fd74, _0x4d0982)
+	);
+}
+function _0x19c6() {
+	var _0x28ac02 = [
+		"clouds",
+		"1762686SeJyfZ",
+		"img",
+		"temp:\x20",
+		"alt",
+		"text",
+		"description",
+		"temp_",
+		"3yXFyFP",
+		"city",
+		"setAttribute",
+		"weather_description_",
+		"rain_",
+		"getCurrentPosition",
+		"getElementById",
+		"style",
+		"sunrise",
+		"week",
+		"styles/icons/sync.png",
+		"UV\x20Index:\x20",
+		"weather_description",
+		"rain:\x20",
+		"day_pred_",
+		"icon_",
+		"createElement",
+		"37103AInXpc",
+		"geolocation",
+		"8stLEKU",
+		"100px",
+		"height",
+		"310VXWJvO",
+		"prepend",
+		"auto",
+		"width",
+		"forecast",
+		"rain",
+		"Gefühlt:\x20",
+		"log",
+		"1091811GIezxz",
+		"textContent",
+		"20px",
+		"humi:\x20",
+		"temperatur_feels_like",
+		"humidity_",
+		"cloud:\x20",
+		"Temperatur:\x20",
+		"styles/icons/sunrise.png",
+		"humidity",
+		"Luftfeuchtigkeit:\x20",
+		"sunset",
+		"longitude",
+		"clouds_",
+		"latitude",
+		"day",
+		"current",
+		"2283564ukekzY",
+		"temp",
+		"859855aLkpjM",
+		"temperature",
+		"styles/icons/sunset.png",
+		"6dceyKs",
+		"application/json",
+		"src",
+		"Wolken:\x20",
+		"icon_hrs_",
+		"stringify",
+		"icon",
+		"79468byBSsO",
+		"201823JUXIUT",
+		"POST",
+		"13dnmlFt",
+		"time",
+		"last_update",
+		"2mRqFHM",
+		"coords",
+	];
+	_0x19c6 = function () {
+		return _0x28ac02;
+	};
+	return _0x19c6();
+}
+(function (_0x48edd8, _0x2697aa) {
+	var _0x33fd4a = _0x4b21,
+		_0x2a00ea = _0x48edd8();
+	while (!![]) {
+		try {
+			var _0x325d63 =
+				(parseInt(_0x33fd4a(0x201)) / 0x1) * (parseInt(_0x33fd4a(0x206)) / 0x2) +
+				(-parseInt(_0x33fd4a(0x210)) / 0x3) * (-parseInt(_0x33fd4a(0x200)) / 0x4) +
+				-parseInt(_0x33fd4a(0x1f6)) / 0x5 +
+				(parseInt(_0x33fd4a(0x1f9)) / 0x6) * (parseInt(_0x33fd4a(0x22e)) / 0x7) +
+				(parseInt(_0x33fd4a(0x223)) / 0x8) * (parseInt(_0x33fd4a(0x209)) / 0x9) +
+				(parseInt(_0x33fd4a(0x226)) / 0xa) * (-parseInt(_0x33fd4a(0x221)) / 0xb) +
+				(parseInt(_0x33fd4a(0x1f4)) / 0xc) * (-parseInt(_0x33fd4a(0x203)) / 0xd);
+			if (_0x325d63 === _0x2697aa) break;
+			else _0x2a00ea["push"](_0x2a00ea["shift"]());
+		} catch (_0x4fa0a8) {
+			_0x2a00ea["push"](_0x2a00ea["shift"]());
+		}
+	}
+})(_0x19c6, 0x1a0be);
 async function getLocation() {
-	if (navigator.geolocation) {
-		navigator.geolocation.getCurrentPosition(async function (position) {
-			// set location coordinates
-			const location = {
-				latitude: position.coords.latitude,
-				longitude: position.coords.longitude,
-			};
-			// send post request with coordinates to api
-			let response = await fetch("https://aexgj5.deta.dev/get_location", {
-				method: "POST",
-				body: JSON.stringify(location),
-				headers: { "Content-Type": "application/json" },
-			});
-
-			if (response.status === 200) {
-				var data = await response.text();
-				// handle data
-				// convert var data to json object
-				data = JSON.parse(data);
-				console.log(data);
-
-				// Data for current weather
-				document.getElementById("city").textContent = data["current"].city;
-				document.getElementById("temperature").textContent =
-					"Temperatur: " + data["current"].temperature + "°C";
-				document.getElementById("temperatur_feels_like").textContent =
-					"Gefühlt: " + data["current"].temperatur_feels_like + "°C";
-				document.getElementById("weather_description").textContent =
-					data["current"].weather_description;
-				document.getElementById("humidity").textContent =
-					"Luftfeuchtigkeit: " + data["current"].humidity + "%";
-				document.getElementById("clouds").textContent = "Wolken: " + data["current"].clouds + "%";
-				document.getElementById("last_update").textContent = " " + data["current"].last_update;
-				document.getElementById("sunrise").textContent = " " + data["current"].sunrise;
-				document.getElementById("sunset").textContent = " " + data["current"].sunset;
-				document.getElementById("icon_current").src = data["current"].icon;
-				document.getElementById("current_weather").textContent =
-					data["current"].weather_description;
-				document.getElementById("uv").textContent = "UV Index: " + data.uv;
-
-				var img_sync = document.createElement("img");
-				img_sync.src = "styles/icons/sync.png";
-				var div_sync = document.getElementById("last_update");
-				div_sync.prepend(img_sync);
-				img_sync.style.height = "15px";
-				img_sync.style.width = "auto";
-				img_sync.alt = "";
-
-				var img_sunrise = document.createElement("img");
-				img_sunrise.src = "styles/icons/sunrise.png";
-				var div_sunrise = document.getElementById("sunrise");
-				div_sunrise.prepend(img_sunrise);
-				img_sunrise.style.height = "auto";
-				img_sunrise.style.width = "20px";
-				img_sunrise.alt = "";
-
-				var img_sunset = document.createElement("img");
-				img_sunset.src = "styles/icons/sunset.png";
-				var div_sunset = document.getElementById("sunset");
-				div_sunset.prepend(img_sunset);
-				img_sunset.style.height = "auto";
-				img_sunset.style.width = "20px";
-				img_sunset.alt = "";
-
-				// Data for the day
-				for (let i = 1; i < 9; i++) {
-					document.getElementById("time_" + i).textContent = data["day"][`forecast${i}`].time;
-					document.getElementById("icon_hrs_" + i).src = data["day"][`forecast${i}`].icon;
-					document.getElementById("icon_hrs_" + i).setAttribute("height", "100px");
-					document.getElementById("icon_hrs_" + i).setAttribute("width", "100px");
-					document.getElementById("weather_description_" + i).textContent =
-						data["day"][`forecast${i}`].description;
-					document.getElementById("temp_" + i).textContent =
-						"temp: " + data["day"][`forecast${i}`].temp + "°C";
-					document.getElementById("humidity_" + i).textContent =
-						"humi: " + data["day"][`forecast${i}`].humidity;
-					document.getElementById("rain_" + i).textContent =
-						"rain: " + data["day"][`forecast${i}`].rain;
-					document.getElementById("clouds_" + i).textContent =
-						"cloud: " + data["day"][`forecast${i}`].clouds;
-				}
-
-				// Data for the week
-				for (let i = 1; i < 6; i++) {
-					document.getElementById("day_pred_" + i).textContent = data["week"][i - 1][0];
-					document.getElementById("temp_min_" + i).textContent = data["week"][i - 1][2];
-					document.getElementById("temp_max_" + i).textContent = data["week"][i - 1][3];
-					document.getElementById("icon_" + i).src = data["week"][i - 1][4];
-				}
+	var _0x254878 = _0x4b21;
+	navigator[_0x254878(0x222)] &&
+		navigator["geolocation"][_0x254878(0x215)](async function (_0x1d7096) {
+			var _0x5a5cb8 = _0x254878;
+			let _0x4dde5c = {
+					latitude: _0x1d7096[_0x5a5cb8(0x207)][_0x5a5cb8(0x1f1)],
+					longitude: _0x1d7096[_0x5a5cb8(0x207)][_0x5a5cb8(0x1ef)],
+				},
+				_0x1508f4 = await fetch("https://aexgj5.deta.dev/get_location", {
+					method: _0x5a5cb8(0x202),
+					body: JSON[_0x5a5cb8(0x1fe)](_0x4dde5c),
+					headers: { "Content-Type": _0x5a5cb8(0x1fa) },
+				});
+			if (0xc8 === _0x1508f4["status"]) {
+				var _0xe2e0de = await _0x1508f4[_0x5a5cb8(0x20d)]();
+				(_0xe2e0de = JSON["parse"](_0xe2e0de)),
+					console[_0x5a5cb8(0x22d)](_0xe2e0de),
+					(document["getElementById"](_0x5a5cb8(0x211))[_0x5a5cb8(0x22f)] =
+						_0xe2e0de[_0x5a5cb8(0x1f3)][_0x5a5cb8(0x211)]),
+					(document["getElementById"](_0x5a5cb8(0x1f7))[_0x5a5cb8(0x22f)] =
+						_0x5a5cb8(0x1ea) + _0xe2e0de[_0x5a5cb8(0x1f3)][_0x5a5cb8(0x1f7)] + "°C"),
+					(document[_0x5a5cb8(0x216)](_0x5a5cb8(0x232))[_0x5a5cb8(0x22f)] =
+						_0x5a5cb8(0x22c) + _0xe2e0de["current"]["temperatur_feels_like"] + "°C"),
+					(document[_0x5a5cb8(0x216)](_0x5a5cb8(0x21c))[_0x5a5cb8(0x22f)] =
+						_0xe2e0de["current"][_0x5a5cb8(0x21c)]),
+					(document[_0x5a5cb8(0x216)](_0x5a5cb8(0x1ec))[_0x5a5cb8(0x22f)] =
+						_0x5a5cb8(0x1ed) + _0xe2e0de[_0x5a5cb8(0x1f3)][_0x5a5cb8(0x1ec)] + "%"),
+					(document[_0x5a5cb8(0x216)](_0x5a5cb8(0x208))[_0x5a5cb8(0x22f)] =
+						_0x5a5cb8(0x1fc) + _0xe2e0de[_0x5a5cb8(0x1f3)]["clouds"] + "%"),
+					(document["getElementById"](_0x5a5cb8(0x205))[_0x5a5cb8(0x22f)] =
+						"\x20" + _0xe2e0de[_0x5a5cb8(0x1f3)][_0x5a5cb8(0x205)]),
+					(document["getElementById"](_0x5a5cb8(0x218))["textContent"] =
+						"\x20" + _0xe2e0de[_0x5a5cb8(0x1f3)][_0x5a5cb8(0x218)]),
+					(document["getElementById"]("sunset")[_0x5a5cb8(0x22f)] =
+						"\x20" + _0xe2e0de["current"][_0x5a5cb8(0x1ee)]),
+					(document["getElementById"]("icon_current")[_0x5a5cb8(0x1fb)] =
+						_0xe2e0de[_0x5a5cb8(0x1f3)]["icon"]),
+					(document[_0x5a5cb8(0x216)]("current_weather")[_0x5a5cb8(0x22f)] =
+						_0xe2e0de["current"][_0x5a5cb8(0x21c)]),
+					(document["getElementById"]("uv")["textContent"] = _0x5a5cb8(0x21b) + _0xe2e0de["uv"]);
+				var _0x33c0f5 = document[_0x5a5cb8(0x220)](_0x5a5cb8(0x20a));
+				(_0x33c0f5[_0x5a5cb8(0x1fb)] = _0x5a5cb8(0x21a)),
+					document[_0x5a5cb8(0x216)](_0x5a5cb8(0x205))[_0x5a5cb8(0x227)](_0x33c0f5),
+					(_0x33c0f5["style"][_0x5a5cb8(0x225)] = "15px"),
+					(_0x33c0f5[_0x5a5cb8(0x217)][_0x5a5cb8(0x229)] = "auto"),
+					(_0x33c0f5[_0x5a5cb8(0x20c)] = "");
+				var _0x42fd94 = document[_0x5a5cb8(0x220)]("img");
+				(_0x42fd94[_0x5a5cb8(0x1fb)] = _0x5a5cb8(0x1eb)),
+					document[_0x5a5cb8(0x216)]("sunrise")["prepend"](_0x42fd94),
+					(_0x42fd94["style"][_0x5a5cb8(0x225)] = _0x5a5cb8(0x228)),
+					(_0x42fd94[_0x5a5cb8(0x217)]["width"] = _0x5a5cb8(0x230)),
+					(_0x42fd94[_0x5a5cb8(0x20c)] = "");
+				var _0x1e8baf = document[_0x5a5cb8(0x220)](_0x5a5cb8(0x20a));
+				(_0x1e8baf[_0x5a5cb8(0x1fb)] = _0x5a5cb8(0x1f8)),
+					document[_0x5a5cb8(0x216)](_0x5a5cb8(0x1ee))[_0x5a5cb8(0x227)](_0x1e8baf),
+					(_0x1e8baf[_0x5a5cb8(0x217)]["height"] = _0x5a5cb8(0x228)),
+					(_0x1e8baf[_0x5a5cb8(0x217)]["width"] = _0x5a5cb8(0x230)),
+					(_0x1e8baf[_0x5a5cb8(0x20c)] = "");
+				for (let _0x3e9ca8 = 0x1; _0x3e9ca8 < 0x9; _0x3e9ca8++)
+					(document[_0x5a5cb8(0x216)]("time_" + _0x3e9ca8)[_0x5a5cb8(0x22f)] =
+						_0xe2e0de[_0x5a5cb8(0x1f2)][_0x5a5cb8(0x22a) + _0x3e9ca8][_0x5a5cb8(0x204)]),
+						(document[_0x5a5cb8(0x216)](_0x5a5cb8(0x1fd) + _0x3e9ca8)[_0x5a5cb8(0x1fb)] =
+							_0xe2e0de["day"][_0x5a5cb8(0x22a) + _0x3e9ca8][_0x5a5cb8(0x1ff)]),
+						document["getElementById"]("icon_hrs_" + _0x3e9ca8)[_0x5a5cb8(0x212)](
+							_0x5a5cb8(0x225),
+							_0x5a5cb8(0x224)
+						),
+						document[_0x5a5cb8(0x216)](_0x5a5cb8(0x1fd) + _0x3e9ca8)[_0x5a5cb8(0x212)](
+							"width",
+							_0x5a5cb8(0x224)
+						),
+						(document["getElementById"](_0x5a5cb8(0x213) + _0x3e9ca8)[_0x5a5cb8(0x22f)] =
+							_0xe2e0de[_0x5a5cb8(0x1f2)][_0x5a5cb8(0x22a) + _0x3e9ca8][_0x5a5cb8(0x20e)]),
+						(document[_0x5a5cb8(0x216)](_0x5a5cb8(0x20f) + _0x3e9ca8)[_0x5a5cb8(0x22f)] =
+							_0x5a5cb8(0x20b) +
+							_0xe2e0de[_0x5a5cb8(0x1f2)]["forecast" + _0x3e9ca8][_0x5a5cb8(0x1f5)] +
+							"°C"),
+						(document[_0x5a5cb8(0x216)](_0x5a5cb8(0x233) + _0x3e9ca8)[_0x5a5cb8(0x22f)] =
+							_0x5a5cb8(0x231) +
+							_0xe2e0de[_0x5a5cb8(0x1f2)][_0x5a5cb8(0x22a) + _0x3e9ca8]["humidity"]),
+						(document[_0x5a5cb8(0x216)](_0x5a5cb8(0x214) + _0x3e9ca8)[_0x5a5cb8(0x22f)] =
+							_0x5a5cb8(0x21d) + _0xe2e0de["day"]["forecast" + _0x3e9ca8][_0x5a5cb8(0x22b)]),
+						(document[_0x5a5cb8(0x216)](_0x5a5cb8(0x1f0) + _0x3e9ca8)[_0x5a5cb8(0x22f)] =
+							_0x5a5cb8(0x234) +
+							_0xe2e0de[_0x5a5cb8(0x1f2)][_0x5a5cb8(0x22a) + _0x3e9ca8]["clouds"]);
+				for (let _0x187deb = 0x1; _0x187deb < 0x6; _0x187deb++)
+					(document[_0x5a5cb8(0x216)](_0x5a5cb8(0x21e) + _0x187deb)[_0x5a5cb8(0x22f)] =
+						_0xe2e0de[_0x5a5cb8(0x219)][_0x187deb - 0x1][0x0]),
+						(document[_0x5a5cb8(0x216)]("temp_min_" + _0x187deb)[_0x5a5cb8(0x22f)] =
+							_0xe2e0de[_0x5a5cb8(0x219)][_0x187deb - 0x1][0x2]),
+						(document[_0x5a5cb8(0x216)]("temp_max_" + _0x187deb)[_0x5a5cb8(0x22f)] =
+							_0xe2e0de[_0x5a5cb8(0x219)][_0x187deb - 0x1][0x3]),
+						(document[_0x5a5cb8(0x216)](_0x5a5cb8(0x21f) + _0x187deb)[_0x5a5cb8(0x1fb)] =
+							_0xe2e0de[_0x5a5cb8(0x219)][_0x187deb - 0x1][0x4]);
 			}
 		});
-	}
 }
-
 getLocation();
-
-setInterval(getLocation, 600000);
+setInterval(getLocation, 0x927c0);
