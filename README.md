@@ -6,7 +6,6 @@
 [![Github last commit](https://img.shields.io/github/last-commit/infinitel8p/weather-forecast)](https://img.shields.io/github/last-commit/infinitel8p/weather-forecast)
 [![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/infinitel8p/weather-forecast)](https://github.com/infinitel8p/weather-forecast/issues?q=is%3Aissue+is%3Aclosed)
 [![Github license](https://img.shields.io/github/license/infinitel8p/pokedex)](https://github.com/infinitel8p/weather-forecast/blob/master/LICENSE)
-![Discord Widget](https://img.shields.io/discord/751084847555936408)
 
 weather-forecast is a simple weather dashboard that retrieves data from OpenWeatherMap and WeatherAPI,  
 third-party APIs that allow developers to access their data and functionality.  
