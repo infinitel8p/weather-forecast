@@ -1,3 +1,19 @@
+.main-top,
+.right {
+	grid-template-columns: repeat(2, 1fr);
+}
+.bottom,
+.main-bottom,
+.right {
+	text-align: center;
+	display: grid;
+}
+.bottom,
+.main-bottom,
+.main-top,
+.right {
+	display: grid;
+}
 body {
 	font-family: sans-serif;
 	font-size: x-large;
@@ -5,43 +21,20 @@ body {
 	padding: 0;
 	margin: 0;
 }
-
+.day,
+.hourly_forecast,
 .main-top > div {
-	border: 1px solid black;
+	border: 1px solid #000;
 }
-
-.main-top {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-}
-
 .left {
 	padding-left: 5vw;
 }
-
 .right {
-	text-align: center;
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
 	padding-right: 5vw;
 }
-
 .main-bottom {
-	text-align: center;
-	display: grid;
 	grid-template-columns: repeat(5, 1fr);
 }
-
 .bottom {
-	text-align: center;
-	display: grid;
 	grid-template-columns: repeat(8, 1fr);
-}
-
-.day {
-	border: 1px solid black;
-}
-
-.hourly_forecast {
-	border: 1px solid black;
 }
