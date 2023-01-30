@@ -27,7 +27,7 @@ class TkinterHandler(logging.Handler):
             customtkinter.END, self.log_format.format(record))
         self.text_widget.see(customtkinter.END)
         self.text_widget.configure(state='disabled')
-        self.text_widget.update()  # Refresh the widget
+        self.text_widget.update_idletasks()  # Refresh the widget
 
 
 class Server(uvicorn.Server):
@@ -52,10 +52,6 @@ class App(customtkinter.CTk):
         self.path = os.path.join(os.path.join(os.path.dirname(
             os.path.abspath(__file__)), "frontend"), "index.html")
 
-        # Set up the logger
-        self.logger = logging.getLogger()
-        self.logger.setLevel(logging.INFO)
-
         # Create the GUI
         self.title('Weather Forecast')
         customtkinter.set_appearance_mode("dark")
@@ -65,9 +61,13 @@ class App(customtkinter.CTk):
         self.log_output.pack(side=customtkinter.BOTTOM,
                              fill=customtkinter.BOTH, expand=True, padx=5, pady=5)
 
-        # Add the TkinterHandler to the logger
         self.handler = TkinterHandler(self.log_output)
+        # Set up the logger
+        self.logger = logging.getLogger()
+        # Add the TkinterHandler to the logger
         self.logger.addHandler(self.handler)
+        # Set logging level for logger
+        self.logger.setLevel(logging.INFO)
 
         # add a frame for input and download button
         self.grid_1 = customtkinter.CTkFrame(self, fg_color="transparent")
@@ -190,9 +190,6 @@ class App(customtkinter.CTk):
                                 port=8000, log_level="info")
         server = Server(config=config)
 
-        uvicorn_logger = logging.getLogger('uvicorn')
-        uvicorn_logger.addHandler(self.handler)
-
         with server.run_in_thread():
             # Server is started.
             self.mainloop_running = True
@@ -216,11 +213,9 @@ import contextlib
 import time
 import threading
 import uvicorn
-
 class Server(uvicorn.Server):
     def install_signal_handlers(self):
         pass
-
     @contextlib.contextmanager
     def run_in_thread(self):
         thread = threading.Thread(target=self.run)
@@ -232,24 +227,14 @@ class Server(uvicorn.Server):
         finally:
             self.should_exit = True
             thread.join()
-
 config = Config("example:app", host="127.0.0.1", port=5000, log_level="info")
 server = Server(config=config)
-
 with server.run_in_thread():
     # Server started.
     ...
 # Server stopped.
-
-
-
-
-
-
-
 # conftest.py
 import pytest
-
 @pytest.fixture(scope="session")
 def server():
     server = ...
