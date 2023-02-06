@@ -1,7 +1,6 @@
 import os
 import platform
 import subprocess
-import webbrowser
 
 
 def install_requirements():
@@ -16,14 +15,6 @@ def install_requirements():
 
     if platform.system() == "Linux" and platform.machine() == "armv7l":
         os.system("sudo apt-get install chromium-chromedriver")
-
-
-def open_browser():
-    """Opens `index.html` in webbrowser
-    """
-    path = os.path.join(os.path.join(os.path.dirname(
-        os.path.abspath(__file__)), "frontend"), "index.html")
-    webbrowser.open(path, new=0, autoraise=True)
 
 
 if __name__ == "__main__":
