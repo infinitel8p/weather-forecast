@@ -4,10 +4,8 @@ import time
 import threading
 import json
 import requests
-import re
 import customtkinter
 import os
-import subprocess
 import webbrowser
 import logging
 
@@ -49,8 +47,8 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
-        self.path = os.path.join(os.path.join(os.path.dirname(
-            os.path.abspath(__file__)), "frontend"), "index.html")
+        self.path = os.path.join(os.path.join(os.path.dirname(os.path.dirname(
+            os.path.abspath(__file__))), "frontend"), "index.html")
 
         # Create the GUI
         self.title('Weather Forecast')
@@ -110,34 +108,6 @@ class App(customtkinter.CTk):
             self.grid_2, text='Check', width=50, command=self.check_api2)
         self.check_button_2.grid(
             row=0, column=2, padx=(2.5, 0))
-
-    def install_requirements(self):
-        """Installs missing packages from `requirements.txt`
-        """
-        self.logger.info("Checking requirements...\n")
-        result = subprocess.Popen(
-            ["pip", "install", "-r", "requirements.txt"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-        out, err = result.communicate()
-
-        # Use regular expression to match lines that contain package name and its status
-        pattern = re.compile(
-            r"^(Collecting|Requirement already satisfied): (.*) in .*$")
-
-        # Iterate through each line of the output
-        for line in out.decode().split("\n"):
-            match = pattern.match(line)
-            if match:
-                package_status = match.group(1)
-                package_name = match.group(2)
-                self.logger.info("{}: {}".format(package_status, package_name))
-            else:
-                self.logger.info(line)
-
-        for line in err.decode().split("\n"):
-            self.logger.error(line)
-
-        self.logger.info("Checked/Installed requirements.")
 
     def check_api1(self):
         self.api_key1 = self.api_input_1.get().strip()
@@ -199,45 +169,4 @@ class App(customtkinter.CTk):
             # Server stopped.
 
 
-if __name__ == "__main__":
-    root = App()
-    root.mainloop_running = False
-    root.after(500, root.install_requirements)
-    root.mainloop()
-    root.mainloop_running = False
-    root.protocol("WM_DELETE_WINDOW", root.destroy())
-
 #! FIX MULTITHREADING TO AVOID RUNNING SERVER IN BACKGROUND AFTER CLOSING GUI
-"""
-import contextlib
-import time
-import threading
-import uvicorn
-class Server(uvicorn.Server):
-    def install_signal_handlers(self):
-        pass
-    @contextlib.contextmanager
-    def run_in_thread(self):
-        thread = threading.Thread(target=self.run)
-        thread.start()
-        try:
-            while not self.started:
-                time.sleep(1e-3)
-            yield
-        finally:
-            self.should_exit = True
-            thread.join()
-config = Config("example:app", host="127.0.0.1", port=5000, log_level="info")
-server = Server(config=config)
-with server.run_in_thread():
-    # Server started.
-    ...
-# Server stopped.
-# conftest.py
-import pytest
-@pytest.fixture(scope="session")
-def server():
-    server = ...
-    with server.run_in_thread():
-        yield
-"""
