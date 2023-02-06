@@ -2,3 +2,4 @@
 /backend/test
 /.vscode
 /backend/.deta
+__pycache__
