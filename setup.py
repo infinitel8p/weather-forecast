@@ -1,16 +1,16 @@
 import os
 import platform
-import threading
 import subprocess
 import webbrowser
 
 
 def install_requirements():
-    """Installs missing packages from `requirements.txt`
+    """Installs missing packages from `requirements.txt` and updates available packages
     """
 
     try:
-        subprocess.check_call(["pip", "install", "-r", "requirements.txt"])
+        subprocess.check_call(
+            ["pip", "install", "--upgrade", "-r", "requirements.txt"])
     except subprocess.CalledProcessError as e:
         print("Error: ", e)
 
@@ -27,19 +27,12 @@ def open_browser():
 
 
 if __name__ == "__main__":
-    # creating threads
-    t1 = threading.Thread(target=install_requirements)
-    t2 = threading.Thread(target=open_browser)
+    # Install requirements
+    install_requirements()
 
-    # starting thread 1 & 2
-    t1.start()
-    t2.start()
-
-    # wait until thread 1 & 2 is completely executed
-    t1.join()
-    t2.join()
-
-    if platform.system() == "Linux" and platform.machine() == "armv7l" or platform.system() == "Darwin":
-        os.system("python3 -m uvicorn backend.main:app --reload")
-    else:
-        os.system("python -m uvicorn backend.main:app --reload")
+    from backend.gui import App
+    root = App()
+    root.mainloop_running = False
+    root.mainloop()
+    root.mainloop_running = False
+    root.protocol("WM_DELETE_WINDOW", root.destroy())
