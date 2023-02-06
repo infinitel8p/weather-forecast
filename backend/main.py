@@ -171,22 +171,18 @@ class WeatherData:
             self.rain_forecast_1 = self.parsed_fetch_4["forecast"]["forecastday"][0]["hour"]
             self.rain_forecast_2 = self.parsed_fetch_4["forecast"]["forecastday"][1]["hour"]
 
-            # go through items of rain api
-            for i in self.rain_forecast_1:
-                # for every item of rain api check the items of the forecast
-                for i2 in self.forecast_data_day:
-                    # check if the day is in the current item of the forecast
-                    if i["time"].split(" ")[0].split("-")[2] + "." + i["time"].split(" ")[0].split("-")[1] in i2[0]:
-                        # if the day was in the forecast check if time of the current rain forecast item is in the current forecast
-                        if i["time"].split(" ")[1] in i2[0]:
-                            # set value 1337 of rain in forecast to rain api value
-                            i2[4] = i["chance_of_rain"]
-            for i in self.rain_forecast_2:
-                for i2 in self.forecast_data_day:
-                    if i["time"].split(" ")[0].split("-")[2] + "." + i["time"].split(" ")[0].split("-")[1] in i2[0]:
-                        if i["time"].split(" ")[1] in i2[0]:
-                            i2[4] = i["chance_of_rain"]
+            # loop through two days of rain forecast
+            for forecast in [self.rain_forecast_1, self.rain_forecast_2]:
+                # loop through each hour of forecast
+                for i in forecast:
+                    # loop through each day in self.data["day"]
+                    for i2 in self.data["day"]:
+                        # check if the date and time match between the forecast and self.data["day"]
+                        if i["time"].split(" ")[0].split("-")[2] + "." + i["time"].split(" ")[0].split("-")[1] in self.data["day"][i2]["time"] and i["time"].split(" ")[1] in self.data["day"][i2]["time"]:
+                            # update the rain chance for the matching day (default value is 1337)
+                            self.data["day"][i2]["rain"] = i["chance_of_rain"]
 
+            # update the UV index
             self.data["uv"] = self.uv_current
 
 
