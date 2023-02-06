@@ -3,7 +3,7 @@ import time
 import os
 import json
 import requests
-
+from datetime import datetime
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -139,8 +139,15 @@ class WeatherData:
             96: ["Thunderstorm with slight hail", "11d"],
             99: ["Thunderstorm with heavy hail", "11d"],
         }
+
         for i in range(0, 5):
             data = []
+            # format date from year-day-month to day.month.year
+            self.parsed_fetch["daily"]["time"][i] = datetime.strptime(
+                self.parsed_fetch["daily"]["time"][i], '%Y-%m-%d')
+            self.parsed_fetch["daily"]["time"][i] = self.parsed_fetch["daily"]["time"][i].strftime(
+                '%d.%m.%Y')
+
             data.append(self.parsed_fetch["daily"]["time"][i])
             data.append(self.parsed_fetch["daily"]["weathercode"][i])
             data.append(
