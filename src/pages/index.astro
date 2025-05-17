@@ -31,11 +31,13 @@ const hourly = [
 ];
 
 const weekly = [
-	{ day: "Mon", high: "25°C", low: "16°C", condition: "Cloudy" },
-	{ day: "Tue", high: "26°C", low: "17°C", condition: "Rainy" },
-	{ day: "Wed", high: "23°C", low: "15°C", condition: "Sunny" },
-	{ day: "Thu", high: "21°C", low: "14°C", condition: "Sunny" },
-	{ day: "Fri", high: "24°C", low: "15°C", condition: "Partly Cloudy" },
+	{ day: "Mon", high: "25", low: "16", condition: "Cloudy" },
+	{ day: "Tue", high: "26", low: "17", condition: "Rainy" },
+	{ day: "Wed", high: "23", low: "15", condition: "Sunny" },
+	{ day: "Thu", high: "21", low: "14", condition: "Sunny" },
+	{ day: "Fri", high: "24", low: "15", condition: "Partly Cloudy" },
+	{ day: "Wed", high: "23", low: "15", condition: "Sunny" },
+	{ day: "Thu", high: "21", low: "14", condition: "Sunny" },
 ];
 
 function formatToBerlinTime(unixTimestamp) {
@@ -51,7 +53,7 @@ function formatToBerlinTime(unixTimestamp) {
 
 <Layout>
 	<main
-		class="flex flex-col items-center gap-8 h-screen bg-gradient-to-b from-blue-500 to-blue-700 text-white">
+		class="flex flex-col items-center gap-8 h-screen bg-gradient-to-b from-slate-800 to-slate-950 text-stone-100">
 		<h1 class="text-6xl">Wuppertal, NRW</h1>
 		<h2 class="text-4xl">{currentHour}:{currentMinute} - {currentDate}</h2>
 
@@ -135,7 +137,7 @@ function formatToBerlinTime(unixTimestamp) {
 			</div>
 		</section>
 		<hr class="w-full h-0.5 bg-white opacity-40 my-4" />
-		<section class="h-1/3">
+		<section class="h-1/3 flex flex-col gap-4">
 			<h3 class="text-2xl">7-Tage-Vorhersage</h3>
 			<div class="flex justify-between gap-4">
 				{
