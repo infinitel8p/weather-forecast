@@ -12,6 +12,7 @@ const currentWeather = await res.json();
 
 const time = new Date();
 const currentTime = time.toLocaleTimeString("de-DE", {
+	timeZone: "Europe/Berlin",
 	hour: "2-digit",
 	minute: "2-digit",
 	hour12: false,
@@ -26,7 +27,6 @@ res = await fetch(
 	`https://api.openweathermap.org/data/2.5/forecast/daily?lat=51.264018&lon=7.1780374&cnt=8&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
 );
 const weeklyWeather = await res.json();
-
 
 const hourly = [
 	{ time: "13:00", temp: "22°C", precipitation: "0.0mm" },
@@ -159,13 +159,15 @@ function formatToBerlinDate(unixTimestamp) {
 			<section class="h-1/3 flex flex-col gap-4">
 				<div class="flex justify-between gap-4">
 					{
-						weeklyWeather.list.slice(1).map((item) => (
-							<SingleWeatherCard
-								title={formatToBerlinDate(item.dt)}
-								temperature={Math.round(item.temp.day)}
-								icon={item.weather[0].icon}
-							/>
-						))
+						weeklyWeather.list
+							.slice(1)
+							.map((item) => (
+								<SingleWeatherCard
+									title={formatToBerlinDate(item.dt)}
+									temperature={Math.round(item.temp.day)}
+									icon={item.weather[0].icon}
+								/>
+							))
 					}
 				</div>
 			</section>
