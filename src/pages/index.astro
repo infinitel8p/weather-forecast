@@ -1,0 +1,180 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import SingleWeatherCard from "@/components/SingleWeatherCard.astro";
+import WeatherChart from "@/components/WeatherChart.jsx";
+import { format } from "path";
+
+const env = import.meta.env;
+let res = await fetch(
+	`https://api.openweathermap.org/data/2.5/weather?lat=51.264018&lon=7.1780374&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
+);
+const currentWeather = await res.json();
+
+const time = new Date();
+const currentTime = time.toLocaleTimeString("de-DE", {
+	hour: "2-digit",
+	minute: "2-digit",
+	hour12: false,
+});
+const currentDate = time.toLocaleDateString("de-DE", {
+	weekday: "long",
+	month: "long",
+	day: "numeric",
+});
+
+res = await fetch(
+	`https://api.openweathermap.org/data/2.5/forecast/daily?lat=51.264018&lon=7.1780374&cnt=8&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
+);
+const weeklyWeather = await res.json();
+
+
+const hourly = [
+	{ time: "13:00", temp: "22°C", precipitation: "0.0mm" },
+	{ time: "14:00", temp: "23°C", precipitation: "1.2mm" },
+	{ time: "15:00", temp: "24°C", precipitation: "0.0mm" },
+	{ time: "16:00", temp: "25°C", precipitation: "0.5mm" },
+	{ time: "17:00", temp: "26°C", precipitation: "0.0mm" },
+	{ time: "18:00", temp: "25°C", precipitation: "0.0mm" },
+	{ time: "19:00", temp: "24°C", precipitation: "0.0mm" },
+	{ time: "20:00", temp: "23°C", precipitation: "0.0mm" },
+	{ time: "21:00", temp: "22°C", precipitation: "0.0mm" },
+	{ time: "22:00", temp: "21°C", precipitation: "0.0mm" },
+	{ time: "23:00", temp: "20°C", precipitation: "0.0mm" },
+	{ time: "00:00", temp: "19°C", precipitation: "0.0mm" },
+];
+const hourlyChartLabels = hourly.map((h) => h.time);
+const hourlyTemperatures = hourly.map((h) => parseInt(h.temp));
+const hourlyPrecipitation = hourly.map((h) => parseFloat(h.precipitation));
+
+function formatToBerlinTime(unixTimestamp) {
+	const date = new Date(unixTimestamp * 1000); // Convert to ms
+	return date.toLocaleTimeString("de-DE", {
+		timeZone: "Europe/Berlin",
+		hour: "2-digit",
+		minute: "2-digit",
+		hour12: false,
+	});
+}
+
+function formatToBerlinDate(unixTimestamp) {
+	const date = new Date(unixTimestamp * 1000); // Convert to ms
+	return date.toLocaleDateString("de-DE", {
+		timeZone: "Europe/Berlin",
+		weekday: "short",
+	});
+}
+---
+
+<Layout>
+	<main
+		class="flex flex-col items-center h-screen bg-gradient-to-b from-slate-800 to-slate-950 text-stone-100">
+		<header
+			class="w-full bg-slate-900 p-4 flex justify-between items-center shadow-md">
+			<h1 class="text-4xl font-semibold text-white">
+				🌤 Wetter Wuppertal
+			</h1>
+			<p class="text-white text-4xl font-semibold">
+				{currentTime} - {currentDate}
+			</p>
+		</header>
+
+		<div class="flex flex-col gap-16">
+			<section class="flex gap-8 h-1/3 items-center mt-8">
+				<div class="flex items-center gap-8">
+					<div class="flex flex-col items-center -mt-12">
+						<img
+							class="w-64 h-64"
+							src=`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@4x.png`
+						/>
+						<p class="-mt-12 text-4xl font-semibold">
+							{currentWeather.weather[0].description}
+						</p>
+					</div>
+					<div class="flex flex-col items-center">
+						<p class="text-9xl font-semibold">
+							{Math.round(currentWeather.main.temp)}°C
+						</p>
+						<p class="text-4xl">
+							Gefühlt: {
+								Math.round(currentWeather.main.feels_like)
+							}°C
+						</p>
+					</div>
+				</div>
+				<div class="grid grid-cols-2 grid-rows-4 text-3xl">
+					<div class="flex">
+						<span>🌅</span>
+						<p>
+							Sonnenaufgang: {
+								formatToBerlinTime(currentWeather.sys.sunrise)
+							}
+						</p>
+					</div>
+					<div class="flex">
+						<span>🌄</span>
+						<p>
+							Sonnenuntergang: {
+								formatToBerlinTime(currentWeather.sys.sunset)
+							}
+						</p>
+					</div>
+					<div class="flex">
+						<span>🍃</span>
+						Wind: {currentWeather.wind.speed} m/s
+					</div>
+					<div class="flex">
+						<span>💧</span>
+						Luftfeuchtigkeit: {currentWeather.main.humidity}%
+					</div>
+					<div class="flex">
+						<span>💨</span>
+						Luftdruck: {currentWeather.main.pressure} hPa
+					</div>
+					<div class="flex">
+						<span>☀️</span>
+						UV-Index: ---
+					</div>
+					<div class="flex">
+						<span>👓</span>
+						Sicht: {currentWeather.visibility} m
+					</div>
+					<div class="flex">
+						<span>☁️</span>
+						Wolken: {currentWeather.clouds.all}%
+					</div>
+				</div>
+			</section>
+
+			<section class="w-full">
+				<div class="flex items-center justify-center">
+					<WeatherChart
+						client:load
+						labels={hourlyChartLabels}
+						temperatureData={hourlyTemperatures}
+						precipitationData={hourlyPrecipitation}
+					/>
+				</div>
+			</section>
+
+			<section class="h-1/3 flex flex-col gap-4">
+				<div class="flex justify-between gap-4">
+					{
+						weeklyWeather.list.slice(1).map((item) => (
+							<SingleWeatherCard
+								title={formatToBerlinDate(item.dt)}
+								temperature={Math.round(item.temp.day)}
+								icon={item.weather[0].icon}
+							/>
+						))
+					}
+				</div>
+			</section>
+		</div>
+
+		<script>
+			setTimeout(() => {
+				window.location.reload();
+			}, 600000);
+		</script>
+	</main>
+</Layout>

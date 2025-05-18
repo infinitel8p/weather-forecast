@@ -1,0 +1,4 @@
+"lat": 51.264018,
+"lon": 7.1780374,
+"country": "DE",
+"state": "North Rhine-Westphalia"
