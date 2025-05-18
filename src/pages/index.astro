@@ -2,6 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import SingleWeatherCard from "@/components/SingleWeatherCard.astro";
 import WeatherChart from "@/components/WeatherChart.jsx";
+import { format } from "path";
 
 const env = import.meta.env;
 let res = await fetch(
@@ -22,9 +23,10 @@ const currentDate = time.toLocaleDateString("de-DE", {
 });
 
 res = await fetch(
-	`https://api.openweathermap.org/data/2.5/forecast/daily?lat=51.264018&lon=7.1780374&cnt=7&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
+	`https://api.openweathermap.org/data/2.5/forecast/daily?lat=51.264018&lon=7.1780374&cnt=8&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
 );
 const weeklyWeather = await res.json();
+
 
 const hourly = [
 	{ time: "13:00", temp: "22°C", precipitation: "0.0mm" },
@@ -44,16 +46,6 @@ const hourlyChartLabels = hourly.map((h) => h.time);
 const hourlyTemperatures = hourly.map((h) => parseInt(h.temp));
 const hourlyPrecipitation = hourly.map((h) => parseFloat(h.precipitation));
 
-const weekly = [
-	{ day: "Mon", high: "25", low: "16", condition: "Cloudy" },
-	{ day: "Tue", high: "26", low: "17", condition: "Rainy" },
-	{ day: "Wed", high: "23", low: "15", condition: "Sunny" },
-	{ day: "Thu", high: "21", low: "14", condition: "Sunny" },
-	{ day: "Fri", high: "24", low: "15", condition: "Partly Cloudy" },
-	{ day: "Wed", high: "23", low: "15", condition: "Sunny" },
-	{ day: "Thu", high: "21", low: "14", condition: "Sunny" },
-];
-
 function formatToBerlinTime(unixTimestamp) {
 	const date = new Date(unixTimestamp * 1000); // Convert to ms
 	return date.toLocaleTimeString("de-DE", {
@@ -61,6 +53,14 @@ function formatToBerlinTime(unixTimestamp) {
 		hour: "2-digit",
 		minute: "2-digit",
 		hour12: false,
+	});
+}
+
+function formatToBerlinDate(unixTimestamp) {
+	const date = new Date(unixTimestamp * 1000); // Convert to ms
+	return date.toLocaleDateString("de-DE", {
+		timeZone: "Europe/Berlin",
+		weekday: "short",
 	});
 }
 ---
@@ -80,7 +80,7 @@ function formatToBerlinTime(unixTimestamp) {
 
 		<div class="flex flex-col gap-16">
 			<section class="flex gap-8 h-1/3 items-center mt-8">
-				<div class="flex items-center">
+				<div class="flex items-center gap-8">
 					<div class="flex flex-col items-center -mt-12">
 						<img
 							class="w-64 h-64"
@@ -91,7 +91,7 @@ function formatToBerlinTime(unixTimestamp) {
 						</p>
 					</div>
 					<div class="flex flex-col items-center">
-						<p class="text-8xl font-semibold">
+						<p class="text-9xl font-semibold">
 							{Math.round(currentWeather.main.temp)}°C
 						</p>
 						<p class="text-4xl">
@@ -159,16 +159,22 @@ function formatToBerlinTime(unixTimestamp) {
 			<section class="h-1/3 flex flex-col gap-4">
 				<div class="flex justify-between gap-4">
 					{
-						weekly.map((day) => (
+						weeklyWeather.list.slice(1).map((item) => (
 							<SingleWeatherCard
-								title={day.day}
-								description={day.condition}
-								temperature={day.high}
+								title={formatToBerlinDate(item.dt)}
+								temperature={Math.round(item.temp.day)}
+								icon={item.weather[0].icon}
 							/>
 						))
 					}
 				</div>
 			</section>
 		</div>
+
+		<script>
+			setTimeout(() => {
+				window.location.reload();
+			}, 600000);
+		</script>
 	</main>
 </Layout>
