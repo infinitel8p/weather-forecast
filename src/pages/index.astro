@@ -1,8 +1,9 @@
 ---
+export const prerender = false;
+
 import Layout from "@/layouts/Layout.astro";
 import SingleWeatherCard from "@/components/SingleWeatherCard.astro";
 import WeatherChart from "@/components/WeatherChart.jsx";
-import { format } from "path";
 
 const env = import.meta.env;
 let res = await fetch(
@@ -173,10 +174,28 @@ function formatToBerlinDate(unixTimestamp) {
 			</section>
 		</div>
 
+		<p id="countdown" class="absolute left-4 bottom-4 text-white">
+			10:00
+		</p>
+
 		<script>
-			setTimeout(() => {
-				window.location.reload();
-			}, 600000);
+			let seconds = 600;
+			const countdownEl = document.getElementById('countdown');
+			function updateCountdown() {
+				const min = Math.floor(seconds / 60);
+				const sec = seconds % 60;
+				countdownEl.textContent = `${min}:${sec.toString().padStart(2, '0')}`;
+			}
+			updateCountdown();
+			const interval = setInterval(() => {
+				seconds--;
+				updateCountdown();
+				if (seconds <= 0) {
+					clearInterval(interval);
+					window.location.reload();
+					console.log("Reloading...");
+				}
+			}, 1000);
 		</script>
 	</main>
 </Layout>
