@@ -29,23 +29,21 @@ res = await fetch(
 );
 const weeklyWeather = await res.json();
 
-const hourly = [
-	{ time: "13:00", temp: "22°C", precipitation: "0.0mm" },
-	{ time: "14:00", temp: "23°C", precipitation: "1.2mm" },
-	{ time: "15:00", temp: "24°C", precipitation: "0.0mm" },
-	{ time: "16:00", temp: "25°C", precipitation: "0.5mm" },
-	{ time: "17:00", temp: "26°C", precipitation: "0.0mm" },
-	{ time: "18:00", temp: "25°C", precipitation: "0.0mm" },
-	{ time: "19:00", temp: "24°C", precipitation: "0.0mm" },
-	{ time: "20:00", temp: "23°C", precipitation: "0.0mm" },
-	{ time: "21:00", temp: "22°C", precipitation: "0.0mm" },
-	{ time: "22:00", temp: "21°C", precipitation: "0.0mm" },
-	{ time: "23:00", temp: "20°C", precipitation: "0.0mm" },
-	{ time: "00:00", temp: "19°C", precipitation: "0.0mm" },
-];
-const hourlyChartLabels = hourly.map((h) => h.time);
-const hourlyTemperatures = hourly.map((h) => parseInt(h.temp));
-const hourlyPrecipitation = hourly.map((h) => parseFloat(h.precipitation));
+res = await fetch(
+	`https://api.openweathermap.org/data/2.5/forecast/hourly?lat=51.264018&lon=7.1780374&cnt=24&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
+);
+const hourlyWeather = await res.json();
+
+const hourlyChartLabels = hourlyWeather.list.map((h) => formatToBerlinTime(h.dt));
+const hourlyTemperatures = hourlyWeather.list.map((h) => Math.round(h.main.temp));
+const hourlyPrecipitation = hourlyWeather.list.map((h) => {
+		if (h.rain) {
+			return h.rain["1h"];
+		} else {
+			return 0;
+		}
+	}
+);
 
 function formatToBerlinTime(unixTimestamp) {
 	const date = new Date(unixTimestamp * 1000); // Convert to ms
@@ -174,17 +172,15 @@ function formatToBerlinDate(unixTimestamp) {
 			</section>
 		</div>
 
-		<p id="countdown" class="absolute left-4 bottom-4 text-white">
-			10:00
-		</p>
+		<p id="countdown" class="absolute left-4 bottom-4 text-white">10:00</p>
 
 		<script>
 			let seconds = 600;
-			const countdownEl = document.getElementById('countdown');
+			const countdownEl = document.getElementById("countdown");
 			function updateCountdown() {
 				const min = Math.floor(seconds / 60);
 				const sec = seconds % 60;
-				countdownEl.textContent = `${min}:${sec.toString().padStart(2, '0')}`;
+				countdownEl.textContent = `${min}:${sec.toString().padStart(2, "0")}`;
 			}
 			updateCountdown();
 			const interval = setInterval(() => {

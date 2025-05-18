@@ -25,7 +25,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             yAxisID: "y-temp",
             tension: 0.4,
             fill: true,
-            pointRadius: 3,
+            pointRadius: 1,
             pointBackgroundColor: "rgba(255, 99, 132, 1)",
           },
           {
@@ -36,7 +36,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             yAxisID: "y-precip",
             tension: 0.4,
             fill: true,
-            pointRadius: 3,
+            pointRadius: 1,
             pointBackgroundColor: "rgba(54, 162, 235, 1)",
           },
         ],
@@ -69,6 +69,9 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
           x: {
             ticks: {
               color: "#e2e8f0",
+              font: {
+                size: 15,
+              },
             },
             grid: {
               color: "rgba(255, 255, 255, 0.1)",
@@ -79,12 +82,19 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             position: "left",
             ticks: {
               color: "#e2e8f0",
+              font : {
+                size: 20,
+              },
+              callback: function (value) {
+                return value + "°C";
+              },
             },
             grid: {
               color: "rgba(255, 255, 255, 0.05)",
             },
           },
           "y-precip": {
+            min: 0,
             type: "linear",
             position: "right",
             grid: {
@@ -92,6 +102,12 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             },
             ticks: {
               color: "#e2e8f0",
+              font: {
+                size: 20,
+              },
+              callback: function (value) {
+                return value + "mm";
+              },
             },
           },
         },
@@ -104,7 +120,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
       style={{
         position: "relative",
         width: "100%",
-        height: "200px", // a bit taller for clarity
+        height: "200px",
       }}
     >
       <canvas ref={canvasRef}></canvas>
