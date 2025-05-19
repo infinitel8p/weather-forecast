@@ -79,7 +79,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
           datalabels: {
             color: "#020618",
             font: {
-              size: 12,
+              size: 16,
               weight: 'bold',
             },
             align: "center",
@@ -128,6 +128,23 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
               },
               callback: function (value) {
                 return value + "mm";
+              },
+            },
+          },
+          "y-uvi": {
+            min: 0,
+            type: "linear",
+            position: "right",
+            grid: {
+              drawOnChartArea: false,
+            },
+            ticks: {
+              color: "rgba(255, 205, 86, 1)",
+              font: {
+                size: 20,
+              },
+              callback: function (value) {
+                return value;
               },
             },
           },
