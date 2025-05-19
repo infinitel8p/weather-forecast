@@ -34,16 +34,33 @@ res = await fetch(
 );
 const hourlyWeather = await res.json();
 
-const hourlyChartLabels = hourlyWeather.list.map((h) => formatToBerlinTime(h.dt));
-const hourlyTemperatures = hourlyWeather.list.map((h) => Math.round(h.main.temp));
-const hourlyPrecipitation = hourlyWeather.list.map((h) => {
-		if (h.rain) {
-			return h.rain["1h"];
-		} else {
-			return 0;
-		}
-	}
+const hourlyChartLabels = hourlyWeather.list.map((h) =>
+	formatToBerlinTime(h.dt)
 );
+const hourlyTemperatures = hourlyWeather.list.map((h) =>
+	Math.round(h.main.temp)
+);
+const hourlyPrecipitation = hourlyWeather.list.map((h) => {
+	if (h.rain) {
+		return h.rain["1h"];
+	} else {
+		return 0;
+	}
+});
+
+const oneCallApiKey = "5796abbde9106b7da4febfae8c44c232";
+res = await fetch(
+	`https://api.openweathermap.org/data/2.5/onecall?lat=51.26401&lon=7.1780374&units=metric&appid=${oneCallApiKey}`
+);
+const oneCall = await res.json();
+
+const hourlyUVIndex = oneCall.hourly.slice(0, 24).map((h) => {
+	if (h.uvi) {
+		return Math.round(h.uvi);
+	} else {
+		return 0;
+	}
+});
 
 function formatToBerlinTime(unixTimestamp) {
 	const date = new Date(unixTimestamp * 1000); // Convert to ms
@@ -62,23 +79,27 @@ function formatToBerlinDate(unixTimestamp) {
 		weekday: "short",
 	});
 }
+
+function meterToKm(m) {
+	return m / 1000;
+}
 ---
 
 <Layout>
 	<main
-		class="flex flex-col items-center h-screen bg-gradient-to-b from-slate-800 to-slate-950 text-stone-100">
+		class="flex flex-col items-center h-screen bg-gradient-to-b from-rose-50 to-rose-200 text-slate-950">
 		<header
-			class="w-full bg-slate-900 p-4 flex justify-between items-center shadow-md">
-			<h1 class="text-4xl font-semibold text-white">
+			class="w-full bg-rose-50 p-4 flex justify-between items-center shadow-md">
+			<h1 class="text-4xl font-semibold text-slate-950">
 				🌤 Wetter Wuppertal
 			</h1>
-			<p class="text-white text-4xl font-semibold">
-				{currentTime} - {currentDate}
+			<p class="text-slate-950 text-4xl font-semibold">
+				🔃 {currentTime} - {currentDate}
 			</p>
 		</header>
 
 		<div class="flex flex-col gap-16">
-			<section class="flex gap-8 h-1/3 items-center mt-8">
+			<section class="flex gap-8 items-center mt-8 mb-8">
 				<div class="flex items-center gap-8">
 					<div class="flex flex-col items-center -mt-12">
 						<img
@@ -94,13 +115,22 @@ function formatToBerlinDate(unixTimestamp) {
 							{Math.round(currentWeather.main.temp)}°C
 						</p>
 						<p class="text-4xl">
-							Gefühlt: {
-								Math.round(currentWeather.main.feels_like)
-							}°C
+							Gefühlt:
+							<span class="text-5xl">
+								{Math.round(currentWeather.main.feels_like)}°C
+							</span>
 						</p>
 					</div>
 				</div>
-				<div class="grid grid-cols-2 grid-rows-4 text-3xl">
+				<div class="grid grid-cols-2 grid-rows-4 text-4xl">
+					<div class="flex">
+						<span>🌡️</span>
+						Min: {Math.round(weeklyWeather.list[0].temp.min)}°C
+					</div>
+					<div class="flex">
+						<span>🌡️</span>
+						Max: {Math.round(weeklyWeather.list[0].temp.max)}°C
+					</div>
 					<div class="flex">
 						<span>🌅</span>
 						<p>
@@ -131,11 +161,11 @@ function formatToBerlinDate(unixTimestamp) {
 					</div>
 					<div class="flex">
 						<span>☀️</span>
-						UV-Index: ---
+						UV-Index: {Math.round(oneCall.current.uvi)}
 					</div>
 					<div class="flex">
 						<span>👓</span>
-						Sicht: {currentWeather.visibility} m
+						Sicht: {meterToKm(currentWeather.visibility)} km
 					</div>
 					<div class="flex">
 						<span>☁️</span>
@@ -151,11 +181,12 @@ function formatToBerlinDate(unixTimestamp) {
 						labels={hourlyChartLabels}
 						temperatureData={hourlyTemperatures}
 						precipitationData={hourlyPrecipitation}
+						uviData={hourlyUVIndex}
 					/>
 				</div>
 			</section>
 
-			<section class="h-1/3 flex flex-col gap-4">
+			<section class="flex flex-col gap-4">
 				<div class="flex justify-between gap-4">
 					{
 						weeklyWeather.list
@@ -172,7 +203,9 @@ function formatToBerlinDate(unixTimestamp) {
 			</section>
 		</div>
 
-		<p id="countdown" class="absolute left-4 bottom-4 text-white">10:00</p>
+		<p id="countdown" class="absolute left-4 bottom-4 text-slate-900">
+			10:00
+		</p>
 
 		<script>
 			let seconds = 600;

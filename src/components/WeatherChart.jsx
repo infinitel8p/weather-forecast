@@ -3,10 +3,11 @@ import {
   Chart,
   registerables
 } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
-Chart.register(...registerables);
+Chart.register(...registerables, ChartDataLabels);
 
-export default function WeatherChart({ labels, temperatureData, precipitationData }) {
+export default function WeatherChart({ labels, temperatureData, precipitationData, uviData }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -39,6 +40,17 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             pointRadius: 1,
             pointBackgroundColor: "rgba(54, 162, 235, 1)",
           },
+          {
+            label: "UV Index",
+            data: uviData,
+            borderColor: "rgba(255, 205, 86, 1)",
+            backgroundColor: "rgba(255, 205, 86, 0.2)",
+            yAxisID: "y-uvi",
+            tension: 0.4,
+            fill: true,
+            pointRadius: 1,
+            pointBackgroundColor: "rgba(255, 205, 86, 1)",
+          },
         ],
       },
       options: {
@@ -51,7 +63,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
         plugins: {
           legend: {
             labels: {
-              color: "#fff",
+              color: "#020618",
               font: {
                 size: 14,
               },
@@ -59,29 +71,38 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
           },
           tooltip: {
             backgroundColor: "#1e293b",
-            titleColor: "#fff",
-            bodyColor: "#e2e8f0",
+            titleColor: "#020618",
+            bodyColor: "#020618",
             borderColor: "#64748b",
             borderWidth: 1,
           },
+          datalabels: {
+            color: "#020618",
+            font: {
+              size: 12,
+              weight: 'bold',
+            },
+            align: "center",
+            formatter: (value) => value,
+          }
         },
         scales: {
           x: {
             ticks: {
-              color: "#e2e8f0",
+              color: "#020618",
               font: {
                 size: 15,
               },
             },
             grid: {
-              color: "rgba(255, 255, 255, 0.1)",
+              color: "#1d293d",
             },
           },
           "y-temp": {
             type: "linear",
             position: "left",
             ticks: {
-              color: "#e2e8f0",
+              color: "rgba(255, 99, 132, 1)",
               font : {
                 size: 20,
               },
@@ -90,7 +111,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
               },
             },
             grid: {
-              color: "rgba(255, 255, 255, 0.05)",
+              color: "#1d293d",
             },
           },
           "y-precip": {
@@ -101,7 +122,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
               drawOnChartArea: false,
             },
             ticks: {
-              color: "#e2e8f0",
+              color: "rgba(54, 162, 235, 1)",
               font: {
                 size: 20,
               },
@@ -120,7 +141,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
       style={{
         position: "relative",
         width: "100%",
-        height: "200px",
+        height: "300px",
       }}
     >
       <canvas ref={canvasRef}></canvas>
