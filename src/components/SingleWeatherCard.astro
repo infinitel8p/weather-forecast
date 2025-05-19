@@ -9,20 +9,17 @@ const {
 ---
 
 <div
-	class="duration-300 font-mono text-slate-950 group cursor-pointer relative overflow-hidden bg-transparent w-32 h-48 rounded-3xl p-4 hover:w-56 hover:bg-blue-200 hover:dark:bg-[#0C66E4]">
-	<h3 class="text-xl text-center">{title}</h3>
-	<div class="gap-4 relative">
+	class="duration-300 font-mono text-slate-950 overflow-hidden bg-transparent">
+	<h3 class="text-2xl text-center font-semibold">{title}</h3>
+	<div class="relative">
 		<img
 			src=`https://openweathermap.org/img/wn/${icon}@4x.png`
 			alt=""
+			class="size-44 -mt-8"
 		/>
 		<h4
-			class="font-sans duration-300 absolute left-1/2 -translate-x-1/2 text-4xl text-center group-hover:translate-x-8 group-hover:-translate-y-16 group-hover:scale-150">
+			class="font-sans text-3xl text-center -mt-8 font-semibold">
 			{temperature}°C
 		</h4>
-	</div>
-	<div class="absolute duration-300 -left-32 mt-2 group-hover:left-10">
-		<p class="text-sm">{description}</p>
-		<p class="text-sm">{humidity}</p>
 	</div>
 </div>

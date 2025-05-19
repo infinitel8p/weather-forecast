@@ -4,6 +4,20 @@ export const prerender = false;
 import Layout from "@/layouts/Layout.astro";
 import SingleWeatherCard from "@/components/SingleWeatherCard.astro";
 import WeatherChart from "@/components/WeatherChart.jsx";
+import {
+	IconSunrise,
+	IconSunset,
+	IconTemperaturePlus,
+	IconTemperatureMinus,
+	IconWindsockFilled,
+	IconDroplet,
+	IconGauge,
+	IconUvIndex,
+	IconBinoculars,
+	IconCloud,
+	IconRefresh,
+	IconReload,
+} from "@tabler/icons-react";
 
 const env = import.meta.env;
 let res = await fetch(
@@ -16,6 +30,7 @@ const currentTime = time.toLocaleTimeString("de-DE", {
 	timeZone: "Europe/Berlin",
 	hour: "2-digit",
 	minute: "2-digit",
+	second: "2-digit",
 	hour12: false,
 });
 const currentDate = time.toLocaleDateString("de-DE", {
@@ -54,7 +69,7 @@ res = await fetch(
 );
 const oneCall = await res.json();
 
-const hourlyUVIndex = oneCall.hourly.slice(0, 24).map((h) => {
+const hourlyUVIndex = oneCall.hourly.slice(1, 25).map((h) => {
 	if (h.uvi) {
 		return Math.round(h.uvi);
 	} else {
@@ -83,124 +98,265 @@ function formatToBerlinDate(unixTimestamp) {
 function meterToKm(m) {
 	return m / 1000;
 }
+
+const hour = new Date().getHours();
+// const isNight = hour >= 20 || hour < 6;
+const isNight = false;
+const colors = [
+	"text-red-950",
+	"text-orange-950",
+	"text-amber-950",
+	"text-yellow-950",
+	"text-lime-950",
+	"text-green-950",
+	"text-emerald-950",
+	"text-teal-950",
+	"text-cyan-950",
+	"text-sky-950",
+	"text-blue-950",
+	"text-indigo-950",
+	"text-violet-950",
+	"text-purple-950",
+	"text-fuchsia-950",
+	"text-pink-950",
+	"text-rose-950",
+	"text-slate-950",
+	"text-gray-950",
+	"text-zinc-950",
+	"text-neutral-950",
+	"text-stone-950",
+];
+const darkColors = [
+	"text-red-100",
+	"text-orange-100",
+	"text-amber-100",
+	"text-yellow-100",
+	"text-lime-100",
+	"text-green-100",
+	"text-emerald-100",
+	"text-teal-100",
+	"text-cyan-100",
+	"text-sky-100",
+	"text-blue-100",
+	"text-indigo-100",
+	"text-violet-100",
+	"text-purple-100",
+	"text-fuchsia-100",
+	"text-pink-100",
+	"text-rose-100",
+	"text-slate-100",
+	"text-gray-100",
+	"text-zinc-100",
+	"text-neutral-100",
+	"text-stone-100",
+];
 ---
 
 <Layout>
 	<main
-		class="flex flex-col items-center h-screen bg-gradient-to-b from-rose-50 to-rose-200 text-slate-950">
-		<header
-			class="w-full bg-rose-50 p-4 flex justify-between items-center shadow-md">
-			<h1 class="text-4xl font-semibold text-slate-950">
-				🌤 Wetter Wuppertal
+		class:list={[
+			"flex flex-col items-center h-screen",
+			{
+				[`bg-gradient-to-b from-slate-800 to-slate-950 ${darkColors[Math.floor(Math.random() * colors.length)]}`]:
+					isNight,
+				[`bg-gradient-to-b from-stone-100 to-stone-300 ${colors[Math.floor(Math.random() * colors.length)]}`]:
+					!isNight,
+			},
+		]}>
+		<header class="w-full p-4 flex justify-between leading-none shadow-md">
+			<h1 class="text-4xl font-semibold flex items-center gap-4">
+				<img
+					src="https://www.svgrepo.com/show/530233/weather.svg"
+					class="size-12"
+				/> Wetter Wuppertal
 			</h1>
-			<p class="text-slate-950 text-4xl font-semibold">
-				🔃 {currentTime} - {currentDate}
+			<p class="text-4xl font-semibold flex items-center gap-4">
+				<IconReload size="32" className="-mb-1" />
+				{currentTime} - {currentDate}
 			</p>
 		</header>
 
-		<div class="flex flex-col gap-12">
-			<section class="flex gap-8 items-center mt-8">
+		<div class="flex flex-col gap-12 w-full">
+			<section class="flex gap-8 items-center justify-evenly mt-8">
 				<div class="flex items-center gap-8">
-					<div class="flex flex-col items-center -mt-12">
+					<div class="flex flex-col items-center -mt-16">
 						<img
-							class="w-64 h-64"
+							class="size-130 -mt-12 drop-shadow-md object-contain"
 							src=`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@4x.png`
 						/>
-						<p class="-mt-12 text-4xl font-semibold">
+						<p class="-mt-24 text-4xl font-semibold">
 							{currentWeather.weather[0].description}
 						</p>
 					</div>
-					<div class="flex flex-col items-center">
-						<p class="text-9xl font-semibold">
-							{Math.round(currentWeather.main.temp)}°C
-						</p>
-						<p class="text-4xl">
-							Gefühlt:
-							<span class="text-5xl">
-								{Math.round(currentWeather.main.feels_like)}°C
-							</span>
-						</p>
+					<div
+						class="flex flex-col items-center justify-evenly self-stretch">
+						<div>
+							<p class="text-9xl font-semibold">
+								{Math.round(currentWeather.main.temp)}°C
+							</p>
+							<p class="text-4xl">
+								Gefühlt:
+								<span class="text-5xl font-semibold">
+									{
+										Math.round(
+											currentWeather.main.feels_like
+										)
+									}°C
+								</span>
+							</p>
+						</div>
+						<div
+							class="grid grid-cols-2 text-xl gap-x-8 font-semibold">
+							<div class="flex items-center">
+								<span><IconTemperatureMinus size={48} /></span>
+								<div
+									class="flex flex-col justify-center items-center w-full">
+									Min:
+									<span class="text-4xl font-bold">
+										{
+											Math.round(
+												weeklyWeather.list[0].temp.min
+											)
+										}<span class="text-2xl">°C</span>
+									</span>
+								</div>
+							</div>
+							<div class="flex items-center">
+								<span><IconTemperaturePlus size={48} /></span>
+								<div
+									class="flex flex-col justify-center items-center w-full">
+									Max:
+									<span class="text-4xl font-bold">
+										{
+											Math.round(
+												weeklyWeather.list[0].temp.max
+											)
+										}<span class="text-2xl">°C</span>
+									</span>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-				<div class="grid grid-cols-2 grid-rows-4 text-4xl">
-					<div class="flex">
-						<span>🌡️</span>
-						Min: {Math.round(weeklyWeather.list[0].temp.min)}°C
+				<div
+					class="grid grid-cols-2 grid-rows-4 text-lg font-semibold gap-x-16 gap-y-4">
+					<div class="flex items-center">
+						<span><IconSunrise size={48} /></span>
+						<div
+							class="flex flex-col justify-center items-center w-full">
+							Sonnenaufgang:
+							<span class="text-4xl font-bold">
+								{formatToBerlinTime(currentWeather.sys.sunrise)}
+							</span>
+						</div>
 					</div>
-					<div class="flex">
-						<span>🌡️</span>
-						Max: {Math.round(weeklyWeather.list[0].temp.max)}°C
+					<div class="flex items-center">
+						<span><IconSunset size={48} /></span>
+						<div
+							class="flex flex-col justify-center items-center w-full">
+							Sonnenuntergang:
+							<span class="text-4xl font-bold">
+								{formatToBerlinTime(currentWeather.sys.sunset)}
+							</span>
+						</div>
 					</div>
-					<div class="flex">
-						<span>🌅</span>
-						<p>
-							Sonnenaufgang: {
-								formatToBerlinTime(currentWeather.sys.sunrise)
-							}
-						</p>
+					<div class="flex items-center">
+						<span><IconWindsockFilled size={48} /></span>
+						<div
+							class="flex flex-col justify-center items-center w-full">
+							Wind:
+							<span class="text-4xl font-bold">
+								{currentWeather.wind.speed}<span
+									class="text-2xl">m/s</span
+								>
+							</span>
+						</div>
 					</div>
-					<div class="flex">
-						<span>🌄</span>
-						<p>
-							Sonnenuntergang: {
-								formatToBerlinTime(currentWeather.sys.sunset)
-							}
-						</p>
+					<div class="flex items-center">
+						<span><IconDroplet size={48} /></span>
+						<div
+							class="flex flex-col justify-center items-center w-full">
+							Luftfeuchtigkeit:
+							<span class="text-4xl font-bold">
+								{currentWeather.main.humidity}<span
+									class="text-2xl">%</span
+								>
+							</span>
+						</div>
 					</div>
-					<div class="flex">
-						<span>🍃</span>
-						Wind: {currentWeather.wind.speed} m/s
+					<div class="flex items-center">
+						<span><IconGauge size={48} /></span>
+						<div
+							class="flex flex-col justify-center items-center w-full">
+							Luftdruck:
+							<span class="text-4xl font-bold">
+								{currentWeather.main.pressure}<span
+									class="text-2xl">hPa</span
+								>
+							</span>
+						</div>
 					</div>
-					<div class="flex">
-						<span>💧</span>
-						Luftfeuchtigkeit: {currentWeather.main.humidity}%
-					</div>
-					<div class="flex">
-						<span>💨</span>
-						Luftdruck: {currentWeather.main.pressure} hPa
-					</div>
-					<div class="flex">
-						<span>☀️</span>
-						UV-Index: {Math.round(oneCall.current.uvi)}
+					<div class="flex items-center">
+						<span><IconUvIndex size={48} /></span>
+						<div
+							class="flex flex-col justify-center items-center w-full">
+							UV-Index:
+							<span class="text-4xl font-bold">
+								{Math.round(oneCall.current.uvi)}
+							</span>
+						</div>
 						<!-- 1-2 Niedrig | 3-5 Mittel, 6-7 Hoch | 8-10 Sehr hoch, 11+ Extrem -->
 					</div>
-					<div class="flex">
-						<span>👓</span>
-						Sicht: {meterToKm(currentWeather.visibility)} km
+					<div class="flex items-center">
+						<span><IconBinoculars size={48} /></span>
+						<div
+							class="flex flex-col justify-center items-center w-full">
+							Sicht:
+							<span class="text-4xl font-bold">
+								{meterToKm(currentWeather.visibility)}<span
+									class="text-2xl">km</span
+								>
+							</span>
+						</div>
 					</div>
-					<div class="flex">
-						<span>☁️</span>
-						Wolken: {currentWeather.clouds.all}%
+					<div class="flex items-center">
+						<span><IconCloud size={48} /></span>
+						<div
+							class="flex flex-col justify-center items-center w-full">
+							Wolken:
+							<span class="text-4xl font-bold">
+								{currentWeather.clouds.all}<span
+									class="text-2xl">%</span
+								>
+							</span>
+						</div>
 					</div>
 				</div>
 			</section>
 
-			<section class="w-full">
-				<div class="flex items-center justify-center">
-					<WeatherChart
-						client:load
-						labels={hourlyChartLabels}
-						temperatureData={hourlyTemperatures}
-						precipitationData={hourlyPrecipitation}
-						uviData={hourlyUVIndex}
-					/>
-				</div>
+			<section
+				class="w-full flex items-center justify-center max-w-screen-xl mx-auto">
+				<WeatherChart
+					client:load
+					labels={hourlyChartLabels}
+					temperatureData={hourlyTemperatures}
+					precipitationData={hourlyPrecipitation}
+					uviData={hourlyUVIndex}
+				/>
 			</section>
 
-			<section class="flex flex-col gap-4">
-				<div class="flex justify-between gap-4">
-					{
-						weeklyWeather.list
-							.slice(1)
-							.map((item) => (
-								<SingleWeatherCard
-									title={formatToBerlinDate(item.dt)}
-									temperature={Math.round(item.temp.day)}
-									icon={item.weather[0].icon}
-								/>
-							))
-					}
-				</div>
+			<section class="flex gap-4 justify-between max-w-screen-xl mx-auto">
+				{
+					weeklyWeather.list
+						.slice(1)
+						.map((item) => (
+							<SingleWeatherCard
+								title={formatToBerlinDate(item.dt)}
+								temperature={Math.round(item.temp.day)}
+								icon={item.weather[0].icon}
+							/>
+						))
+				}
 			</section>
 		</div>
 

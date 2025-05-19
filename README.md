@@ -13,7 +13,7 @@ This app will run through JavaScript dynamically updated HTML and CSS powered by
 
 💻 live preview! [infinitel8p.github.io/weather-forecast/](https://infinitel8p.github.io/weather-forecast/)
 
-![preview](https://user-images.githubusercontent.com/50703696/181757623-5fc4b6ee-7c6a-466a-b248-1e42a1dd528c.png)
+![image](https://github.com/user-attachments/assets/a86152aa-5d68-4321-a5f9-71f383fe5332)
 
 #### Contents:
 

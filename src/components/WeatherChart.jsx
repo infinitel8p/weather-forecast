@@ -65,7 +65,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             labels: {
               color: "#020618",
               font: {
-                size: 14,
+                size: 12,
               },
             },
           },
@@ -79,7 +79,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
           datalabels: {
             color: "#020618",
             font: {
-              size: 16,
+              size: 18,
               weight: 'bold',
             },
             align: "center",
@@ -91,7 +91,12 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             ticks: {
               color: "#020618",
               font: {
-                size: 15,
+                size: 18,
+                weight: "bold",
+              },
+              callback: function (val, index) {
+                // Show every second label (0-based index)
+                return index % 2 === 0 ? this.getLabelForValue(val) : '';
               },
             },
             grid: {
@@ -158,7 +163,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
       style={{
         position: "relative",
         width: "100%",
-        height: "300px",
+        height: "200px",
       }}
     >
       <canvas ref={canvasRef}></canvas>
