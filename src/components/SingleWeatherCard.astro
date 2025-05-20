@@ -5,11 +5,12 @@ const {
 	temperature,
 	icon = null,
 	humidity = null,
+	textColor = null,
 } = Astro.props;
 ---
 
 <div
-	class="duration-300 font-mono text-slate-950 overflow-hidden bg-transparent">
+	class=`duration-300 font-mono overflow-hidden bg-transparent ${textColor}`>
 	<h3 class="text-2xl text-center font-semibold">{title}</h3>
 	<div class="relative">
 		<img

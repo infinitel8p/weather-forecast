@@ -7,7 +7,7 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 
 Chart.register(...registerables, ChartDataLabels);
 
-export default function WeatherChart({ labels, temperatureData, precipitationData, uviData }) {
+export default function WeatherChart({ labels, temperatureData, precipitationData, uviData, textColor }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {

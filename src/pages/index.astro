@@ -26,17 +26,14 @@ let res = await fetch(
 const currentWeather = await res.json();
 
 const time = new Date();
-const currentTime = time.toLocaleTimeString("de-DE", {
-	timeZone: "Europe/Berlin",
-	hour: "2-digit",
-	minute: "2-digit",
-	second: "2-digit",
-	hour12: false,
-});
 const currentDate = time.toLocaleDateString("de-DE", {
+	timeZone: "Europe/Berlin",
 	weekday: "long",
 	month: "long",
 	day: "numeric",
+	hour: "2-digit",
+	minute: "2-digit",
+	hour12: false,
 });
 
 res = await fetch(
@@ -100,8 +97,7 @@ function meterToKm(m) {
 }
 
 const hour = new Date().getHours();
-// const isNight = hour >= 20 || hour < 6;
-const isNight = false;
+const isNight = hour >= 22 || hour < 6;
 const colors = [
 	"text-red-950",
 	"text-orange-950",
@@ -154,42 +150,45 @@ const darkColors = [
 
 <Layout>
 	<main
-		class:list={[
-			"flex flex-col items-center h-screen",
-			{
-				[`bg-gradient-to-b from-slate-800 to-slate-950 ${darkColors[Math.floor(Math.random() * colors.length)]}`]:
-					isNight,
-				[`bg-gradient-to-b from-stone-100 to-stone-300 ${colors[Math.floor(Math.random() * colors.length)]}`]:
-					!isNight,
-			},
-		]}>
-		<header class="w-full p-4 flex justify-between leading-none shadow-md">
-			<h1 class="text-4xl font-semibold flex items-center gap-4">
-				<img
-					src="https://www.svgrepo.com/show/530233/weather.svg"
-					class="size-12"
-				/> Wetter Wuppertal
-			</h1>
-			<p class="text-4xl font-semibold flex items-center gap-4">
-				<IconReload size="32" className="-mb-1" />
-				{currentTime} - {currentDate}
-			</p>
-		</header>
-
-		<div class="flex flex-col gap-12 w-full">
-			<section class="flex gap-8 items-center justify-evenly mt-8">
-				<div class="flex items-center gap-8">
-					<div class="flex flex-col items-center -mt-16">
+		class="flex flex-col items-center h-screen w-full"
+		style={{
+			backgroundColor: isNight ? "#111927" : "#fdfdfd",
+			backgroundImage: isNight
+				? `radial-gradient(at 50% 50%, hsl(200, 77%, 50%) 0px, transparent 59%),
+         radial-gradient(at 82% 65%, hsl(218, 39%, 11%) 0px, transparent 55%)`
+				: `radial-gradient(at 50% 50%, hsl(45, 100%, 80%) 0px, transparent 59%),
+         radial-gradient(at 82% 65%, #f5f5f4 0px, transparent 55%)`,
+		}}>
+		<div class="flex flex-col gap-4 w-full">
+			<section
+				class="grid grid-cols-2 max-w-[1475px] items-center gap-4 mt-8 mx-auto">
+				<div
+					class:list={[
+						"flex items-center gap-16 shadow-md rounded-lg p-8 backdrop-blur-lg backdrop-saturate-150 border",
+						{
+							[`bg-[rgba(17,25,39,0.5)] border-white/10 text-slate-100`]:
+								// ${darkColors[Math.floor(Math.random() * colors.length)]}
+								isNight,
+							[`bg-[rgba(245,245,244,0.75)] border-black/10 text-slate-900`]:
+								//  ${colors[Math.floor(Math.random() * colors.length)]}
+								!isNight,
+						},
+					]}>
+					<div class="flex flex-col items-center">
+						<div class="text-xl font-bold">Wuppertal, NRW</div>
+						<div class="text-xl">
+							{currentDate}
+						</div>
 						<img
-							class="size-130 -mt-12 drop-shadow-md object-contain"
+							class="size-100 drop-shadow-md object-contain -my-24"
 							src=`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@4x.png`
 						/>
-						<p class="-mt-24 text-4xl font-semibold">
+						<p class="text-4xl font-semibold">
 							{currentWeather.weather[0].description}
 						</p>
 					</div>
 					<div
-						class="flex flex-col items-center justify-evenly self-stretch">
+						class="flex flex-col items-center justify-evenly self-stretch pr-8 -ml-8">
 						<div>
 							<p class="text-9xl font-semibold">
 								{Math.round(currentWeather.main.temp)}°C
@@ -239,8 +238,18 @@ const darkColors = [
 					</div>
 				</div>
 				<div
-					class="grid grid-cols-2 grid-rows-4 text-lg font-semibold gap-x-16 gap-y-4">
-					<div class="flex items-center">
+					class:list={[
+						"grid grid-cols-2 grid-rows-4 text-lg font-semibold gap-x-16 gap-y-4mx-auto shadow-md rounded-lg p-8 backdrop-blur-lg backdrop-saturate-150 border pl-24 h-full",
+						{
+							[`bg-[rgba(17,25,39,0.5)] border-white/10 text-slate-100`]:
+								// ${darkColors[Math.floor(Math.random() * colors.length)]}
+								isNight,
+							[`bg-[rgba(245,245,244,0.75)] border-black/10 text-slate-900`]:
+								//  ${colors[Math.floor(Math.random() * colors.length)]}
+								!isNight,
+						},
+					]}>
+					<div class="flex items-center text-center">
 						<span><IconSunrise size={48} /></span>
 						<div
 							class="flex flex-col justify-center items-center w-full">
@@ -335,17 +344,39 @@ const darkColors = [
 			</section>
 
 			<section
-				class="w-full flex items-center justify-center max-w-screen-xl mx-auto">
+				class:list={[
+					"w-full flex items-center justify-center shadow-md rounded-lg p-8 max-w-[1475px] mx-auto backdrop-blur-lg backdrop-saturate-150 border",
+					{
+						[`bg-[rgba(17,25,39,0.5)] border-white/10 ${darkColors[Math.floor(Math.random() * colors.length)]}`]:
+							isNight,
+						[`bg-[rgba(245,245,244,0.75)] border-black/10 ${colors[Math.floor(Math.random() * colors.length)]}`]:
+							!isNight,
+					},
+				]}>
 				<WeatherChart
 					client:load
 					labels={hourlyChartLabels}
 					temperatureData={hourlyTemperatures}
 					precipitationData={hourlyPrecipitation}
 					uviData={hourlyUVIndex}
+					textColor={isNight
+						? darkColors[
+								Math.floor(Math.random() * darkColors.length)
+							]
+						: colors[Math.floor(Math.random() * colors.length)]}
 				/>
 			</section>
 
-			<section class="flex gap-4 justify-between max-w-screen-xl mx-auto">
+			<section
+				class:list={[
+					"flex gap-4 justify-between w-[1475px] mx-auto shadow-md rounded-lg p-4 backdrop-blur-lg backdrop-saturate-150 border",
+					{
+						[`bg-[rgba(17,25,39,0.5)] border-white/10 ${darkColors[Math.floor(Math.random() * colors.length)]}`]:
+							isNight,
+						[`bg-[rgba(245,245,244,0.55)] border-black/10 ${colors[Math.floor(Math.random() * colors.length)]}`]:
+							!isNight,
+					},
+				]}>
 				{
 					weeklyWeather.list
 						.slice(1)
@@ -354,6 +385,11 @@ const darkColors = [
 								title={formatToBerlinDate(item.dt)}
 								temperature={Math.round(item.temp.day)}
 								icon={item.weather[0].icon}
+								textColor={
+									isNight
+										? "text-slate-100"
+										: "text-slate-900"
+								}
 							/>
 						))
 				}
