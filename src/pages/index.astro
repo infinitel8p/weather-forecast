@@ -96,8 +96,14 @@ function meterToKm(m) {
 	return m / 1000;
 }
 
-const hour = new Date().getHours();
-const isNight = hour >= 22 || hour < 6;
+// some random color stuff
+const hour = new Date().toLocaleTimeString("de-DE", {
+	timeZone: "Europe/Berlin",
+	hour: "2-digit",
+	hour12: false,
+});
+const hourNumber = parseInt(hour, 10);
+const isNight = hourNumber >= 22 || hourNumber < 6;
 const colors = [
 	"text-red-950",
 	"text-orange-950",
