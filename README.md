@@ -1,32 +1,39 @@
 # weather-forecast
 
-![Codacy grade](https://img.shields.io/codacy/grade/cb5b81c74c324312ab5381133e2cb660)
-[![pages-build-deployment](https://github.com/infinitel8p/weather-forecast/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/infinitel8p/weather-forecast/actions/workflows/pages/pages-build-deployment)
-[![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/infinitel8p/weather-forecast)](https://img.shields.io/github/languages/code-size/infinitel8p/weather-forecast)
-[![Github last commit](https://img.shields.io/github/last-commit/infinitel8p/weather-forecast)](https://img.shields.io/github/last-commit/infinitel8p/weather-forecast)
-[![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/infinitel8p/weather-forecast)](https://github.com/infinitel8p/weather-forecast/issues?q=is%3Aissue+is%3Aclosed)
-[![Github license](https://img.shields.io/github/license/infinitel8p/pokedex)](https://github.com/infinitel8p/weather-forecast/blob/master/LICENSE)
+weather-forecast is a simple weather dashboard that retrieves data from OpenWeatherMap.
+The project is built for a Raspberry Pi 5" screen. It includes a custom 3d-printed case with stand.
 
-weather-forecast is a simple weather dashboard that retrieves data from OpenWeatherMap and WeatherAPI,  
-third-party APIs that allow developers to access their data and functionality.  
-This app will run through JavaScript dynamically updated HTML and CSS powered by a python backend.
-
-💻 live preview! [infinitel8p.github.io/weather-forecast/](https://infinitel8p.github.io/weather-forecast/)
+💻 live preview! [weather.infinitel8p.com](https://weather.infinitel8p.com//)
 
 ![image](https://github.com/user-attachments/assets/a86152aa-5d68-4321-a5f9-71f383fe5332)
 
 #### Contents:
-
-- [How to setup](https://github.com/infinitel8p/PokeDex#how-to-setup)
+- [weather-forecast](#weather-forecast)
+      - [Contents:](#contents)
+  - [How to setup:](#how-to-setup)
+  - [3D-printed case](#3d-printed-case)
+  - [Hardware](#hardware)
 
 ## How to setup:
 
-###### :snake: Please make sure that python is installed, [added to path](https://datatofish.com/add-python-to-windows-path/) and that pip is running correctly before you run the app this way for the first time!
-
-1.  Click `clone or download` and choose to download the ZIP file (If you only want the necessary files download the `weather-forecast.zip` from the [Releases](https://github.com/infinitel8p/weather-forecast/releases))
-2.  Extract the folder from the ZIP file
-3.  Run the `setup.py`
+1.  Clone the repository
 
 ```shell
-python C:\Users\USER\Desktop\weather-forecast\setup.py
+git clone https://github.com/infinitel8p/weather-forecast.git
 ```
+2. Setup the environment variables in `.env` file
+3. Install the dependencies
+
+```shell
+npm install
+```
+
+## 3D-printed case
+
+The case is designed to fit a Raspberry Pi 5" screen. The design files are available on MakerWorld.
+- [MakerWorld](https://makerworld.com/de/models/1438574-weather-dashboard-raspberry-pi-5-screen#profileId-1496923)
+
+## Hardware
+
+- Raspberry Pi 4
+- 5" HDMI screen such as [this one](https://www.amazon.de/Elecrow-Aufl%C3%B6sung-Touchscreen-Monitor-Raspberry/dp/B013JECYF2)

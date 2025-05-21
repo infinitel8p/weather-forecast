@@ -18,7 +18,7 @@ export default defineConfig({
       cssMinify: "lightningcss"
     }
   },
-
+  output: 'server',
   devToolbar: { enabled: false },
   integrations: [react()],
   adapter: netlify(),

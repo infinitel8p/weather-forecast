@@ -1,6 +1,4 @@
 ---
-export const prerender = false;
-
 import Layout from "@/layouts/Layout.astro";
 import SingleWeatherCard from "@/components/SingleWeatherCard.astro";
 import WeatherChart from "@/components/WeatherChart.jsx";
@@ -20,8 +18,21 @@ import {
 } from "@tabler/icons-react";
 
 const env = import.meta.env;
+const latCookie = Astro.cookies.get("lat");
+const lonCookie = Astro.cookies.get("lon");
+
+const lat = latCookie?.value;
+const lon = lonCookie?.value;
+
+console.log("lat", lat);
+console.log("lon", lon);
+
+if (!lat || !lon) {
+	return Astro.redirect("/setup");
+}
+
 let res = await fetch(
-	`https://api.openweathermap.org/data/2.5/weather?lat=51.264018&lon=7.1780374&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
+	`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
 );
 const currentWeather = await res.json();
 
@@ -37,12 +48,12 @@ const currentDate = time.toLocaleDateString("de-DE", {
 });
 
 res = await fetch(
-	`https://api.openweathermap.org/data/2.5/forecast/daily?lat=51.264018&lon=7.1780374&cnt=8&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
+	`https://api.openweathermap.org/data/2.5/forecast/daily?lat=${lat}&lon=${lon}&cnt=8&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
 );
 const weeklyWeather = await res.json();
 
 res = await fetch(
-	`https://api.openweathermap.org/data/2.5/forecast/hourly?lat=51.264018&lon=7.1780374&cnt=24&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
+	`https://api.openweathermap.org/data/2.5/forecast/hourly?lat=${lat}&lon=${lon}&cnt=24&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
 );
 const hourlyWeather = await res.json();
 
@@ -60,9 +71,8 @@ const hourlyPrecipitation = hourlyWeather.list.map((h) => {
 	}
 });
 
-const oneCallApiKey = "5796abbde9106b7da4febfae8c44c232";
 res = await fetch(
-	`https://api.openweathermap.org/data/2.5/onecall?lat=51.26401&lon=7.1780374&units=metric&appid=${oneCallApiKey}`
+	`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=metric&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
 );
 const oneCall = await res.json();
 
@@ -181,7 +191,7 @@ const darkColors = [
 						},
 					]}>
 					<div class="flex flex-col items-center">
-						<div class="text-xl font-bold">Wuppertal, NRW</div>
+						<div class="text-xl font-bold">{currentWeather.name}, {currentWeather.sys.country}</div>
 						<div class="text-xl">
 							{currentDate}
 						</div>
