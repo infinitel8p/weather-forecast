@@ -170,23 +170,6 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
               color: "#1d293d",
             },
           },
-          "y-precip": {
-            min: 0,
-            type: "linear",
-            position: "right",
-            grid: {
-              drawOnChartArea: false,
-            },
-            ticks: {
-              color: "rgba(54, 162, 235, 1)",
-              font: {
-                size: 20,
-              },
-              callback: function (value) {
-                return value + "mm";
-              },
-            },
-          },
           "y-uvi": {
             min: 0,
             type: "linear",
@@ -201,6 +184,23 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
               },
               callback: function (value) {
                 return value;
+              },
+            },
+          },
+          "y-precip": {
+            min: 0,
+            type: "linear",
+            position: "right",
+            grid: {
+              drawOnChartArea: false,
+            },
+            ticks: {
+              color: "rgba(54, 162, 235, 1)",
+              font: {
+                size: 20,
+              },
+              callback: function (value) {
+                return value + "mm";
               },
             },
           },
