@@ -325,11 +325,16 @@ const darkColors = [
 						<div
 							class="flex flex-col justify-center items-center w-full">
 							UV-Index:
-							<span class="text-4xl font-bold">
+							<span class:list={["text-4xl font-bold", {
+								"text-red-600": oneCall.current.uvi >= 11,
+								"text-red-400": oneCall.current.uvi >= 8,
+								"text-orange-500": oneCall.current.uvi >= 6,
+								"text-yellow-500": oneCall.current.uvi >= 3,
+								}
+							]}>
 								{Math.round(oneCall.current.uvi)}
 							</span>
 						</div>
-						<!-- 1-2 Niedrig | 3-5 Mittel, 6-7 Hoch | 8-10 Sehr hoch, 11+ Extrem -->
 					</div>
 					<div class="flex items-center">
 						<span><IconBinoculars size={48} /></span>
