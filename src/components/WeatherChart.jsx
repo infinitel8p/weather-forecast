@@ -10,38 +10,25 @@ Chart.register(...registerables, ChartDataLabels, annotationPlugin);
 
 export default function WeatherChart({ labels, temperatureData, precipitationData, uviData, textColor, sunrise, sunset }) {
   const canvasRef = useRef(null);
-  
-
-function timeToMinutes(t) {
-  const [h, m] = t.split(':').map(Number);
-  return h * 60 + m;
-}
-
-let updatedLabels = [...labels, sunrise, sunset];
-updatedLabels.sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
-
-function insertPlaceholders(labels, fullLabels, dataArray) {
-  return fullLabels.map(label => {
-    const index = labels.indexOf(label);
-    return index !== -1 ? dataArray[index] : null;
-  });
-}
-
-const updatedTemperatureData = insertPlaceholders(labels, updatedLabels, temperatureData);
-const updatedPrecipitationData = insertPlaceholders(labels, updatedLabels, precipitationData);
-const updatedUviData = insertPlaceholders(labels, updatedLabels, uviData);
 
   useEffect(() => {
     const ctx = canvasRef.current.getContext("2d");
 
+    function roundToNearestHour(timeStr) {
+      const [h, m] = timeStr.split(":").map(Number);
+      const roundedHour = m >= 30 ? h + 1 : h;
+      return String(roundedHour).padStart(2, "0") + ":00";
+    }
+    
+
     new Chart(ctx, {
       type: "line",
       data: {
-        labels: updatedLabels,
+        labels,
         datasets: [
           {
             label: "Temperatur (°C)",
-            data: updatedTemperatureData,
+            data: temperatureData,
             borderColor: "rgba(255, 99, 132, 1)",
             backgroundColor: "rgba(255, 99, 132, 0.2)",
             yAxisID: "y-temp",
@@ -52,7 +39,7 @@ const updatedUviData = insertPlaceholders(labels, updatedLabels, uviData);
           },
           {
             label: "Niederschlag (mm)",
-            data: updatedPrecipitationData,
+            data: precipitationData,
             borderColor: "rgba(54, 162, 235, 1)",
             backgroundColor: "rgba(54, 162, 235, 0.2)",
             yAxisID: "y-precip",
@@ -63,7 +50,7 @@ const updatedUviData = insertPlaceholders(labels, updatedLabels, uviData);
           },
           {
             label: "UV Index",
-            data: updatedUviData,
+            data: uviData,
             borderColor: "rgba(255, 205, 86, 1)",
             backgroundColor: "rgba(255, 205, 86, 0.2)",
             yAxisID: "y-uvi",
@@ -72,6 +59,19 @@ const updatedUviData = insertPlaceholders(labels, updatedLabels, uviData);
             pointRadius: 1,
             pointBackgroundColor: "rgba(255, 205, 86, 1)",
           },
+          {
+            label: "Sonnenaufgang",
+            borderColor: "#FFB300",
+            backgroundColor: "rgba(255, 179, 0, 0.2)", 
+            yAxisID: "y-uvi",
+          },
+          {
+            label: "Sonnenuntergang",
+            borderColor: "#1E90FF",
+            backgroundColor: "rgba(30, 144, 255, 0.2)",
+            yAxisID: "y-uvi",
+          },
+          
         ],
       },
       options: {
@@ -114,6 +114,24 @@ const updatedUviData = insertPlaceholders(labels, updatedLabels, uviData);
             align: "center",
             formatter: (value) => value,
           },
+          annotation: {
+            annotations: {
+              verticalLine13: {
+                type: "line",
+                scaleID: 'x',
+                value: roundToNearestHour(sunrise),
+                borderColor: '#FFB300',
+                borderWidth: 2,
+              },
+              verticalLine14: {
+                type: 'line',
+                scaleID: 'x',
+                value: roundToNearestHour(sunset),
+                borderColor: '#1E90FF',
+                borderWidth: 2,
+              },
+            }
+          }
         },
         scales: {
           x: {
@@ -128,12 +146,9 @@ const updatedUviData = insertPlaceholders(labels, updatedLabels, uviData);
                 weight: "bold",
               },
               callback: function (val, index) {
-                const label = this.getLabelForValue(val);
-                if (label === sunrise) return 'Tag';
-                if (label === sunset) return 'Nacht';
-                const [h, m] = label.split(":");
-                return h % 2 === 0 ? label : "";
-              }
+                // Show every second label (0-based index)
+                return index % 2 === 0 ? this.getLabelForValue(val) : '';
+              },
             },
             grid: {
               color: "#1d293d",
