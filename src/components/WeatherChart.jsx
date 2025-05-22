@@ -10,37 +10,38 @@ Chart.register(...registerables, ChartDataLabels, annotationPlugin);
 
 export default function WeatherChart({ labels, temperatureData, precipitationData, uviData, textColor, sunrise, sunset }) {
   const canvasRef = useRef(null);
-  console.log("sunrise:", sunrise);  // e.g., "06:00"
-  console.log("sunset:", sunset);    // e.g., "20:15"
+  
 
+function timeToMinutes(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+let updatedLabels = [...labels, sunrise, sunset];
+updatedLabels.sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
+
+function insertPlaceholders(labels, fullLabels, dataArray) {
+  return fullLabels.map(label => {
+    const index = labels.indexOf(label);
+    return index !== -1 ? dataArray[index] : null;
+  });
+}
+
+const updatedTemperatureData = insertPlaceholders(labels, updatedLabels, temperatureData);
+const updatedPrecipitationData = insertPlaceholders(labels, updatedLabels, precipitationData);
+const updatedUviData = insertPlaceholders(labels, updatedLabels, uviData);
 
   useEffect(() => {
     const ctx = canvasRef.current.getContext("2d");
 
-    const getTimePositionIndex = (timeStr) => {
-      const [targetHour, targetMin] = timeStr.split(":").map(Number);
-
-      for (let i = 0; i < labels.length - 1; i++) {
-        const [currHour] = labels[i].split(":").map(Number);
-        const [nextHour] = labels[i + 1].split(":").map(Number);
-
-        if (targetHour >= currHour && targetHour < nextHour) {
-          const fraction = (targetHour + targetMin / 60 - currHour) / (nextHour - currHour);
-          return i + fraction;
-        }
-      }
-      return labels.length - 1; // fallback if not found
-    };
-    
-
     new Chart(ctx, {
       type: "line",
       data: {
-        labels,
+        labels: updatedLabels,
         datasets: [
           {
             label: "Temperatur (°C)",
-            data: temperatureData,
+            data: updatedTemperatureData,
             borderColor: "rgba(255, 99, 132, 1)",
             backgroundColor: "rgba(255, 99, 132, 0.2)",
             yAxisID: "y-temp",
@@ -51,7 +52,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
           },
           {
             label: "Niederschlag (mm)",
-            data: precipitationData,
+            data: updatedPrecipitationData,
             borderColor: "rgba(54, 162, 235, 1)",
             backgroundColor: "rgba(54, 162, 235, 0.2)",
             yAxisID: "y-precip",
@@ -62,7 +63,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
           },
           {
             label: "UV Index",
-            data: uviData,
+            data: updatedUviData,
             borderColor: "rgba(255, 205, 86, 1)",
             backgroundColor: "rgba(255, 205, 86, 0.2)",
             yAxisID: "y-uvi",
@@ -112,7 +113,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             },
             align: "center",
             formatter: (value) => value,
-          }
+          },
         },
         scales: {
           x: {
@@ -127,9 +128,12 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
                 weight: "bold",
               },
               callback: function (val, index) {
-                // Show every second label (0-based index)
-                return index % 2 === 0 ? this.getLabelForValue(val) : '';
-              },
+                const label = this.getLabelForValue(val);
+                if (label === sunrise) return 'Tag';
+                if (label === sunset) return 'Nacht';
+                const [h, m] = label.split(":");
+                return h % 2 === 0 ? label : "";
+              }
             },
             grid: {
               color: "#1d293d",
@@ -186,47 +190,6 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             },
           },
         },
-        annotation: {
-          annotations: {
-            sunrise: {
-              type: 'line',
-              xMin: getTimePositionIndex(sunrise),
-              xMax: getTimePositionIndex(sunrise),
-              borderColor: 'orange',
-              borderWidth: 2,
-              label: {
-                content: '🌅 Sunrise',
-                enabled: true,
-                position: 'start',
-                color: 'orange',
-                backgroundColor: 'transparent',
-                font: {
-                  size: 12,
-                  weight: 'bold',
-                }
-              }
-            },
-            sunset: {
-              type: 'line',
-              xMin: getTimePositionIndex(sunset),
-              xMax: getTimePositionIndex(sunset),
-              borderColor: 'purple',
-              borderWidth: 2,
-              label: {
-                content: '🌇 Sunset',
-                enabled: true,
-                position: 'start',
-                color: 'purple',
-                backgroundColor: 'black',
-                font: {
-                  size: 12,
-                  weight: 'bold',
-                }
-              }
-            }
-          }
-        },
-        
       },
     });
   }, []);
