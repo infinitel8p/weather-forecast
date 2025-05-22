@@ -5,7 +5,7 @@ The project is built for a Raspberry Pi 5" screen. It includes a custom 3d-print
 
 💻 live preview! [weather.infinitel8p.com](https://weather.infinitel8p.com//)
 
-![image](https://github.com/user-attachments/assets/a86152aa-5d68-4321-a5f9-71f383fe5332)
+![weather infinitel8p com_](https://github.com/user-attachments/assets/0e4e5e23-dbac-44fd-972b-9a8ec9fdc4d2)
 
 #### Contents:
 - [weather-forecast](#weather-forecast)
@@ -29,6 +29,7 @@ npm install
 ```
 
 ## 3D-printed case
+![WhatsApp Image 2025-05-21 at 07 21 03](https://github.com/user-attachments/assets/b5b318ca-4eb3-44ab-b2b0-eb1675a0d4fa)
 
 The case is designed to fit a Raspberry Pi 5" screen. The design files are available on MakerWorld.
 - [MakerWorld](https://makerworld.com/de/models/1438574-weather-dashboard-raspberry-pi-5-screen#profileId-1496923)
