@@ -4,14 +4,34 @@ import {
   registerables
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import annotationPlugin from 'chartjs-plugin-annotation';
 
-Chart.register(...registerables, ChartDataLabels);
+Chart.register(...registerables, ChartDataLabels, annotationPlugin);
 
-export default function WeatherChart({ labels, temperatureData, precipitationData, uviData, textColor }) {
+export default function WeatherChart({ labels, temperatureData, precipitationData, uviData, textColor, sunrise, sunset }) {
   const canvasRef = useRef(null);
+  console.log("sunrise:", sunrise);  // e.g., "06:00"
+  console.log("sunset:", sunset);    // e.g., "20:15"
+
 
   useEffect(() => {
     const ctx = canvasRef.current.getContext("2d");
+
+    const getTimePositionIndex = (timeStr) => {
+      const [targetHour, targetMin] = timeStr.split(":").map(Number);
+
+      for (let i = 0; i < labels.length - 1; i++) {
+        const [currHour] = labels[i].split(":").map(Number);
+        const [nextHour] = labels[i + 1].split(":").map(Number);
+
+        if (targetHour >= currHour && targetHour < nextHour) {
+          const fraction = (targetHour + targetMin / 60 - currHour) / (nextHour - currHour);
+          return i + fraction;
+        }
+      }
+      return labels.length - 1; // fallback if not found
+    };
+    
 
     new Chart(ctx, {
       type: "line",
@@ -63,21 +83,29 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
         plugins: {
           legend: {
             labels: {
-              color: "#020618",
+              color: (() => {
+                const [hourStr] = labels[0].split(":");
+                const hour = parseInt(hourStr, 10);
+                return (hour >= 23 || hour < 7) ? "#ffffff" : "#020618";
+              })(),
               font: {
                 size: 12,
               },
             },
           },
           tooltip: {
-            backgroundColor: "#1e293b",
-            titleColor: "#020618",
-            bodyColor: "#020618",
+            backgroundColor: "slategray",
+            titleColor: "white",
+            bodyColor: "white",
             borderColor: "#64748b",
             borderWidth: 1,
           },
           datalabels: {
-            color: "#020618",
+            color: (() => {
+              const [hourStr] = labels[0].split(":");
+              const hour = parseInt(hourStr, 10);
+              return (hour >= 23 || hour < 7) ? "#ffffff" : "#020618";
+            })(),
             font: {
               size: 18,
               weight: 'bold',
@@ -89,7 +117,11 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
         scales: {
           x: {
             ticks: {
-              color: "#020618",
+              color: (() => {
+                const [hourStr] = labels[0].split(":");
+                const hour = parseInt(hourStr, 10);
+                return (hour >= 23 || hour < 7) ? "#ffffff" : "#020618";
+              })(),
               font: {
                 size: 18,
                 weight: "bold",
@@ -154,6 +186,47 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             },
           },
         },
+        annotation: {
+          annotations: {
+            sunrise: {
+              type: 'line',
+              xMin: getTimePositionIndex(sunrise),
+              xMax: getTimePositionIndex(sunrise),
+              borderColor: 'orange',
+              borderWidth: 2,
+              label: {
+                content: '🌅 Sunrise',
+                enabled: true,
+                position: 'start',
+                color: 'orange',
+                backgroundColor: 'transparent',
+                font: {
+                  size: 12,
+                  weight: 'bold',
+                }
+              }
+            },
+            sunset: {
+              type: 'line',
+              xMin: getTimePositionIndex(sunset),
+              xMax: getTimePositionIndex(sunset),
+              borderColor: 'purple',
+              borderWidth: 2,
+              label: {
+                content: '🌇 Sunset',
+                enabled: true,
+                position: 'start',
+                color: 'purple',
+                backgroundColor: 'black',
+                font: {
+                  size: 12,
+                  weight: 'bold',
+                }
+              }
+            }
+          }
+        },
+        
       },
     });
   }, []);

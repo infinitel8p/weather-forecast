@@ -24,9 +24,6 @@ const lonCookie = Astro.cookies.get("lon");
 const lat = latCookie?.value;
 const lon = lonCookie?.value;
 
-console.log("lat", lat);
-console.log("lon", lon);
-
 if (!lat || !lon) {
 	return Astro.redirect("/setup");
 }
@@ -191,7 +188,9 @@ const darkColors = [
 						},
 					]}>
 					<div class="flex flex-col items-center">
-						<div class="text-xl font-bold">{currentWeather.name}, {currentWeather.sys.country}</div>
+						<div class="text-xl font-bold">
+							{currentWeather.name}, {currentWeather.sys.country}
+						</div>
 						<div class="text-xl">
 							{currentDate}
 						</div>
@@ -375,6 +374,8 @@ const darkColors = [
 					temperatureData={hourlyTemperatures}
 					precipitationData={hourlyPrecipitation}
 					uviData={hourlyUVIndex}
+					sunrise={formatToBerlinTime(currentWeather.sys.sunrise)}
+					sunset={formatToBerlinTime(currentWeather.sys.sunset)}
 					textColor={isNight
 						? darkColors[
 								Math.floor(Math.random() * darkColors.length)
