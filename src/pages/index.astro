@@ -203,8 +203,8 @@ const darkColors = [
 						</p>
 					</div>
 					<div
-						class="flex flex-col items-center justify-evenly self-stretch pr-8 -ml-8">
-						<div>
+						class="flex flex-col items-center justify-evenly self-stretch pr-8 -ml-8 text-center">
+						<div class="ml-8 pb-4">
 							<p class="text-9xl font-semibold">
 								{Math.round(currentWeather.main.temp)}°C
 							</p>
@@ -221,7 +221,7 @@ const darkColors = [
 						</div>
 						<div
 							class="grid grid-cols-2 text-xl gap-x-8 font-semibold">
-							<div class="flex items-center">
+							<div class="flex items-end gap-4">
 								<span><IconTemperatureMinus size={60} /></span>
 								<div
 									class="flex flex-col justify-center items-center w-full">
@@ -235,7 +235,7 @@ const darkColors = [
 									</span>
 								</div>
 							</div>
-							<div class="flex items-center">
+							<div class="flex items-end gap-4">
 								<span><IconTemperaturePlus size={60} /></span>
 								<div
 									class="flex flex-col justify-center items-center w-full">
@@ -325,13 +325,20 @@ const darkColors = [
 						<div
 							class="flex flex-col justify-center items-center w-full">
 							UV-Index:
-							<span class:list={["text-4xl font-bold", {
-								"text-red-600": oneCall.current.uvi >= 11,
-								"text-red-400": oneCall.current.uvi >= 8,
-								"text-orange-500": oneCall.current.uvi >= 6,
-								"text-yellow-500": oneCall.current.uvi >= 3,
-								}
-							]}>
+							<span
+								class:list={[
+									"text-4xl font-bold",
+									{
+										"text-red-600":
+											oneCall.current.uvi >= 11,
+										"text-red-400":
+											oneCall.current.uvi >= 8,
+										"text-orange-500":
+											oneCall.current.uvi >= 6,
+										"text-yellow-500":
+											oneCall.current.uvi >= 3,
+									},
+								]}>
 								{Math.round(oneCall.current.uvi)}
 							</span>
 						</div>
@@ -365,7 +372,7 @@ const darkColors = [
 
 			<section
 				class:list={[
-					"w-full flex items-center justify-center shadow-md rounded-lg p-8 max-w-[1475px] mx-auto backdrop-blur-lg backdrop-saturate-150 border",
+					"w-full flex items-center justify-center shadow-md rounded-lg px-8 py-3 max-w-[1475px] mx-auto backdrop-blur-lg backdrop-saturate-150 border",
 					{
 						[`bg-[rgba(17,25,39,0.5)] border-white/10 ${darkColors[Math.floor(Math.random() * colors.length)]}`]:
 							isNight,

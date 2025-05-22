@@ -36,6 +36,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             fill: true,
             pointRadius: 1,
             pointBackgroundColor: "rgba(255, 99, 132, 1)",
+            
           },
           {
             label: "Niederschlag (mm)",
@@ -142,7 +143,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
                 return (hour >= 23 || hour < 7) ? "#ffffff" : "#020618";
               })(),
               font: {
-                size: 18,
+                size: 24,
                 weight: "bold",
               },
               callback: function (val, index) {
@@ -160,7 +161,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             ticks: {
               color: "rgba(255, 99, 132, 1)",
               font : {
-                size: 20,
+                size: 24,
               },
               callback: function (value) {
                 return value + "°C";
@@ -197,7 +198,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             ticks: {
               color: "rgba(54, 162, 235, 1)",
               font: {
-                size: 20,
+                size: 24,
               },
               callback: function (value) {
                 return value + "mm";
@@ -214,7 +215,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
       style={{
         position: "relative",
         width: "100%",
-        height: "200px",
+        height: "240px",
       }}
     >
       <canvas ref={canvasRef}></canvas>
