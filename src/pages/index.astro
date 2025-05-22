@@ -174,7 +174,7 @@ const darkColors = [
 		}}>
 		<div class="flex flex-col gap-4 w-full">
 			<section
-				class="grid grid-cols-2 max-w-[1475px] items-center gap-4 mt-8 mx-auto">
+				class="grid grid-cols-2 max-w-[1475px] items-center gap-4 mt-5 mx-auto">
 				<div
 					class:list={[
 						"flex items-center gap-16 shadow-md rounded-lg p-8 backdrop-blur-lg backdrop-saturate-150 border",
@@ -198,7 +198,7 @@ const darkColors = [
 							class="size-100 drop-shadow-md object-contain -my-24"
 							src=`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@4x.png`
 						/>
-						<p class="text-4xl font-semibold">
+						<p class="text-4xl font-semibold text-center">
 							{currentWeather.weather[0].description}
 						</p>
 					</div>
@@ -222,7 +222,7 @@ const darkColors = [
 						<div
 							class="grid grid-cols-2 text-xl gap-x-8 font-semibold">
 							<div class="flex items-center">
-								<span><IconTemperatureMinus size={48} /></span>
+								<span><IconTemperatureMinus size={60} /></span>
 								<div
 									class="flex flex-col justify-center items-center w-full">
 									Min:
@@ -236,7 +236,7 @@ const darkColors = [
 								</div>
 							</div>
 							<div class="flex items-center">
-								<span><IconTemperaturePlus size={48} /></span>
+								<span><IconTemperaturePlus size={60} /></span>
 								<div
 									class="flex flex-col justify-center items-center w-full">
 									Max:
@@ -254,7 +254,7 @@ const darkColors = [
 				</div>
 				<div
 					class:list={[
-						"grid grid-cols-2 grid-rows-4 text-lg font-semibold gap-x-16 gap-y-4mx-auto shadow-md rounded-lg p-8 backdrop-blur-lg backdrop-saturate-150 border pl-24 h-full",
+						"grid grid-cols-2 grid-rows-4 text-lg font-semibold gap-x-16 gap-y-4 shadow-md rounded-lg p-8 backdrop-blur-lg backdrop-saturate-150 border pl-24 h-full",
 						{
 							[`bg-[rgba(17,25,39,0.5)] border-white/10 text-slate-100`]:
 								// ${darkColors[Math.floor(Math.random() * colors.length)]}
@@ -264,8 +264,8 @@ const darkColors = [
 								!isNight,
 						},
 					]}>
-					<div class="flex items-center text-center">
-						<span><IconSunrise size={48} /></span>
+					<div class="flex items-end text-center">
+						<span><IconSunrise size={60} /></span>
 						<div
 							class="flex flex-col justify-center items-center w-full">
 							Sonnenaufgang:
@@ -274,8 +274,8 @@ const darkColors = [
 							</span>
 						</div>
 					</div>
-					<div class="flex items-center">
-						<span><IconSunset size={48} /></span>
+					<div class="flex items-end">
+						<span><IconSunset size={60} /></span>
 						<div
 							class="flex flex-col justify-center items-center w-full">
 							Sonnenuntergang:
@@ -284,8 +284,8 @@ const darkColors = [
 							</span>
 						</div>
 					</div>
-					<div class="flex items-center">
-						<span><IconWindsockFilled size={48} /></span>
+					<div class="flex items-end">
+						<span><IconWindsockFilled size={60} /></span>
 						<div
 							class="flex flex-col justify-center items-center w-full">
 							Wind:
@@ -296,8 +296,8 @@ const darkColors = [
 							</span>
 						</div>
 					</div>
-					<div class="flex items-center">
-						<span><IconDroplet size={48} /></span>
+					<div class="flex items-end">
+						<span><IconDroplet size={60} /></span>
 						<div
 							class="flex flex-col justify-center items-center w-full">
 							Luftfeuchtigkeit:
@@ -308,8 +308,8 @@ const darkColors = [
 							</span>
 						</div>
 					</div>
-					<div class="flex items-center">
-						<span><IconGauge size={48} /></span>
+					<div class="flex items-end">
+						<span><IconGauge size={60} /></span>
 						<div
 							class="flex flex-col justify-center items-center w-full">
 							Luftdruck:
@@ -320,8 +320,8 @@ const darkColors = [
 							</span>
 						</div>
 					</div>
-					<div class="flex items-center">
-						<span><IconUvIndex size={48} /></span>
+					<div class="flex items-end">
+						<span><IconUvIndex size={60} /></span>
 						<div
 							class="flex flex-col justify-center items-center w-full">
 							UV-Index:
@@ -336,8 +336,8 @@ const darkColors = [
 							</span>
 						</div>
 					</div>
-					<div class="flex items-center">
-						<span><IconBinoculars size={48} /></span>
+					<div class="flex items-end">
+						<span><IconBinoculars size={60} /></span>
 						<div
 							class="flex flex-col justify-center items-center w-full">
 							Sicht:
@@ -348,8 +348,8 @@ const darkColors = [
 							</span>
 						</div>
 					</div>
-					<div class="flex items-center">
-						<span><IconCloud size={48} /></span>
+					<div class="flex items-end">
+						<span><IconCloud size={60} /></span>
 						<div
 							class="flex flex-col justify-center items-center w-full">
 							Wolken:
