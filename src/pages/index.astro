@@ -20,9 +20,11 @@ import {
 const env = import.meta.env;
 const latCookie = Astro.cookies.get("lat");
 const lonCookie = Astro.cookies.get("lon");
+const cityCookie = Astro.cookies.get("city");
 
 const lat = latCookie?.value;
 const lon = lonCookie?.value;
+const city = cityCookie?.value;
 
 if (!lat || !lon) {
 	return Astro.redirect("/setup");
@@ -189,7 +191,7 @@ const darkColors = [
 					]}>
 					<div class="flex flex-col items-center">
 						<div class="text-2xl font-bold">
-							{currentWeather.name}, {currentWeather.sys.country}
+							{city ? city : currentWeather.name}
 						</div>
 						<div class="text-xl font-semibold">
 							{currentDate}

@@ -17,7 +17,6 @@ import Layout from "@/layouts/Layout.astro";
 					name="lat"
 					type="number"
 					step="any"
-					required
 					class="w-full mt-1 p-2 border border-gray-300 rounded"
 				/>
 			</label>
@@ -29,7 +28,20 @@ import Layout from "@/layouts/Layout.astro";
 					name="lon"
 					type="number"
 					step="any"
-					required
+					class="w-full mt-1 p-2 border border-gray-300 rounded"
+				/>
+			</label>
+
+			<!-- or -->
+
+			<hr class="text-gray-300 mt-8" />
+
+			<label class="block">
+				<span class="text-sm font-medium">Stadt/PLZ (City/ZIP)</span>
+				<input
+					id="city"
+					name="city"
+					type="text"
 					class="w-full mt-1 p-2 border border-gray-300 rounded"
 				/>
 			</label>
@@ -49,6 +61,7 @@ import Layout from "@/layouts/Layout.astro";
 
 				const lat = document.getElementById("lat").value;
 				const lon = document.getElementById("lon").value;
+				const other = document.getElementById("city").value;
 
 				// Send data to your API using fetch
 				const res = await fetch("/api/set-location", {
@@ -56,7 +69,7 @@ import Layout from "@/layouts/Layout.astro";
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify({ lat, lon }),
+					body: JSON.stringify({ lat, lon, other }),
 				});
 
 				if (!res.ok) {
@@ -75,3 +88,5 @@ import Layout from "@/layouts/Layout.astro";
 		</script>
 	</main>
 </Layout>
+
+<!-- https://api.openweathermap.org/data/2.5/find?q=42107&appid=41161cd58b0942a968f3a39fe1bd14c3&units=metric -->
