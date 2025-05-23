@@ -188,10 +188,10 @@ const darkColors = [
 						},
 					]}>
 					<div class="flex flex-col items-center">
-						<div class="text-xl font-bold">
+						<div class="text-2xl font-bold">
 							{currentWeather.name}, {currentWeather.sys.country}
 						</div>
-						<div class="text-xl">
+						<div class="text-xl font-semibold">
 							{currentDate}
 						</div>
 						<img
@@ -208,7 +208,8 @@ const darkColors = [
 							<p class="text-9xl font-semibold">
 								{Math.round(currentWeather.main.temp)}°C
 							</p>
-							<p class="text-4xl">
+							<p
+								class="text-4xl font-semibold flex items-baseline gap-2">
 								Gefühlt:
 								<span class="text-5xl font-semibold">
 									{
@@ -254,7 +255,7 @@ const darkColors = [
 				</div>
 				<div
 					class:list={[
-						"grid grid-cols-2 grid-rows-4 text-lg font-semibold gap-x-16 gap-y-4 shadow-md rounded-lg p-8 backdrop-blur-lg backdrop-saturate-150 border pl-24 h-full",
+						"grid grid-cols-2 grid-rows-4 text-lg font-semibold gap-x-16 gap-y-4 shadow-md rounded-lg p-8 backdrop-blur-lg backdrop-saturate-150 border pl-24 h-full text-center",
 						{
 							[`bg-[rgba(17,25,39,0.5)] border-white/10 text-slate-100`]:
 								// ${darkColors[Math.floor(Math.random() * colors.length)]}
@@ -264,7 +265,7 @@ const darkColors = [
 								!isNight,
 						},
 					]}>
-					<div class="flex items-end text-center">
+					<div class="flex items-end">
 						<span><IconSunrise size={60} /></span>
 						<div
 							class="flex flex-col justify-center items-center w-full">

@@ -62,8 +62,8 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
           },
           {
             label: "Sonnenaufgang",
-            borderColor: "#FFB300",
-            backgroundColor: "rgba(255, 179, 0, 0.2)", 
+            borderColor: "#FF6F61",
+            backgroundColor: "rgba(255, 111, 97, 0.2)", 
             yAxisID: "y-uvi",
           },
           {
@@ -121,7 +121,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
                 type: "line",
                 scaleID: 'x',
                 value: roundToNearestHour(sunrise),
-                borderColor: '#FFB300',
+                borderColor: '#FF6F61',
                 borderWidth: 2,
               },
               verticalLine14: {
