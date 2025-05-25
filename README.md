@@ -3,9 +3,7 @@
 weather-forecast is a simple weather dashboard that retrieves data from OpenWeatherMap.
 The project is built for a Raspberry Pi 5" screen. It includes a custom 3d-printed case with stand.
 
-💻 live preview! [weather.infinitel8p.com](https://weather.infinitel8p.com//)
-
-![weather infinitel8p com_](https://github.com/user-attachments/assets/0e4e5e23-dbac-44fd-972b-9a8ec9fdc4d2)
+![screely-1748158650273](https://github.com/user-attachments/assets/32b171c0-3220-4248-b71f-e0fbc3c39fda)
 
 #### Contents:
 - [weather-forecast](#weather-forecast)
