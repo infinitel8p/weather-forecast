@@ -70,10 +70,18 @@ const hourlyPrecipitation = hourlyWeather.list.map((h) => {
 	}
 });
 
-res = await fetch(
-	`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=metric&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
-);
-const oneCall = await res.json();
+let oneCall;
+try {
+	res = await fetch(
+		`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=metric&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
+	);
+	oneCall = await res.json();
+} catch (error) {
+	const fs = await import("fs/promises");
+	const data = await fs.readFile("src/assets/output.json", "utf-8");
+	oneCall = JSON.parse(data);
+}
+
 
 const hourlyUVIndex = oneCall.hourly.slice(1, 25).map((h) => {
 	if (h.uvi) {
