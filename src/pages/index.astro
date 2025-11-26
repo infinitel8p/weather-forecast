@@ -46,23 +46,28 @@ const currentDate = time.toLocaleDateString("de-DE", {
 	hour12: false,
 });
 
+// res = await fetch(
+// 	`https://api.openweathermap.org/data/2.5/forecast/daily?lat=${lat}&lon=${lon}&cnt=8&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
+// );
 res = await fetch(
-	`https://api.openweathermap.org/data/2.5/forecast/daily?lat=${lat}&lon=${lon}&cnt=8&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
+	`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&cnt=8&lang=DE&units=metric&exclude=current,minutely,hourly,alerts&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
 );
 const weeklyWeather = await res.json();
+console.log(weeklyWeather);
 
+// res = await fetch(
+// 	`https://api.openweathermap.org/data/2.5/forecast/hourly?lat=${lat}&lon=${lon}&cnt=24&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
+// );
 res = await fetch(
-	`https://api.openweathermap.org/data/2.5/forecast/hourly?lat=${lat}&lon=${lon}&cnt=24&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
+	`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&cnt=8&lang=DE&units=metric&exclude=current,minutely,daily,alerts&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
 );
 const hourlyWeather = await res.json();
 
-const hourlyChartLabels = hourlyWeather.list.map((h) =>
+const hourlyChartLabels = hourlyWeather.hourly.map((h) =>
 	formatToBerlinTime(h.dt)
 );
-const hourlyTemperatures = hourlyWeather.list.map((h) =>
-	Math.round(h.main.temp)
-);
-const hourlyPrecipitation = hourlyWeather.list.map((h) => {
+const hourlyTemperatures = hourlyWeather.hourly.map((h) => Math.round(h.temp));
+const hourlyPrecipitation = hourlyWeather.hourly.map((h) => {
 	if (h.rain) {
 		return h.rain["1h"];
 	} else {
@@ -81,7 +86,6 @@ try {
 	const data = await fs.readFile("src/assets/output.json", "utf-8");
 	oneCall = JSON.parse(data);
 }
-
 
 const hourlyUVIndex = oneCall.hourly.slice(1, 25).map((h) => {
 	if (h.uvi) {
@@ -240,7 +244,7 @@ const darkColors = [
 									<span class="text-4xl font-bold">
 										{
 											Math.round(
-												weeklyWeather.list[0].temp.min
+												weeklyWeather.daily[0].temp.min
 											)
 										}<span class="text-2xl">°C</span>
 									</span>
@@ -254,7 +258,7 @@ const darkColors = [
 									<span class="text-4xl font-bold">
 										{
 											Math.round(
-												weeklyWeather.list[0].temp.max
+												weeklyWeather.daily[0].temp.max
 											)
 										}<span class="text-2xl">°C</span>
 									</span>
@@ -418,7 +422,7 @@ const darkColors = [
 					},
 				]}>
 				{
-					weeklyWeather.list
+					weeklyWeather.daily
 						.slice(1)
 						.map((item) => (
 							<SingleWeatherCard
