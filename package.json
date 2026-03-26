@@ -9,19 +9,19 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/netlify": "^6.6.3",
-    "@astrojs/react": "^4.4.2",
-    "@tabler/icons-react": "^3.35.0",
-    "@tailwindcss/vite": "^4.1.17",
-    "@types/react": "^19.2.7",
+    "@astrojs/netlify": "^7.0.5",
+    "@astrojs/react": "^5.0.2",
+    "@tabler/icons-react": "^3.41.0",
+    "@tailwindcss/vite": "^4.2.2",
+    "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "astro": "^5.18.1",
+    "astro": "^6.1.1",
     "chart.js": "^4.5.1",
     "chartjs-plugin-annotation": "^3.1.0",
     "chartjs-plugin-datalabels": "^2.2.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "tailwindcss": "^4.1.17",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwindcss": "^4.2.2",
     "weather-forecast": "file:"
   }
 }
