@@ -8,7 +8,7 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 
 Chart.register(...registerables, ChartDataLabels, annotationPlugin);
 
-export default function WeatherChart({ labels, temperatureData, precipitationData, uviData, textColor, sunrise, sunset }) {
+export default function WeatherChart({ labels, temperatureData, precipitationData, uviData, sunrise, sunset }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -19,7 +19,6 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
       const roundedHour = m >= 30 ? h + 1 : h;
       return String(roundedHour).padStart(2, "0") + ":00";
     }
-    
 
     new Chart(ctx, {
       type: "line",
@@ -27,52 +26,38 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
         labels,
         datasets: [
           {
-            label: "Temperatur (°C)",
+            label: "Temp °C",
             data: temperatureData,
-            borderColor: "rgba(255, 99, 132, 1)",
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            borderColor: "rgba(248, 113, 113, 0.7)",
+            backgroundColor: "rgba(248, 113, 113, 0.06)",
             yAxisID: "y-temp",
             tension: 0.4,
             fill: true,
-            pointRadius: 1,
-            pointBackgroundColor: "rgba(255, 99, 132, 1)",
-            
+            pointRadius: 0.75,
+            borderWidth: 1.5,
           },
           {
-            label: "Niederschlag (mm)",
+            label: "Regen mm",
             data: precipitationData,
-            borderColor: "rgba(54, 162, 235, 1)",
-            backgroundColor: "rgba(54, 162, 235, 0.2)",
+            borderColor: "rgba(56, 189, 168, 0.6)",
+            backgroundColor: "rgba(56, 189, 168, 0.06)",
             yAxisID: "y-precip",
             tension: 0.4,
             fill: true,
-            pointRadius: 1,
-            pointBackgroundColor: "rgba(54, 162, 235, 1)",
+            pointRadius: 0.75,
+            borderWidth: 1.5,
           },
           {
-            label: "UV Index",
+            label: "UV",
             data: uviData,
-            borderColor: "rgba(255, 205, 86, 1)",
-            backgroundColor: "rgba(255, 205, 86, 0.2)",
+            borderColor: "rgba(250, 204, 21, 0.5)",
+            backgroundColor: "rgba(250, 204, 21, 0.04)",
             yAxisID: "y-uvi",
             tension: 0.4,
             fill: true,
-            pointRadius: 1,
-            pointBackgroundColor: "rgba(255, 205, 86, 1)",
+            pointRadius: 0.75,
+            borderWidth: 1,
           },
-          {
-            label: "Sonnenaufgang",
-            borderColor: "#FF6F61",
-            backgroundColor: "rgba(255, 111, 97, 0.2)", 
-            yAxisID: "y-uvi",
-          },
-          {
-            label: "Sonnenuntergang",
-            borderColor: "#1E90FF",
-            backgroundColor: "rgba(30, 144, 255, 0.2)",
-            yAxisID: "y-uvi",
-          },
-          
         ],
       },
       options: {
@@ -84,100 +69,107 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
         },
         plugins: {
           legend: {
+            display: true,
+            position: "top",
+            align: "end",
             labels: {
-              color: (() => {
-                const [hourStr] = labels[0].split(":");
-                const hour = parseInt(hourStr, 10);
-                return (hour >= 23 || hour < 7) ? "#ffffff" : "#020618";
-              })(),
-              font: {
-                size: 12,
-              },
+              color: "rgba(204, 251, 241, 0.3)",
+              font: { size: 8, family: "ui-monospace, SFMono-Regular, monospace" },
+              boxWidth: 6,
+              boxHeight: 6,
+              padding: 6,
+              usePointStyle: true,
+              pointStyle: "circle",
             },
           },
           tooltip: {
-            backgroundColor: "slategray",
-            titleColor: "white",
-            bodyColor: "white",
-            borderColor: "#64748b",
+            backgroundColor: "rgba(5, 13, 18, 0.95)",
+            titleColor: "rgba(204, 251, 241, 0.7)",
+            bodyColor: "rgba(204, 251, 241, 0.6)",
+            borderColor: "rgba(56, 189, 168, 0.1)",
             borderWidth: 1,
+            titleFont: { size: 9, family: "ui-monospace, monospace" },
+            bodyFont: { size: 9, family: "ui-monospace, monospace" },
+            padding: 6,
+            cornerRadius: 4,
           },
           datalabels: {
-            color: (() => {
-              const [hourStr] = labels[0].split(":");
-              const hour = parseInt(hourStr, 10);
-              return (hour >= 23 || hour < 7) ? "#ffffff" : "#020618";
-            })(),
-            font: {
-              size: 18,
-              weight: 'bold',
-            },
-            align: "center",
+            display: "auto",
+            color: "rgba(204, 251, 241, 0.5)",
+            font: { size: 7, weight: "bold", family: "ui-monospace, monospace" },
+            align: "top",
+            offset: 2,
+            padding: 0,
             formatter: (value) => value,
           },
           annotation: {
             annotations: {
-              verticalLine13: {
+              sunrise: {
                 type: "line",
-                scaleID: 'x',
+                scaleID: "x",
                 value: roundToNearestHour(sunrise),
-                borderColor: '#FF6F61',
-                borderWidth: 2,
+                borderColor: "rgba(248, 113, 113, 0.2)",
+                borderWidth: 1,
+                borderDash: [2, 3],
+                label: {
+                  display: true,
+                  content: "☀",
+                  position: "start",
+                  font: { size: 8 },
+                  backgroundColor: "transparent",
+                },
               },
-              verticalLine14: {
-                type: 'line',
-                scaleID: 'x',
+              sunset: {
+                type: "line",
+                scaleID: "x",
                 value: roundToNearestHour(sunset),
-                borderColor: '#1E90FF',
-                borderWidth: 2,
+                borderColor: "rgba(56, 189, 168, 0.2)",
+                borderWidth: 1,
+                borderDash: [2, 3],
+                label: {
+                  display: true,
+                  content: "☾",
+                  position: "start",
+                  font: { size: 8 },
+                  backgroundColor: "transparent",
+                },
               },
-            }
-          }
+            },
+          },
         },
         scales: {
           x: {
             ticks: {
-              color: (() => {
-                const [hourStr] = labels[0].split(":");
-                const hour = parseInt(hourStr, 10);
-                return (hour >= 23 || hour < 7) ? "#ffffff" : "#020618";
-              })(),
-              font: {
-                size: 24,
-                weight: "bold",
-              },
+              color: "rgba(204, 251, 241, 0.2)",
+              font: { size: 8, family: "ui-monospace, monospace" },
+              maxRotation: 0,
               callback: function (val, index) {
-                // Show every second label (0-based index)
-                return index % 2 === 0 ? this.getLabelForValue(val) : '';
+                return index % 4 === 0 ? this.getLabelForValue(val) : "";
               },
             },
             grid: {
-              color: "#1d293d",
+              color: "rgba(56, 189, 168, 0.03)",
             },
           },
           "y-temp": {
             type: "linear",
             position: "left",
             ticks: {
-              color: "rgba(255, 99, 132, 1)",
-              font : {
-                size: 24,
-              },
-              callback: function (value) {
-                return value + "°C";
-              },
+              color: "rgba(248, 113, 113, 0.35)",
+              font: { size: 8, family: "ui-monospace, monospace" },
+              callback: (v) => v + "°",
+              maxTicksLimit: 5,
             },
             grid: {
-              color: "#1d293d",
+              color: "rgba(56, 189, 168, 0.03)",
             },
           },
           "y-uvi": {
             min: 0,
             type: "linear",
             position: "right",
-            grid: {
-              drawOnChartArea: false,
-            },
+            display: false,
+            grid: { drawOnChartArea: false },
             ticks: {
               color: "rgba(255, 205, 86, 1)",
               font: {
@@ -196,13 +188,10 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
               drawOnChartArea: false,
             },
             ticks: {
-              color: "rgba(54, 162, 235, 1)",
-              font: {
-                size: 24,
-              },
-              callback: function (value) {
-                return value + "mm";
-              },
+              color: "rgba(56, 189, 168, 0.25)",
+              font: { size: 8, family: "ui-monospace, monospace" },
+              callback: (v) => v + "mm",
+              maxTicksLimit: 4,
             },
           },
         },
@@ -211,13 +200,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
   }, []);
 
   return (
-    <div
-      style={{
-        position: "relative",
-        width: "100%",
-        height: "240px",
-      }}
-    >
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <canvas ref={canvasRef}></canvas>
     </div>
   );

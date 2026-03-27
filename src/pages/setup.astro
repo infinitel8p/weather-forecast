@@ -1,90 +1,494 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import { IconArrowRight, IconRadar2 } from "@tabler/icons-react";
+
+// Precompute outer tick marks (every 30°)
+const ticks = [...Array(12)].map((_, i) => {
+	const a = (i * 30 * Math.PI) / 180;
+	const r1 = 178;
+	const r2 = 188;
+	return {
+		x1: 200 + r1 * Math.sin(a),
+		y1: 200 - r1 * Math.cos(a),
+		x2: 200 + r2 * Math.sin(a),
+		y2: 200 - r2 * Math.cos(a),
+	};
+});
+
+// Small ticks every 10° (skip 30° positions)
+const smallTicks = [...Array(36)]
+	.map((_, i) => {
+		if (i % 3 === 0) return null;
+		const a = (i * 10 * Math.PI) / 180;
+		const r1 = 181;
+		const r2 = 186;
+		return {
+			x1: 200 + r1 * Math.sin(a),
+			y1: 200 - r1 * Math.cos(a),
+			x2: 200 + r2 * Math.sin(a),
+			y2: 200 - r2 * Math.cos(a),
+		};
+	})
+	.filter(Boolean);
 ---
 
 <Layout>
-	<main
-		class="flex flex-col items-center justify-center h-screen w-full bg-gray-50 text-gray-900">
-		<form
-			id="location-form"
-			class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md space-y-6">
-			<h1 class="text-2xl font-bold">Standort einrichten</h1>
+	<main class="h-screen w-full overflow-hidden bg-[#050d12] flex" id="setup-main">
+		<!-- Left: Doppler radar display -->
+		<div class="relative flex-1 overflow-hidden flex items-center justify-center">
+			<!-- Doppler Radar SVG -->
+			<svg viewBox="-15 -5 430 415" class="w-95 h-95">
+				<defs>
+					<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+						<feGaussianBlur stdDeviation="3" result="blur"/>
+						<feMerge>
+							<feMergeNode in="blur"/>
+							<feMergeNode in="SourceGraphic"/>
+						</feMerge>
+					</filter>
+					<linearGradient id="sweepGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+						<stop offset="0%" stop-color="rgba(56,189,168,0.45)"/>
+						<stop offset="100%" stop-color="rgba(56,189,168,0.03)"/>
+					</linearGradient>
+					<!-- Doppler echo gradient -->
+					<radialGradient id="echoGrad" cx="50%" cy="50%" r="50%">
+						<stop offset="0%" stop-color="rgba(56,189,168,0)"/>
+						<stop offset="40%" stop-color="rgba(56,189,168,0)"/>
+						<stop offset="60%" stop-color="rgba(56,189,168,0.06)"/>
+						<stop offset="80%" stop-color="rgba(45,160,200,0.04)"/>
+						<stop offset="100%" stop-color="rgba(56,189,168,0)"/>
+					</radialGradient>
+				</defs>
 
-			<label class="block">
-				<span class="text-sm font-medium">Breitengrad (Latitude)</span>
-				<input
-					id="lat"
-					name="lat"
-					type="number"
-					step="any"
-					class="w-full mt-1 p-2 border border-gray-300 rounded"
-				/>
-			</label>
+				<!-- Static doppler echo (faint weather pattern) -->
+				<circle cx="200" cy="200" r="180" fill="url(#echoGrad)"/>
 
-			<label class="block">
-				<span class="text-sm font-medium">Längengrad (Longitude)</span>
-				<input
-					id="lon"
-					name="lon"
-					type="number"
-					step="any"
-					class="w-full mt-1 p-2 border border-gray-300 rounded"
-				/>
-			</label>
+				<!-- Outer tick marks every 30° -->
+				{ticks.map((t) => (
+					<line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke="rgba(56,189,168,0.12)" stroke-width="0.8"/>
+				))}
+				<!-- Small ticks every 10° -->
+				{smallTicks.map((t) => (
+					<line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke="rgba(56,189,168,0.06)" stroke-width="0.5"/>
+				))}
 
-			<!-- or -->
+				<!-- Range rings -->
+				<circle cx="200" cy="200" r="40" fill="none" stroke="rgba(56,189,168,0.09)" stroke-width="0.5"/>
+				<circle cx="200" cy="200" r="85" fill="none" stroke="rgba(56,189,168,0.07)" stroke-width="0.5"/>
+				<circle cx="200" cy="200" r="130" fill="none" stroke="rgba(56,189,168,0.05)" stroke-width="0.5"/>
+				<circle cx="200" cy="200" r="180" fill="none" stroke="rgba(56,189,168,0.04)" stroke-width="0.5" stroke-dasharray="2 4"/>
 
-			<hr class="text-gray-300 mt-8" />
+				<!-- Crosshairs -->
+				<line x1="15" y1="200" x2="385" y2="200" stroke="rgba(56,189,168,0.035)" stroke-width="0.5"/>
+				<line x1="200" y1="15" x2="200" y2="385" stroke="rgba(56,189,168,0.035)" stroke-width="0.5"/>
+				<!-- Range intersection ticks -->
+				<line x1="113" y1="198" x2="113" y2="202" stroke="rgba(56,189,168,0.1)" stroke-width="0.5"/>
+				<line x1="287" y1="198" x2="287" y2="202" stroke="rgba(56,189,168,0.1)" stroke-width="0.5"/>
+				<line x1="198" y1="113" x2="202" y2="113" stroke="rgba(56,189,168,0.1)" stroke-width="0.5"/>
+				<line x1="198" y1="287" x2="202" y2="287" stroke="rgba(56,189,168,0.1)" stroke-width="0.5"/>
 
-			<label class="block">
-				<span class="text-sm font-medium">Stadt/PLZ (City/ZIP)</span>
-				<input
-					id="city"
-					name="city"
-					type="text"
-					class="w-full mt-1 p-2 border border-gray-300 rounded"
-				/>
-			</label>
+				<!-- Doppler echoes (revealed by sweep, animated via JS) -->
+				<g id="echo-group" opacity="0"></g>
 
-			<button
-				type="submit"
-				class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700">
-				Speichern & Starten
-			</button>
-		</form>
+				<!-- Sweep arm + trail -->
+				<g id="sweep-group">
+					<path id="sweep-trail" d="" fill="rgba(56,189,168,0.035)"/>
+					<line id="sweep-line" x1="200" y1="200" x2="380" y2="200" stroke="url(#sweepGrad)" stroke-width="1"/>
+				</g>
 
-		<script type="module">
-			const form = document.getElementById("location-form");
+				<!-- Ping rings -->
+				<circle id="ping-1" cx="200" cy="200" r="3" fill="none" stroke="rgba(56,189,168,0.4)" stroke-width="0.5"/>
+				<circle id="ping-2" cx="200" cy="200" r="3" fill="none" stroke="rgba(56,189,168,0.4)" stroke-width="0.5"/>
 
-			form.addEventListener("submit", async (e) => {
-				e.preventDefault();
+				<!-- Station dot with glow -->
+				<circle cx="200" cy="200" r="2.5" fill="rgb(56,189,168)" filter="url(#glow)"/>
 
-				const lat = document.getElementById("lat").value;
-				const lon = document.getElementById("lon").value;
-				const other = document.getElementById("city").value;
+				<!-- Cardinal labels -->
+				<text x="200" y="8" text-anchor="middle" fill="rgba(56,189,168,0.14)" font-size="7" font-family="ui-monospace, monospace">N</text>
+				<text x="396" y="203" text-anchor="end" fill="rgba(56,189,168,0.14)" font-size="7" font-family="ui-monospace, monospace">E</text>
+				<text x="200" y="398" text-anchor="middle" fill="rgba(56,189,168,0.14)" font-size="7" font-family="ui-monospace, monospace">S</text>
+				<text x="2" y="203" text-anchor="start" fill="rgba(56,189,168,0.14)" font-size="7" font-family="ui-monospace, monospace">W</text>
 
-				// Send data to your API using fetch
-				const res = await fetch("/api/set-location", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ lat, lon, other }),
-				});
+				<!-- Range labels -->
+				<text x="200" y="157" text-anchor="middle" fill="rgba(56,189,168,0.08)" font-size="5" font-family="ui-monospace, monospace">50km</text>
+				<text x="200" y="112" text-anchor="middle" fill="rgba(56,189,168,0.08)" font-size="5" font-family="ui-monospace, monospace">100km</text>
+			</svg>
 
-				if (!res.ok) {
-					alert("Fehler beim Speichern der Position");
-					return;
-				}
+			<!-- Corner labels -->
+			<div class="absolute top-4 right-5 font-mono text-[10px] tracking-[0.15em] neon-sign">
+				WEATHER//<span id="neon-flicker" class="neon-sign">FORECAST</span>
+			</div>
+			<div class="absolute top-4 left-5 font-mono text-[9px] text-teal-400/12 tracking-[0.1em]">
+				DOPPLER RADAR
+			</div>
+			<div class="absolute bottom-4 left-5 font-mono text-[10px] text-teal-400/13 leading-relaxed">
+				<div id="coord-lat">51.0504° N</div>
+				<div id="coord-lon">7.1491° E</div>
+			</div>
+		</div>
 
-				// Fullscreen
-				if (document.documentElement.requestFullscreen) {
-					await document.documentElement.requestFullscreen();
-				}
+		<!-- Right: Form panel -->
+		<div class="w-85 h-full bg-[#0a1219] border-l border-teal-400/6 flex flex-col justify-center px-8">
+			<div class="space-y-6">
+				<div class="space-y-1.5">
+					<div class="flex items-center gap-2">
+						<IconRadar2 size={14} className="text-teal-400/30" />
+						<p class="font-mono text-[10px] text-teal-400/35 uppercase tracking-[0.2em]">Konfiguration</p>
+					</div>
+					<h1 class="text-xl font-semibold text-teal-50/90 tracking-tight">Standort</h1>
+				</div>
 
-				// Navigate to homepage
-				window.location.href = "/";
-			});
-		</script>
+				<div class="space-y-3">
+					<div class="grid grid-cols-2 gap-4">
+						<div class="setup-field">
+							<label class="setup-label" for="lat">Lat</label>
+							<input id="lat" name="lat" type="number" step="any" placeholder="51.05" class="setup-input"/>
+							<div class="setup-underline"></div>
+						</div>
+						<div class="setup-field">
+							<label class="setup-label" for="lon">Lon</label>
+							<input id="lon" name="lon" type="number" step="any" placeholder="7.15" class="setup-input"/>
+							<div class="setup-underline"></div>
+						</div>
+					</div>
+
+					<div class="flex items-center gap-3 py-1">
+						<div class="flex-1 h-px bg-teal-400/6"></div>
+						<span class="font-mono text-[9px] text-teal-400/12 uppercase tracking-[0.2em]">oder</span>
+						<div class="flex-1 h-px bg-teal-400/6"></div>
+					</div>
+
+					<div class="setup-field">
+						<label class="setup-label" for="city">Stadt / PLZ</label>
+						<input id="city" name="city" type="text" placeholder="Berlin" class="setup-input"/>
+						<div class="setup-underline"></div>
+					</div>
+				</div>
+
+				<button
+					type="button"
+					id="submit-btn"
+					class="group w-full py-2.5 bg-teal-400/5 border border-teal-400/10 rounded-lg font-mono text-xs text-teal-400/50 uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 hover:bg-teal-400/10 hover:text-teal-400/70 hover:border-teal-400/20">
+					Starten
+					<IconArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-0.5" />
+				</button>
+			</div>
+
+			<a
+				href="https://github.com/infinitel8p"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="absolute bottom-4 font-mono text-[9px] text-teal-400/15 no-underline transition-all duration-500 hover:text-teal-400/40"
+				style="text-shadow: 0 0 8px rgba(56,189,168,0.08);"
+				onmouseenter="this.style.textShadow='0 0 6px rgba(56,189,168,0.2), 0 0 15px rgba(56,189,168,0.1)'"
+				onmouseleave="this.style.textShadow='0 0 8px rgba(56,189,168,0.08)'"
+			>@InfiniteL8p</a>
+		</div>
 	</main>
+
+	<style is:global>
+		.setup-field {
+			position: relative;
+			padding-left: 10px;
+			border-left: 1px solid rgba(56, 189, 168, 0);
+			transition: border-color 0.3s;
+		}
+		.setup-field:focus-within {
+			border-left-color: rgba(56, 189, 168, 0.2);
+		}
+		.setup-label {
+			display: block;
+			font-size: 10px;
+			font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+			color: rgba(56, 189, 168, 0.22);
+			text-transform: uppercase;
+			letter-spacing: 0.12em;
+			margin-bottom: 2px;
+			transition: color 0.3s;
+		}
+		.setup-field:focus-within .setup-label {
+			color: rgba(56, 189, 168, 0.45);
+		}
+		.setup-input {
+			width: 100%;
+			padding: 5px 0;
+			background: transparent;
+			border: none;
+			border-bottom: 1px solid transparent;
+			font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+			font-size: 16px;
+			color: rgba(204, 251, 241, 0.9);
+			outline: none;
+			transition: border-color 0.4s;
+			letter-spacing: 0.03em;
+		}
+		.setup-input::placeholder {
+			color: rgba(56, 189, 168, 0.07);
+			letter-spacing: 0.05em;
+		}
+		.setup-input:focus {
+			border-bottom-color: transparent;
+		}
+		/* Show a faint line only when the field has content */
+		.setup-input:not(:placeholder-shown):not(:focus) {
+			border-bottom-color: rgba(56, 189, 168, 0.06);
+		}
+		.setup-underline {
+			position: absolute;
+			bottom: 0;
+			left: 10px;
+			right: 0;
+			height: 1px;
+			background: linear-gradient(90deg, rgb(56, 189, 168), rgba(45, 160, 200, 0.6));
+			transform: scaleX(0);
+			transform-origin: left;
+			transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+			box-shadow: 0 0 12px rgba(56, 189, 168, 0.2), 0 0 4px rgba(56, 189, 168, 0.1);
+		}
+		.setup-input:focus ~ .setup-underline {
+			transform: scaleX(1);
+		}
+		.setup-input[type="number"]::-webkit-inner-spin-button,
+		.setup-input[type="number"]::-webkit-outer-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+		.setup-input[type="number"] {
+			-moz-appearance: textfield;
+		}
+
+		/* Neon sign */
+		.neon-sign {
+			color: rgba(56, 189, 168, 0.85);
+			text-shadow:
+				0 0 4px rgba(56, 189, 168, 0.4),
+				0 0 12px rgba(56, 189, 168, 0.2),
+				0 0 30px rgba(56, 189, 168, 0.1);
+			transition: opacity 0.05s, text-shadow 0.05s;
+		}
+		.neon-sign.flicker-off {
+			color: rgba(56, 189, 168, 0.12);
+			text-shadow: none;
+		}
+		.neon-sign.flicker-dim {
+			color: rgba(56, 189, 168, 0.35);
+			text-shadow:
+				0 0 2px rgba(56, 189, 168, 0.15);
+		}
+	</style>
+
+	<script>
+		const sweepGroup = document.getElementById("sweep-group");
+		const sweepTrail = document.getElementById("sweep-trail");
+		const ping1 = document.getElementById("ping-1");
+		const ping2 = document.getElementById("ping-2");
+		const echoGroup = document.getElementById("echo-group");
+		const CX = 200;
+		const CY = 200;
+		const R = 180;
+
+		// Coordinate ticker — cycles through real city coordinates
+		const coordLat = document.getElementById("coord-lat");
+		const coordLon = document.getElementById("coord-lon");
+		const locations = [
+			{ lat: 51.0504, latD: "N", lon: 7.1491, lonD: "E" },   // Bergisch Gladbach
+			{ lat: 48.8566, latD: "N", lon: 2.3522, lonD: "E" },   // Paris
+			{ lat: 35.6762, latD: "N", lon: 139.6503, lonD: "E" },  // Tokyo
+			{ lat: 40.7128, latD: "N", lon: 74.0060, lonD: "W" },   // New York
+			{ lat: 55.7558, latD: "N", lon: 37.6173, lonD: "E" },   // Moscow
+			{ lat: 33.8688, latD: "S", lon: 151.2093, lonD: "E" },  // Sydney
+			{ lat: 52.5200, latD: "N", lon: 13.4050, lonD: "E" },   // Berlin
+			{ lat: 64.1466, latD: "N", lon: 21.9426, lonD: "W" },   // Reykjavik
+			{ lat: 1.3521, latD: "N", lon: 103.8198, lonD: "E" },   // Singapore
+			{ lat: 37.5665, latD: "N", lon: 126.9780, lonD: "E" },  // Seoul
+		];
+
+		let coordFrom = locations[0];
+		let coordTo = locations[1];
+		let coordIdx = 1;
+		let coordProgress = 0;
+		const HOLD_TIME = 3;    // seconds to hold before scrolling
+		const SCROLL_TIME = 1.2; // seconds to animate between coordinates
+		let coordTimer = 0;
+		let coordPhase = "hold"; // "hold" or "scroll"
+
+		function updateCoords(dt) {
+			coordTimer += dt;
+
+			if (coordPhase === "hold") {
+				if (coordTimer >= HOLD_TIME) {
+					coordTimer = 0;
+					coordPhase = "scroll";
+					coordFrom = locations[coordIdx];
+					coordIdx = (coordIdx + 1) % locations.length;
+					coordTo = locations[coordIdx];
+				}
+			} else {
+				coordProgress = Math.min(coordTimer / SCROLL_TIME, 1);
+				// Smooth ease in-out
+				const t = coordProgress < 0.5
+					? 4 * coordProgress * coordProgress * coordProgress
+					: 1 - Math.pow(-2 * coordProgress + 2, 3) / 2;
+
+				const lat = coordFrom.lat + (coordTo.lat - coordFrom.lat) * t;
+				const lon = coordFrom.lon + (coordTo.lon - coordFrom.lon) * t;
+				const latD = t > 0.5 ? coordTo.latD : coordFrom.latD;
+				const lonD = t > 0.5 ? coordTo.lonD : coordFrom.lonD;
+
+				coordLat.textContent = `${lat.toFixed(4)}° ${latD}`;
+				coordLon.textContent = `${Math.abs(lon).toFixed(4)}° ${lonD}`;
+
+				if (coordProgress >= 1) {
+					coordTimer = 0;
+					coordPhase = "hold";
+				}
+			}
+		}
+
+		// Neon Wackelkontakt — only "FORECAST" flickers
+		const neonEl = document.getElementById("neon-flicker");
+		let neonTimer = 0;
+		let nextFlicker = 2 + Math.random() * 4;
+
+		function updateNeon(dt) {
+			neonTimer += dt;
+			if (neonTimer < nextFlicker) return;
+
+			const pattern = [];
+			// 2-6 rapid flickers per burst, irregular
+			const flickerCount = 2 + Math.floor(Math.random() * 5);
+
+			let t = 0;
+			for (let i = 0; i < flickerCount; i++) {
+				// Randomize: sometimes off, sometimes dim, varying durations
+				const roll = Math.random();
+				const state = roll < 0.6 ? "flicker-off" : "flicker-dim";
+				const offDuration = 20 + Math.random() * 70;
+				const onDuration = 15 + Math.random() * 80;
+
+				pattern.push({ time: t, state });
+				t += offDuration;
+
+				// Sometimes double-tap: brief on then off again
+				if (Math.random() < 0.3) {
+					pattern.push({ time: t, state: "" });
+					t += 15 + Math.random() * 30;
+					pattern.push({ time: t, state: "flicker-off" });
+					t += 20 + Math.random() * 40;
+				}
+
+				pattern.push({ time: t, state: "" });
+				t += onDuration;
+			}
+
+			for (const step of pattern) {
+				setTimeout(() => {
+					neonEl.classList.remove("flicker-off", "flicker-dim");
+					if (step.state) neonEl.classList.add(step.state);
+				}, step.time);
+			}
+
+			neonTimer = 0;
+			nextFlicker = 2 + Math.random() * 6; // every 2-8s
+		}
+
+		// Generate random doppler echo blobs (weather cells)
+		const echoes = [];
+		for (let i = 0; i < 5; i++) {
+			const echoAngle = Math.random() * 360;
+			const echoDist = 50 + Math.random() * 120;
+			const echoR = 8 + Math.random() * 18;
+			const rad = (echoAngle * Math.PI) / 180;
+			const ex = CX + echoDist * Math.cos(rad);
+			const ey = CY + echoDist * Math.sin(rad);
+			const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+			circle.setAttribute("cx", String(ex));
+			circle.setAttribute("cy", String(ey));
+			circle.setAttribute("r", String(echoR));
+			circle.setAttribute("fill", `rgba(56,189,168,${0.02 + Math.random() * 0.04})`);
+			circle.setAttribute("filter", "url(#glow)");
+			echoGroup.appendChild(circle);
+			echoes.push({ angle: echoAngle, el: circle, baseOpacity: 0.02 + Math.random() * 0.04 });
+		}
+		echoGroup.setAttribute("opacity", "1");
+
+		let lastTime = 0;
+		let angle = 0;
+
+		function animateRadar(timestamp) {
+			const dt = lastTime ? (timestamp - lastTime) / 1000 : 0.016;
+			lastTime = timestamp;
+
+			// Coordinate ticker + neon flicker
+			updateCoords(dt);
+			updateNeon(dt);
+
+			// ~12 seconds per full revolution
+			angle = (angle + dt * 30) % 360;
+
+			// Rotate sweep
+			sweepGroup.setAttribute("transform", `rotate(${angle}, ${CX}, ${CY})`);
+
+			// Trail cone: 35° arc
+			const trailDeg = 35;
+			const startRad = (-trailDeg * Math.PI) / 180;
+			const x1 = CX + R * Math.cos(startRad);
+			const y1 = CY + R * Math.sin(startRad);
+			const x2 = CX + R;
+			const y2 = CY;
+			sweepTrail.setAttribute("d", `M${CX},${CY} L${x1},${y1} A${R},${R} 0 0,1 ${x2},${y2} Z`);
+
+			// Doppler echoes: brighten when sweep passes, then fade
+			for (const echo of echoes) {
+				let diff = ((angle - echo.angle) % 360 + 360) % 360;
+				let brightness;
+				if (diff < 30) {
+					brightness = echo.baseOpacity + 0.08 * (1 - diff / 30);
+				} else {
+					const fade = Math.min((diff - 30) / 300, 1);
+					brightness = echo.baseOpacity * (1 - fade * 0.6);
+				}
+				echo.el.setAttribute("fill", `rgba(56,189,168,${brightness})`);
+			}
+
+			// Ping pulses with cubic ease-out
+			const p1 = (angle % 360) / 360;
+			const p2 = ((angle + 180) % 360) / 360;
+			const ease = (t) => 1 - Math.pow(1 - t, 3);
+
+			ping1.setAttribute("r", String(3 + ease(p1) * 80));
+			ping1.setAttribute("stroke-opacity", String(0.35 * Math.pow(1 - p1, 2)));
+
+			ping2.setAttribute("r", String(3 + ease(p2) * 80));
+			ping2.setAttribute("stroke-opacity", String(0.35 * Math.pow(1 - p2, 2)));
+
+			requestAnimationFrame(animateRadar);
+		}
+
+		requestAnimationFrame(animateRadar);
+
+		// Form submit
+		document.getElementById("submit-btn").addEventListener("click", async () => {
+			const lat = document.getElementById("lat").value;
+			const lon = document.getElementById("lon").value;
+			const other = document.getElementById("city").value;
+
+			const res = await fetch("/api/set-location", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ lat, lon, other }),
+			});
+
+			if (!res.ok) {
+				alert("Fehler beim Speichern der Position");
+				return;
+			}
+
+			if (document.documentElement.requestFullscreen) {
+				await document.documentElement.requestFullscreen();
+			}
+
+			window.location.href = "/";
+		});
+	</script>
 </Layout>

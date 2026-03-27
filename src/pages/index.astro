@@ -5,16 +5,12 @@ import WeatherChart from "@/components/WeatherChart.jsx";
 import {
 	IconSunrise,
 	IconSunset,
-	IconTemperaturePlus,
-	IconTemperatureMinus,
-	IconWindsockFilled,
+	IconWind,
 	IconDroplet,
 	IconGauge,
 	IconUvIndex,
-	IconBinoculars,
+	IconEye,
 	IconCloud,
-	IconRefresh,
-	IconReload,
 } from "@tabler/icons-react";
 
 const env = import.meta.env;
@@ -46,18 +42,11 @@ const currentDate = time.toLocaleDateString("de-DE", {
 	hour12: false,
 });
 
-// res = await fetch(
-// 	`https://api.openweathermap.org/data/2.5/forecast/daily?lat=${lat}&lon=${lon}&cnt=8&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
-// );
 res = await fetch(
 	`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&cnt=8&lang=DE&units=metric&exclude=current,minutely,hourly,alerts&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
 );
 const weeklyWeather = await res.json();
-console.log(weeklyWeather);
 
-// res = await fetch(
-// 	`https://api.openweathermap.org/data/2.5/forecast/hourly?lat=${lat}&lon=${lon}&cnt=24&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
-// );
 res = await fetch(
 	`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&cnt=8&lang=DE&units=metric&exclude=current,minutely,daily,alerts&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
 );
@@ -96,7 +85,7 @@ const hourlyUVIndex = oneCall.hourly.slice(1, 25).map((h) => {
 });
 
 function formatToBerlinTime(unixTimestamp) {
-	const date = new Date(unixTimestamp * 1000); // Convert to ms
+	const date = new Date(unixTimestamp * 1000);
 	return date.toLocaleTimeString("de-DE", {
 		timeZone: "Europe/Berlin",
 		hour: "2-digit",
@@ -106,7 +95,7 @@ function formatToBerlinTime(unixTimestamp) {
 }
 
 function formatToBerlinDate(unixTimestamp) {
-	const date = new Date(unixTimestamp * 1000); // Convert to ms
+	const date = new Date(unixTimestamp * 1000);
 	return date.toLocaleDateString("de-DE", {
 		timeZone: "Europe/Berlin",
 		weekday: "short",
@@ -116,335 +105,168 @@ function formatToBerlinDate(unixTimestamp) {
 function meterToKm(m) {
 	return m / 1000;
 }
-
-// some random color stuff
-const hour = new Date().toLocaleTimeString("de-DE", {
-	timeZone: "Europe/Berlin",
-	hour: "2-digit",
-	hour12: false,
-});
-const hourNumber = parseInt(hour, 10);
-const isNight = hourNumber >= 22 || hourNumber < 6;
-const colors = [
-	"text-red-950",
-	"text-orange-950",
-	"text-amber-950",
-	"text-yellow-950",
-	"text-lime-950",
-	"text-green-950",
-	"text-emerald-950",
-	"text-teal-950",
-	"text-cyan-950",
-	"text-sky-950",
-	"text-blue-950",
-	"text-indigo-950",
-	"text-violet-950",
-	"text-purple-950",
-	"text-fuchsia-950",
-	"text-pink-950",
-	"text-rose-950",
-	"text-slate-950",
-	"text-gray-950",
-	"text-zinc-950",
-	"text-neutral-950",
-	"text-stone-950",
-];
-const darkColors = [
-	"text-red-100",
-	"text-orange-100",
-	"text-amber-100",
-	"text-yellow-100",
-	"text-lime-100",
-	"text-green-100",
-	"text-emerald-100",
-	"text-teal-100",
-	"text-cyan-100",
-	"text-sky-100",
-	"text-blue-100",
-	"text-indigo-100",
-	"text-violet-100",
-	"text-purple-100",
-	"text-fuchsia-100",
-	"text-pink-100",
-	"text-rose-100",
-	"text-slate-100",
-	"text-gray-100",
-	"text-zinc-100",
-	"text-neutral-100",
-	"text-stone-100",
-];
 ---
 
 <Layout>
-	<main
-		class="flex flex-col items-center h-screen w-full"
-		style={{
-			backgroundColor: isNight ? "#111927" : "#fdfdfd",
-			backgroundImage: isNight
-				? `radial-gradient(at 50% 50%, hsl(200, 77%, 50%) 0px, transparent 59%),
-         radial-gradient(at 82% 65%, hsl(218, 39%, 11%) 0px, transparent 55%)`
-				: `radial-gradient(at 50% 50%, hsl(45, 100%, 80%) 0px, transparent 59%),
-         radial-gradient(at 82% 65%, #f5f5f4 0px, transparent 55%)`,
-		}}>
-		<div class="flex flex-col gap-4 w-full">
-			<section
-				class="grid grid-cols-2 max-w-[1475px] items-center gap-4 mt-5 mx-auto">
-				<div
-					class:list={[
-						"flex items-center gap-16 shadow-md rounded-lg p-8 backdrop-blur-lg backdrop-saturate-150 border h-full",
-						{
-							[`bg-[rgba(17,25,39,0.5)] border-white/10 text-slate-100`]:
-								// ${darkColors[Math.floor(Math.random() * colors.length)]}
-								isNight,
-							[`bg-[rgba(245,245,244,0.75)] border-black/10 text-slate-900`]:
-								//  ${colors[Math.floor(Math.random() * colors.length)]}
-								!isNight,
-						},
-					]}>
-					<div class="flex flex-col items-center">
-						<div class="text-2xl font-bold">
-							{city ? city : currentWeather.name}
-						</div>
-						<div class="text-xl font-semibold">
-							{currentDate}
-						</div>
-						<img
-							class="size-100 drop-shadow-md object-contain -my-24"
-							src=`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@4x.png`
-						/>
-						<p class="text-4xl font-semibold text-center">
-							{currentWeather.weather[0].description}
+	<main class="flex flex-col h-screen w-screen overflow-hidden bg-[#050d12] p-2 gap-1.5 relative">
+		<!-- Sonar background -->
+		<svg id="sonar-bg" class="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" style="z-index: 0; opacity: 0.04;">
+			<defs>
+				<radialGradient id="sweep-fade" cx="0" cy="1" r="1">
+					<stop offset="0%" stop-color="rgb(56,189,168)" stop-opacity="0.3" />
+					<stop offset="100%" stop-color="rgb(56,189,168)" stop-opacity="0" />
+				</radialGradient>
+			</defs>
+			<!-- Concentric rings from bottom-left -->
+			<g id="sonar-rings"></g>
+			<!-- Radial grid lines from bottom-left -->
+			<g id="sonar-radials"></g>
+			<!-- Horizontal scan lines -->
+			<g id="sonar-scanlines"></g>
+			<!-- Sweep arm -->
+			<line id="sweep-arm" x1="0" x2="0" y1="0" y2="0" stroke="rgb(56,189,168)" stroke-width="1.5" opacity="0.5" />
+			<!-- Sweep glow trail -->
+			<path id="sweep-trail" fill="url(#sweep-fade)" opacity="0.3" />
+		</svg>
+
+		<!-- Top row -->
+		<div class="flex gap-1.5 shrink-0" style="height: 40%;">
+			<!-- Left: Current weather -->
+			<div class="hud-card flex-1 flex flex-col p-3 relative overflow-hidden">
+				<!-- Header -->
+				<div class="flex items-baseline justify-between">
+					<div>
+						<div class="text-xl font-semibold text-teal-50/90">{city ? city : currentWeather.name}</div>
+						<div class="font-mono text-[11px] text-teal-400/20">{currentDate}</div>
+					</div>
+					<div class="font-mono text-md text-teal-50/50">
+						{Math.round(weeklyWeather.daily[0].temp.min)}° <span class="text-teal-400/20">/</span> {Math.round(weeklyWeather.daily[0].temp.max)}°
+					</div>
+				</div>
+				<!-- Center: icon + temp -->
+				<div class="flex items-center justify-center flex-1">
+					<img
+						class="w-32 h-32 object-contain drop-shadow-[0_0_12px_rgba(56,189,168,0.08)] -mr-2"
+						src=`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@4x.png`
+					/>
+					<div class="flex flex-col items-start">
+						<p class="text-8xl font-bold font-mono text-teal-50/90 leading-none" style="text-shadow: 0 0 25px rgba(56,189,168,0.06);">
+							{Math.round(currentWeather.main.temp)}°
+						</p>
+						<p class="font-mono text-sm text-teal-400/25 mt-1">
+							Gefühlt {Math.round(currentWeather.main.feels_like)}°
 						</p>
 					</div>
-					<div
-						class="flex flex-col items-center justify-evenly self-stretch pr-8 -ml-8 text-center">
-						<div class="ml-8 pb-4">
-							<p class="text-9xl font-semibold">
-								{Math.round(currentWeather.main.temp)}°C
-							</p>
-							<p
-								class="text-4xl font-semibold flex items-baseline gap-2">
-								Gefühlt:
-								<span class="text-5xl font-semibold">
-									{
-										Math.round(
-											currentWeather.main.feels_like
-										)
-									}°C
-								</span>
-							</p>
-						</div>
-						<div
-							class="grid grid-cols-2 text-xl gap-x-8 font-semibold">
-							<div class="flex items-end gap-4">
-								<span><IconTemperatureMinus size={60} /></span>
-								<div
-									class="flex flex-col justify-center items-center w-full">
-									Min:
-									<span class="text-4xl font-bold">
-										{
-											Math.round(
-												weeklyWeather.daily[0].temp.min
-											)
-										}<span class="text-2xl">°C</span>
-									</span>
-								</div>
-							</div>
-							<div class="flex items-end gap-4">
-								<span><IconTemperaturePlus size={60} /></span>
-								<div
-									class="flex flex-col justify-center items-center w-full">
-									Max:
-									<span class="text-4xl font-bold">
-										{
-											Math.round(
-												weeklyWeather.daily[0].temp.max
-											)
-										}<span class="text-2xl">°C</span>
-									</span>
-								</div>
-							</div>
-						</div>
+				</div>
+				<!-- Footer: description -->
+				<p class="text-base font-medium text-teal-50/50 text-center -mt-1">
+					{currentWeather.weather[0].description}
+				</p>
+			</div>
+
+			<!-- Right: Details grid -->
+			<div class="hud-card flex-1 grid grid-cols-2 grid-rows-4 gap-x-2 gap-y-0 px-3 py-2 items-center justify-items-center">
+				<div class="detail-item">
+					<IconSunrise size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">Aufgang</span>
+						<span class="detail-value">{formatToBerlinTime(currentWeather.sys.sunrise)}</span>
 					</div>
 				</div>
-				<div
-					class:list={[
-						"grid grid-cols-2 grid-rows-4 text-lg font-semibold gap-x-16 gap-y-4 shadow-md rounded-lg p-8 backdrop-blur-lg backdrop-saturate-150 border pl-24 h-full text-center",
-						{
-							[`bg-[rgba(17,25,39,0.5)] border-white/10 text-slate-100`]:
-								// ${darkColors[Math.floor(Math.random() * colors.length)]}
-								isNight,
-							[`bg-[rgba(245,245,244,0.75)] border-black/10 text-slate-900`]:
-								//  ${colors[Math.floor(Math.random() * colors.length)]}
-								!isNight,
-						},
-					]}>
-					<div class="flex items-end">
-						<span><IconSunrise size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							Sonnenaufgang:
-							<span class="text-4xl font-bold">
-								{formatToBerlinTime(currentWeather.sys.sunrise)}
-							</span>
-						</div>
-					</div>
-					<div class="flex items-end">
-						<span><IconSunset size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							Sonnenuntergang:
-							<span class="text-4xl font-bold">
-								{formatToBerlinTime(currentWeather.sys.sunset)}
-							</span>
-						</div>
-					</div>
-					<div class="flex items-end">
-						<span><IconWindsockFilled size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							Wind:
-							<span class="text-4xl font-bold">
-								{currentWeather.wind.speed}<span
-									class="text-2xl">m/s</span
-								>
-							</span>
-						</div>
-					</div>
-					<div class="flex items-end">
-						<span><IconDroplet size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							Luftfeuchtigkeit:
-							<span class="text-4xl font-bold">
-								{currentWeather.main.humidity}<span
-									class="text-2xl">%</span
-								>
-							</span>
-						</div>
-					</div>
-					<div class="flex items-end">
-						<span><IconGauge size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							Luftdruck:
-							<span class="text-4xl font-bold">
-								{currentWeather.main.pressure}<span
-									class="text-2xl">hPa</span
-								>
-							</span>
-						</div>
-					</div>
-					<div class="flex items-end">
-						<span><IconUvIndex size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							UV-Index:
-							<span
-								class:list={[
-									"text-4xl font-bold",
-									{
-										"text-red-600":
-											oneCall.current.uvi >= 11,
-										"text-red-400":
-											oneCall.current.uvi >= 8,
-										"text-orange-500":
-											oneCall.current.uvi >= 6,
-										"text-yellow-500":
-											oneCall.current.uvi >= 3,
-									},
-								]}>
-								{Math.round(oneCall.current.uvi)}
-							</span>
-						</div>
-					</div>
-					<div class="flex items-end">
-						<span><IconBinoculars size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							Sicht:
-							<span class="text-4xl font-bold">
-								{meterToKm(currentWeather.visibility)}<span
-									class="text-2xl">km</span
-								>
-							</span>
-						</div>
-					</div>
-					<div class="flex items-end">
-						<span><IconCloud size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							Wolken:
-							<span class="text-4xl font-bold">
-								{currentWeather.clouds.all}<span
-									class="text-2xl">%</span
-								>
-							</span>
-						</div>
+				<div class="detail-item">
+					<IconSunset size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">Untergang</span>
+						<span class="detail-value">{formatToBerlinTime(currentWeather.sys.sunset)}</span>
 					</div>
 				</div>
-			</section>
-
-			<section
-				class:list={[
-					"w-full flex items-center justify-center shadow-md rounded-lg px-8 py-3 max-w-[1475px] mx-auto backdrop-blur-lg backdrop-saturate-150 border",
-					{
-						[`bg-[rgba(17,25,39,0.5)] border-white/10 ${darkColors[Math.floor(Math.random() * colors.length)]}`]:
-							isNight,
-						[`bg-[rgba(245,245,244,0.75)] border-black/10 ${colors[Math.floor(Math.random() * colors.length)]}`]:
-							!isNight,
-					},
-				]}>
-				<WeatherChart
-					client:load
-					labels={hourlyChartLabels}
-					temperatureData={hourlyTemperatures}
-					precipitationData={hourlyPrecipitation}
-					uviData={hourlyUVIndex}
-					sunrise={formatToBerlinTime(currentWeather.sys.sunrise)}
-					sunset={formatToBerlinTime(currentWeather.sys.sunset)}
-					textColor={isNight
-						? darkColors[
-								Math.floor(Math.random() * darkColors.length)
-							]
-						: colors[Math.floor(Math.random() * colors.length)]}
-				/>
-			</section>
-
-			<section
-				class:list={[
-					"flex gap-4 justify-between w-[1475px] mx-auto shadow-md rounded-lg p-4 backdrop-blur-lg backdrop-saturate-150 border",
-					{
-						[`bg-[rgba(17,25,39,0.5)] border-white/10 ${darkColors[Math.floor(Math.random() * colors.length)]}`]:
-							isNight,
-						[`bg-[rgba(245,245,244,0.55)] border-black/10 ${colors[Math.floor(Math.random() * colors.length)]}`]:
-							!isNight,
-					},
-				]}>
-				{
-					weeklyWeather.daily
-						.slice(1)
-						.map((item) => (
-							<SingleWeatherCard
-								title={formatToBerlinDate(item.dt)}
-								temperature={Math.round(item.temp.day)}
-								icon={item.weather[0].icon}
-								textColor={
-									isNight
-										? "text-slate-100"
-										: "text-slate-900"
-								}
-							/>
-						))
-				}
-			</section>
+				<div class="detail-item">
+					<IconWind size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">Wind</span>
+						<span class="detail-value">{currentWeather.wind.speed}<span class="detail-unit">m/s</span></span>
+					</div>
+				</div>
+				<div class="detail-item">
+					<IconDroplet size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">Feuchte</span>
+						<span class="detail-value">{currentWeather.main.humidity}<span class="detail-unit">%</span></span>
+					</div>
+				</div>
+				<div class="detail-item">
+					<IconGauge size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">Druck</span>
+						<span class="detail-value">{currentWeather.main.pressure}<span class="detail-unit">hPa</span></span>
+					</div>
+				</div>
+				<div class="detail-item">
+					<IconUvIndex size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">UV</span>
+						<span class:list={[
+							"detail-value",
+							{
+								"!text-red-500": oneCall.current.uvi >= 11,
+								"!text-red-400": oneCall.current.uvi >= 8 && oneCall.current.uvi < 11,
+								"!text-orange-400": oneCall.current.uvi >= 6 && oneCall.current.uvi < 8,
+								"!text-yellow-400": oneCall.current.uvi >= 3 && oneCall.current.uvi < 6,
+							},
+						]}>{Math.round(oneCall.current.uvi)}</span>
+					</div>
+				</div>
+				<div class="detail-item">
+					<IconEye size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">Sicht</span>
+						<span class="detail-value">{meterToKm(currentWeather.visibility)}<span class="detail-unit">km</span></span>
+					</div>
+				</div>
+				<div class="detail-item">
+					<IconCloud size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">Wolken</span>
+						<span class="detail-value">{currentWeather.clouds.all}<span class="detail-unit">%</span></span>
+					</div>
+				</div>
+			</div>
 		</div>
 
-		<p id="countdown" class="absolute left-4 bottom-4 text-slate-900">
+		<!-- Chart -->
+		<div class="hud-card flex-1 min-h-0 px-2 py-1">
+			<WeatherChart
+				client:load
+				labels={hourlyChartLabels}
+				temperatureData={hourlyTemperatures}
+				precipitationData={hourlyPrecipitation}
+				uviData={hourlyUVIndex}
+				sunrise={formatToBerlinTime(currentWeather.sys.sunrise)}
+				sunset={formatToBerlinTime(currentWeather.sys.sunset)}
+			/>
+		</div>
+
+		<!-- Weekly forecast -->
+		<div class="hud-card flex justify-between items-center px-3 py-3 shrink-0 gap-2">
+			{
+				weeklyWeather.daily
+					.slice(1)
+					.map((item) => (
+						<SingleWeatherCard
+							title={formatToBerlinDate(item.dt)}
+							temperature={Math.round(item.temp.day)}
+							icon={item.weather[0].icon}
+						/>
+					))
+			}
+		</div>
+
+		<span id="countdown" class="absolute left-2.5 bottom-1.5 font-mono text-[9px] text-teal-400/12">
 			20:00
-		</p>
+		</span>
 
 		<script>
+			// Countdown
 			let seconds = 1200;
 			const countdownEl = document.getElementById("countdown");
 			function updateCountdown() {
@@ -459,9 +281,151 @@ const darkColors = [
 				if (seconds <= 0) {
 					clearInterval(interval);
 					window.location.reload();
-					console.log("Reloading...");
 				}
 			}, 1000);
+
+			// Sonar background
+			const svgEl = document.getElementById("sonar-bg");
+			const sweepArm = document.getElementById("sweep-arm");
+			const sweepTrail = document.getElementById("sweep-trail");
+			const ringsG = document.getElementById("sonar-rings");
+			const radialsG = document.getElementById("sonar-radials");
+			const scanlinesG = document.getElementById("sonar-scanlines");
+
+			function buildSonar() {
+				const w = svgEl.clientWidth;
+				const h = svgEl.clientHeight;
+				const ns = "http://www.w3.org/2000/svg";
+
+				// Clear previous
+				ringsG.innerHTML = "";
+				radialsG.innerHTML = "";
+				scanlinesG.innerHTML = "";
+
+				// Rings from bottom-left
+				const ringSpacing = 100;
+				const maxR = Math.sqrt(w * w + h * h);
+				for (let r = ringSpacing; r < maxR; r += ringSpacing) {
+					const c = document.createElementNS(ns, "circle");
+					c.setAttribute("cx", 0);
+					c.setAttribute("cy", h);
+					c.setAttribute("r", r);
+					c.setAttribute("fill", "none");
+					c.setAttribute("stroke", "rgb(56,189,168)");
+					c.setAttribute("stroke-width", "0.5");
+					ringsG.appendChild(c);
+				}
+
+				// Radial lines every 15° from bottom-left (0-90° quadrant)
+				for (let a = 15; a < 90; a += 15) {
+					const rad = (a * Math.PI) / 180;
+					const l = document.createElementNS(ns, "line");
+					l.setAttribute("x1", 0);
+					l.setAttribute("y1", h);
+					l.setAttribute("x2", Math.cos(rad) * maxR);
+					l.setAttribute("y2", h - Math.sin(rad) * maxR);
+					l.setAttribute("stroke", "rgb(56,189,168)");
+					l.setAttribute("stroke-width", "0.3");
+					l.setAttribute("stroke-dasharray", "2 6");
+					radialsG.appendChild(l);
+				}
+
+				// Horizontal scan lines
+				for (let y = 0.2; y < 1; y += 0.2) {
+					const l = document.createElementNS(ns, "line");
+					l.setAttribute("x1", 0);
+					l.setAttribute("y1", h * y);
+					l.setAttribute("x2", w);
+					l.setAttribute("y2", h * y);
+					l.setAttribute("stroke", "rgb(56,189,168)");
+					l.setAttribute("stroke-width", "0.3");
+					l.setAttribute("stroke-dasharray", "3 10");
+					scanlinesG.appendChild(l);
+				}
+			}
+			buildSonar();
+
+			// Sweep animation
+			let sweepAngle = 0;
+			let lastTime = performance.now();
+			const SWEEP_SPEED = 12;
+			const TRAIL_DEG = 30;
+
+			function animateSweep(now) {
+				const dt = (now - lastTime) / 1000;
+				lastTime = now;
+				sweepAngle = (sweepAngle + SWEEP_SPEED * dt) % 90;
+
+				const h = svgEl.clientHeight;
+				const len = Math.sqrt(svgEl.clientWidth ** 2 + h ** 2);
+				const rad = (sweepAngle * Math.PI) / 180;
+
+				// Arm
+				sweepArm.setAttribute("x1", 0);
+				sweepArm.setAttribute("y1", h);
+				sweepArm.setAttribute("x2", Math.cos(rad) * len);
+				sweepArm.setAttribute("y2", h - Math.sin(rad) * len);
+
+				// Trail arc
+				const trailStart = Math.max(0, sweepAngle - TRAIL_DEG);
+				const r1 = (trailStart * Math.PI) / 180;
+				const r2 = rad;
+				const arcR = len * 0.6;
+				const x1 = Math.cos(r1) * arcR;
+				const y1 = h - Math.sin(r1) * arcR;
+				const x2 = Math.cos(r2) * arcR;
+				const y2 = h - Math.sin(r2) * arcR;
+				sweepTrail.setAttribute("d",
+					`M 0 ${h} L ${x1} ${y1} A ${arcR} ${arcR} 0 0 1 ${x2} ${y2} Z`
+				);
+
+				requestAnimationFrame(animateSweep);
+			}
+			requestAnimationFrame(animateSweep);
 		</script>
 	</main>
 </Layout>
+
+<style is:global>
+	.hud-card {
+		background: rgba(10, 18, 25, 0.7);
+		border: 1px solid rgba(56, 189, 168, 0.06);
+		border-radius: 6px;
+		position: relative;
+		z-index: 1;
+	}
+	.detail-item {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+	.detail-icon {
+		color: rgba(56, 189, 168, 0.2);
+		flex-shrink: 0;
+	}
+	.detail-text {
+		display: flex;
+		flex-direction: column;
+	}
+	.detail-label {
+		font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+		font-size: 11px;
+		color: rgba(56, 189, 168, 0.22);
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		line-height: 1;
+	}
+	.detail-value {
+		font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+		font-size: 22px;
+		font-weight: 700;
+		color: rgba(204, 251, 241, 0.85);
+		line-height: 1.2;
+	}
+	.detail-unit {
+		font-size: 11px;
+		font-weight: 500;
+		color: rgba(56, 189, 168, 0.25);
+		margin-left: 1px;
+	}
+</style>
