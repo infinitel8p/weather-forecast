@@ -18,6 +18,7 @@ The project is built for a Raspberry Pi 5" screen. It includes a custom 3d-print
 - [weather-forecast](#weather-forecast)
       - [Contents:](#contents)
   - [How to setup:](#how-to-setup)
+  - [High-contrast mode](#high-contrast-mode)
   - [3D-printed case](#3d-printed-case)
   - [Hardware](#hardware)
 
@@ -34,6 +35,17 @@ git clone https://github.com/infinitel8p/weather-forecast.git
 ```shell
 npm install
 ```
+
+## High-contrast mode
+
+For small or low-quality screens (like the Raspberry Pi 5" touchscreen), a high-contrast variant of the day theme is available. Append `?hc` to the URL to activate it:
+
+```
+http://localhost:4321/?hc
+http://localhost:4321/setup?hc
+```
+
+This increases text contrast, makes cards more opaque, deepens borders, and strengthens the geometric background elements for better readability. The night theme is unaffected.
 
 ## 3D-printed case
 ![WhatsApp Image 2025-05-21 at 07 21 03](https://github.com/user-attachments/assets/b5b318ca-4eb3-44ab-b2b0-eb1675a0d4fa)

@@ -481,7 +481,7 @@ const smallTicks = [...Array(36)]
 			transition: background 0.6s ease;
 		}
 
-		#setup-main[data-theme="day"] {
+		#setup-main[data-theme^="day"] {
 			--accent: 110, 78, 30;
 			--accent-alt: 140, 95, 35;
 			--accent-warm: 200, 140, 30;
@@ -500,6 +500,28 @@ const smallTicks = [...Array(36)]
 			--neon-dim: rgba(190, 110, 20, 0.45);
 			--neon-dim-glow: rgba(200, 140, 30, 0.15);
 			background: linear-gradient(145deg, #e8e1d5, #e5dccf);
+		}
+
+		/* High-contrast day — for small/low-quality screens */
+		#setup-main[data-theme="day-hc"] {
+			--accent: 90, 60, 18;
+			--accent-alt: 120, 78, 20;
+			--accent-warm: 170, 110, 15;
+			--accent-copper: 150, 75, 15;
+			--bg-main: #ddd4c4;
+			--bg-panel: #e8e1d5;
+			--border-panel: rgba(150, 75, 15, 0.16);
+			--text-heading: rgba(35, 22, 5, 0.97);
+			--text-input: rgba(35, 22, 5, 0.9);
+			--text-placeholder: rgba(120, 78, 20, 0.4);
+			--neon-full: rgba(160, 85, 10, 0.92);
+			--neon-glow-1: rgba(170, 110, 15, 0.45);
+			--neon-glow-2: rgba(170, 110, 15, 0.25);
+			--neon-glow-3: rgba(170, 110, 15, 0.12);
+			--neon-off: rgba(150, 75, 15, 0.3);
+			--neon-dim: rgba(160, 85, 10, 0.55);
+			--neon-dim-glow: rgba(170, 110, 15, 0.2);
+			background: linear-gradient(145deg, #ddd5c6, #d9d0c0);
 		}
 
 		/* ── Panel & text ── */
@@ -646,70 +668,124 @@ const smallTicks = [...Array(36)]
 		#station-dot { fill: rgb(var(--accent)); transition: fill 0.6s ease; }
 
 		/* ── Day mode: richer colors + depth ── */
-		#setup-main[data-theme="day"] .svg-tick-major { stroke: rgba(var(--accent-copper), 0.35); }
-		#setup-main[data-theme="day"] .svg-tick-minor { stroke: rgba(var(--accent), 0.2); }
-		#setup-main[data-theme="day"] .svg-ring { stroke: rgba(var(--accent-copper), 0.22); }
-		#setup-main[data-theme="day"] .svg-ring-mid { stroke: rgba(var(--accent-copper), 0.18); }
-		#setup-main[data-theme="day"] .svg-ring-far { stroke: rgba(var(--accent), 0.14); }
-		#setup-main[data-theme="day"] .svg-ring-outer { stroke: rgba(var(--accent-copper), 0.12); }
-		#setup-main[data-theme="day"] .svg-crosshair { stroke: rgba(var(--accent-copper), 0.1); }
-		#setup-main[data-theme="day"] .svg-intersection { stroke: rgba(var(--accent-copper), 0.3); }
-		#setup-main[data-theme="day"] .svg-sweep-trail { fill: rgba(var(--accent-warm), 0.07); }
-		#setup-main[data-theme="day"] .svg-ping { stroke: rgba(var(--accent-warm), 0.22); }
-		#setup-main[data-theme="day"] .svg-cardinal { fill: rgba(var(--accent-copper), 0.45); }
-		#setup-main[data-theme="day"] .svg-range-label { fill: rgba(var(--accent-copper), 0.32); }
-		#setup-main[data-theme="day"] #station-dot {
+		#setup-main[data-theme^="day"] .svg-tick-major { stroke: rgba(var(--accent-copper), 0.35); }
+		#setup-main[data-theme^="day"] .svg-tick-minor { stroke: rgba(var(--accent), 0.2); }
+		#setup-main[data-theme^="day"] .svg-ring { stroke: rgba(var(--accent-copper), 0.22); }
+		#setup-main[data-theme^="day"] .svg-ring-mid { stroke: rgba(var(--accent-copper), 0.18); }
+		#setup-main[data-theme^="day"] .svg-ring-far { stroke: rgba(var(--accent), 0.14); }
+		#setup-main[data-theme^="day"] .svg-ring-outer { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme^="day"] .svg-crosshair { stroke: rgba(var(--accent-copper), 0.1); }
+		#setup-main[data-theme^="day"] .svg-intersection { stroke: rgba(var(--accent-copper), 0.3); }
+		#setup-main[data-theme^="day"] .svg-sweep-trail { fill: rgba(var(--accent-warm), 0.07); }
+		#setup-main[data-theme^="day"] .svg-ping { stroke: rgba(var(--accent-warm), 0.22); }
+		#setup-main[data-theme^="day"] .svg-cardinal { fill: rgba(var(--accent-copper), 0.45); }
+		#setup-main[data-theme^="day"] .svg-range-label { fill: rgba(var(--accent-copper), 0.32); }
+		#setup-main[data-theme^="day"] #station-dot {
 			fill: rgb(var(--accent-warm));
 			filter: url(#glow) drop-shadow(0 0 3px rgba(var(--accent-warm), 0.5));
 		}
-		#setup-main[data-theme="day"] .setup-text-faint { color: rgba(var(--accent-copper), 0.4); }
-		#setup-main[data-theme="day"] .setup-icon-accent { color: rgba(var(--accent-warm), 0.65); }
-		#setup-main[data-theme="day"] .setup-text-accent { color: rgba(var(--accent-copper), 0.6); }
-		#setup-main[data-theme="day"] .setup-label { color: rgba(var(--accent-copper), 0.5); }
-		#setup-main[data-theme="day"] .setup-field:focus-within .setup-label { color: rgba(var(--accent-copper), 0.8); }
-		#setup-main[data-theme="day"] .setup-field:focus-within {
+		#setup-main[data-theme^="day"] .setup-text-faint { color: rgba(var(--accent-copper), 0.4); }
+		#setup-main[data-theme^="day"] .setup-icon-accent { color: rgba(var(--accent-warm), 0.65); }
+		#setup-main[data-theme^="day"] .setup-text-accent { color: rgba(var(--accent-copper), 0.6); }
+		#setup-main[data-theme^="day"] .setup-label { color: rgba(var(--accent-copper), 0.5); }
+		#setup-main[data-theme^="day"] .setup-field:focus-within .setup-label { color: rgba(var(--accent-copper), 0.8); }
+		#setup-main[data-theme^="day"] .setup-field:focus-within {
 			border-left-color: rgba(var(--accent-warm), 0.35);
 		}
-		#setup-main[data-theme="day"] .setup-divider {
+		#setup-main[data-theme^="day"] .setup-divider {
 			background: linear-gradient(90deg, transparent, rgba(var(--accent-copper), 0.18), transparent);
 		}
-		#setup-main[data-theme="day"] .setup-underline {
+		#setup-main[data-theme^="day"] .setup-underline {
 			background: linear-gradient(90deg, rgb(var(--accent-warm)), rgba(var(--accent-copper), 0.8));
 			box-shadow: 0 0 12px rgba(var(--accent-warm), 0.3), 0 0 4px rgba(var(--accent-warm), 0.15);
 		}
-		#setup-main[data-theme="day"] .setup-btn {
+		#setup-main[data-theme^="day"] .setup-btn {
 			background: linear-gradient(145deg, rgba(var(--accent-warm), 0.08), rgba(var(--accent-copper), 0.1));
 			border-color: rgba(var(--accent-copper), 0.18);
 			color: rgba(var(--accent-copper), 0.7);
 			box-shadow: 0 1px 4px rgba(var(--accent), 0.06);
 		}
-		#setup-main[data-theme="day"] .setup-btn:hover {
+		#setup-main[data-theme^="day"] .setup-btn:hover {
 			background: linear-gradient(145deg, rgba(var(--accent-warm), 0.14), rgba(var(--accent-copper), 0.18));
 			color: rgba(var(--accent-copper), 0.9);
 			border-color: rgba(var(--accent-warm), 0.3);
 			box-shadow: 0 2px 8px rgba(var(--accent-warm), 0.12);
 		}
-		#setup-main[data-theme="day"] .setup-input:not(:placeholder-shown):not(:focus) {
+		#setup-main[data-theme^="day"] .setup-input:not(:placeholder-shown):not(:focus) {
 			border-bottom-color: rgba(var(--accent-copper), 0.15);
 		}
-		#setup-main[data-theme="day"] #radar-glow {
+		#setup-main[data-theme^="day"] #radar-glow {
 			background: radial-gradient(circle,
 				rgba(var(--accent-warm), 0.08) 0%,
 				rgba(var(--accent-warm), 0.04) 35%,
 				transparent 65%
 			);
 		}
-		#setup-main[data-theme="day"] .setup-panel {
+		#setup-main[data-theme^="day"] .setup-panel {
 			background: linear-gradient(180deg, #f2ece3, #ede6db);
 			border-color: rgba(var(--accent-copper), 0.1);
 			box-shadow: -1px 0 12px rgba(var(--accent), 0.04);
 		}
-		#setup-main[data-theme="day"] .neon-sign {
+		#setup-main[data-theme^="day"] .neon-sign {
 			text-shadow:
 				0 0 5px var(--neon-glow-1),
 				0 0 15px var(--neon-glow-2),
 				0 0 35px var(--neon-glow-3);
 		}
+
+		/* ── High-contrast day overrides ── */
+		#setup-main[data-theme="day-hc"] .setup-text-faint { color: rgba(var(--accent-copper), 0.6); }
+		#setup-main[data-theme="day-hc"] .setup-label { color: rgba(var(--accent-copper), 0.7); }
+		#setup-main[data-theme="day-hc"] .setup-text-accent { color: rgba(var(--accent-copper), 0.8); }
+		#setup-main[data-theme="day-hc"] .setup-btn {
+			border-color: rgba(var(--accent-copper), 0.28);
+			color: rgba(var(--accent-copper), 0.85);
+		}
+		#setup-main[data-theme="day-hc"] .setup-btn:hover {
+			color: rgba(var(--accent-copper), 1);
+			border-color: rgba(var(--accent-warm), 0.4);
+		}
+		#setup-main[data-theme="day-hc"] .setup-panel {
+			background: linear-gradient(180deg, #e8e1d5, #e3dace);
+			border-color: rgba(var(--accent-copper), 0.16);
+			box-shadow: -1px 0 12px rgba(var(--accent), 0.07);
+		}
+		#setup-main[data-theme="day-hc"] .svg-cardinal { fill: rgba(var(--accent-copper), 0.65); }
+		#setup-main[data-theme="day-hc"] .svg-range-label { fill: rgba(var(--accent-copper), 0.5); }
+		#setup-main[data-theme="day-hc"] .svg-tick-major { stroke: rgba(var(--accent-copper), 0.5); }
+		#setup-main[data-theme="day-hc"] .svg-tick-minor { stroke: rgba(var(--accent), 0.3); }
+		#setup-main[data-theme="day-hc"] .svg-ring { stroke: rgba(var(--accent-copper), 0.3); }
+		#setup-main[data-theme="day-hc"] .svg-ring-mid { stroke: rgba(var(--accent-copper), 0.25); }
+		#setup-main[data-theme="day-hc"] .svg-ring-far { stroke: rgba(var(--accent), 0.2); }
+		#setup-main[data-theme="day-hc"] .svg-ring-outer { stroke: rgba(var(--accent-copper), 0.18); }
+		#setup-main[data-theme="day-hc"] .svg-crosshair { stroke: rgba(var(--accent-copper), 0.14); }
+		#setup-main[data-theme="day-hc"] .svg-intersection { stroke: rgba(var(--accent-copper), 0.4); }
+
+		/* Geometric elements — high contrast */
+		#setup-main[data-theme="day-hc"] .sg-radial         { stroke: rgba(var(--accent), 0.08); }
+		#setup-main[data-theme="day-hc"] .sg-ecliptic ellipse   { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme="day-hc"] .sg-ecliptic circle    { stroke: rgba(var(--accent-copper), 0.16); }
+		#setup-main[data-theme="day-hc"] .sg-tick-micro     { stroke: rgba(var(--accent-copper), 0.06); }
+		#setup-main[data-theme="day-hc"] .sg-hexagon        { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme="day-hc"] .sg-flower         { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme="day-hc"] .sg-flower-center  { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme="day-hc"] .sg-pentagon       { stroke: rgba(var(--accent-copper), 0.1);  }
+		#setup-main[data-theme="day-hc"] .sg-star           { stroke: rgba(var(--accent-copper), 0.09); }
+		#setup-main[data-theme="day-hc"] .sg-vesica         { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme="day-hc"] .sg-spiral         { stroke: rgba(var(--accent-copper), 0.14); }
+		#setup-main[data-theme="day-hc"] .sg-solar-ray line { stroke: rgba(var(--accent-warm), 0.08); }
+		#setup-main[data-theme="day-hc"] .sg-solar-disk     { stroke: rgba(var(--accent-warm), 0.18); }
+		#setup-main[data-theme="day-hc"] .sg-arc            { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme="day-hc"] .sg-compass-rose path { stroke: rgba(var(--accent-copper), 0.14); }
+		#setup-main[data-theme="day-hc"] .sg-prop-tick      { stroke: rgba(var(--accent-warm), 0.18); }
+		#setup-main[data-theme="day-hc"] .sg-label          { fill: rgba(var(--accent-copper), 0.15); }
+		#setup-main[data-theme="day-hc"] .sg-angle-arc      { stroke: rgba(var(--accent-copper), 0.13); }
+		#setup-main[data-theme="day-hc"] .sg-wave-path      { stroke: rgba(var(--accent-copper), 0.1);  }
+		#setup-main[data-theme="day-hc"] .sg-constellation circle { fill: rgba(var(--accent-warm), 0.16); }
+		#setup-main[data-theme="day-hc"] .sg-constellation line   { stroke: rgba(var(--accent-warm), 0.1); }
+		#setup-main[data-theme="day-hc"] .sg-meander path   { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme="day-hc"] .sg-meander line   { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme="day-hc"] .sg-corner         { stroke: rgba(var(--accent-copper), 0.14); }
 
 		/* Footer link */
 		#footer-link {
@@ -719,10 +795,10 @@ const smallTicks = [...Array(36)]
 			color: rgba(var(--accent), 0.4);
 			text-shadow: 0 0 6px rgba(var(--accent), 0.2), 0 0 15px rgba(var(--accent), 0.1);
 		}
-		#setup-main[data-theme="day"] #footer-link {
+		#setup-main[data-theme^="day"] #footer-link {
 			color: rgba(var(--accent-copper), 0.2);
 		}
-		#setup-main[data-theme="day"] #footer-link:hover {
+		#setup-main[data-theme^="day"] #footer-link:hover {
 			color: rgba(var(--accent-warm), 0.55);
 			text-shadow: 0 0 8px rgba(var(--accent-warm), 0.15);
 		}
@@ -761,51 +837,54 @@ const smallTicks = [...Array(36)]
 		.sg-corner         { stroke: rgba(var(--accent), 0.06); }
 
 		/* ── Integrated geometric construction — Day mode ── */
-		#setup-main[data-theme="day"] .sg-radial         { stroke: rgba(var(--accent), 0.05); }
-		#setup-main[data-theme="day"] .sg-ecliptic ellipse   { stroke: rgba(var(--accent-copper), 0.08); }
-		#setup-main[data-theme="day"] .sg-ecliptic circle    { stroke: rgba(var(--accent-copper), 0.11); }
-		#setup-main[data-theme="day"] .sg-tick-micro     { stroke: rgba(var(--accent-copper), 0.04); }
+		#setup-main[data-theme^="day"] .sg-radial         { stroke: rgba(var(--accent), 0.05); }
+		#setup-main[data-theme^="day"] .sg-ecliptic ellipse   { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme^="day"] .sg-ecliptic circle    { stroke: rgba(var(--accent-copper), 0.11); }
+		#setup-main[data-theme^="day"] .sg-tick-micro     { stroke: rgba(var(--accent-copper), 0.04); }
 
-		#setup-main[data-theme="day"] .sg-hexagon        { stroke: rgba(var(--accent-copper), 0.08); }
-		#setup-main[data-theme="day"] .sg-flower         { stroke: rgba(var(--accent-copper), 0.05); }
-		#setup-main[data-theme="day"] .sg-flower-center  { stroke: rgba(var(--accent-copper), 0.08); }
-		#setup-main[data-theme="day"] .sg-pentagon       { stroke: rgba(var(--accent-copper), 0.07); }
-		#setup-main[data-theme="day"] .sg-star           { stroke: rgba(var(--accent-copper), 0.06); }
-		#setup-main[data-theme="day"] .sg-vesica         { stroke: rgba(var(--accent-copper), 0.08); }
-		#setup-main[data-theme="day"] .sg-spiral         { stroke: rgba(var(--accent-copper), 0.09); }
+		#setup-main[data-theme^="day"] .sg-hexagon        { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme^="day"] .sg-flower         { stroke: rgba(var(--accent-copper), 0.05); }
+		#setup-main[data-theme^="day"] .sg-flower-center  { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme^="day"] .sg-pentagon       { stroke: rgba(var(--accent-copper), 0.07); }
+		#setup-main[data-theme^="day"] .sg-star           { stroke: rgba(var(--accent-copper), 0.06); }
+		#setup-main[data-theme^="day"] .sg-vesica         { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme^="day"] .sg-spiral         { stroke: rgba(var(--accent-copper), 0.09); }
 
-		#setup-main[data-theme="day"] .sg-solar-ray line { stroke: rgba(var(--accent-warm), 0.05); }
-		#setup-main[data-theme="day"] .sg-solar-disk     { stroke: rgba(var(--accent-warm), 0.12); }
+		#setup-main[data-theme^="day"] .sg-solar-ray line { stroke: rgba(var(--accent-warm), 0.05); }
+		#setup-main[data-theme^="day"] .sg-solar-disk     { stroke: rgba(var(--accent-warm), 0.12); }
 
-		#setup-main[data-theme="day"] .sg-arc            { stroke: rgba(var(--accent-copper), 0.08); }
-		#setup-main[data-theme="day"] .sg-compass-rose path { stroke: rgba(var(--accent-copper), 0.09); }
-		#setup-main[data-theme="day"] .sg-prop-tick      { stroke: rgba(var(--accent-warm), 0.12); }
-		#setup-main[data-theme="day"] .sg-label          { fill: rgba(var(--accent-copper), 0.1); }
-		#setup-main[data-theme="day"] .sg-angle-arc      { stroke: rgba(var(--accent-copper), 0.09); }
+		#setup-main[data-theme^="day"] .sg-arc            { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme^="day"] .sg-compass-rose path { stroke: rgba(var(--accent-copper), 0.09); }
+		#setup-main[data-theme^="day"] .sg-prop-tick      { stroke: rgba(var(--accent-warm), 0.12); }
+		#setup-main[data-theme^="day"] .sg-label          { fill: rgba(var(--accent-copper), 0.1); }
+		#setup-main[data-theme^="day"] .sg-angle-arc      { stroke: rgba(var(--accent-copper), 0.09); }
 
-		#setup-main[data-theme="day"] .sg-wave-path      { stroke: rgba(var(--accent-copper), 0.06); }
+		#setup-main[data-theme^="day"] .sg-wave-path      { stroke: rgba(var(--accent-copper), 0.06); }
 
-		#setup-main[data-theme="day"] .sg-constellation circle { fill: rgba(var(--accent-warm), 0.1); }
-		#setup-main[data-theme="day"] .sg-constellation line   { stroke: rgba(var(--accent-warm), 0.06); }
+		#setup-main[data-theme^="day"] .sg-constellation circle { fill: rgba(var(--accent-warm), 0.1); }
+		#setup-main[data-theme^="day"] .sg-constellation line   { stroke: rgba(var(--accent-warm), 0.06); }
 
-		#setup-main[data-theme="day"] .sg-meander path   { stroke: rgba(var(--accent-copper), 0.08); }
-		#setup-main[data-theme="day"] .sg-meander line   { stroke: rgba(var(--accent-copper), 0.05); }
+		#setup-main[data-theme^="day"] .sg-meander path   { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme^="day"] .sg-meander line   { stroke: rgba(var(--accent-copper), 0.05); }
 
-		#setup-main[data-theme="day"] .sg-corner         { stroke: rgba(var(--accent-copper), 0.09); }
+		#setup-main[data-theme^="day"] .sg-corner         { stroke: rgba(var(--accent-copper), 0.09); }
 	</style>
 
 	<script>
 		// ── Theme detection (day 06:00–21:59, night 22:00–05:59) ──
+		// Append ?hc to the URL for high-contrast day mode (e.g. on Raspberry Pi)
 		const main = document.getElementById("setup-main");
 		const hour = new Date().getHours();
 		const isDay = hour >= 6 && hour <= 21;
-		main.setAttribute("data-theme", isDay ? "day" : "night");
+		const hc = new URLSearchParams(window.location.search).has("hc");
+		const dayTheme = hc ? "day-hc" : "day";
+		main.setAttribute("data-theme", isDay ? dayTheme : "night");
 
 		// Accent RGB for JS-driven SVG attributes
-		const accent = isDay ? [110, 78, 30] : [56, 189, 168];
-		const accentAlt = isDay ? [180, 95, 30] : [45, 160, 200];
+		const accent = isDay ? (hc ? [90, 60, 18] : [110, 78, 30]) : [56, 189, 168];
+		const accentAlt = isDay ? (hc ? [150, 75, 15] : [180, 95, 30]) : [45, 160, 200];
 		// Warm highlight color for animated SVG elements in day mode
-		const echoColor = isDay ? [180, 120, 35] : [56, 189, 168];
+		const echoColor = isDay ? (hc ? [150, 90, 20] : [180, 120, 35]) : [56, 189, 168];
 
 		// Update SVG gradient stops for current theme
 		function applyGradientTheme() {

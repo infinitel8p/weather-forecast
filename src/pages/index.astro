@@ -600,10 +600,10 @@ function meterToKm(m) {
 				<div class="flex items-baseline justify-between">
 					<div>
 						<div class="text-xl font-semibold dash-primary">{city ? city : currentWeather.name}</div>
-						<div class="font-mono text-[11px] dash-faint">{currentDate}</div>
+						<div class="font-mono text-[11px] dash-muted">{currentDate}</div>
 					</div>
 					<div class="font-mono text-md dash-secondary">
-						{Math.round(weeklyWeather.daily[0].temp.min)}° <span class="dash-faintest">/</span> {Math.round(weeklyWeather.daily[0].temp.max)}°
+						{Math.round(weeklyWeather.daily[0].temp.min)}° <span class="dash-muted">/</span> {Math.round(weeklyWeather.daily[0].temp.max)}°
 					</div>
 				</div>
 				<!-- Center: icon + temp -->
@@ -710,7 +710,7 @@ function meterToKm(m) {
 		</div>
 
 		<!-- Weekly forecast -->
-		<div class="hud-card flex justify-between items-center px-3 py-3 shrink-0 gap-2">
+		<div class="hud-card flex justify-between items-center shrink-0 pr-3 gap-2">
 			{
 				weeklyWeather.daily
 					.slice(1)
@@ -730,12 +730,15 @@ function meterToKm(m) {
 
 		<script>
 			// Theme detection (day 06:00–21:59, night 22:00–05:59)
+			// Append ?hc to the URL for high-contrast day mode (e.g. on Raspberry Pi)
 			const dashMain = document.getElementById("dashboard-main");
 			const hour = new Date().getHours();
 			const isDay = hour >= 6 && hour <= 21;
-			dashMain.setAttribute("data-theme", isDay ? "day" : "night");
+			const hc = new URLSearchParams(window.location.search).has("hc");
+			const dayTheme = hc ? "day-hc" : "day";
+			dashMain.setAttribute("data-theme", isDay ? dayTheme : "night");
 
-			const sonarColor = isDay ? "rgb(180,95,30)" : "rgb(56,189,168)";
+			const sonarColor = isDay ? (hc ? "rgb(150,75,15)" : "rgb(180,95,30)") : "rgb(56,189,168)";
 
 			// Update sonar gradient
 			document.getElementById("sweep-fade-start").setAttribute("stop-color", sonarColor);
@@ -883,7 +886,7 @@ function meterToKm(m) {
 		transition: background 0.6s ease;
 	}
 
-	#dashboard-main[data-theme="day"] {
+	#dashboard-main[data-theme^="day"] {
 		--accent: 110, 78, 30;
 		--accent-warm: 200, 140, 30;
 		--accent-copper: 180, 95, 30;
@@ -899,6 +902,25 @@ function meterToKm(m) {
 		--icon-shadow: drop-shadow(0 0 8px rgba(200, 140, 30, 0.1));
 		--temp-shadow: 0 0 20px rgba(200, 140, 30, 0.06);
 		background: linear-gradient(145deg, #e8e1d5, #e5dccf);
+	}
+
+	/* High-contrast day — same warm palette, stronger readability for small/low-quality screens */
+	#dashboard-main[data-theme="day-hc"] {
+		--accent: 90, 60, 18;
+		--accent-warm: 170, 110, 15;
+		--accent-copper: 150, 75, 15;
+		--bg-main: #ddd4c4;
+		--card-bg: rgba(240, 234, 222, 0.7);
+		--card-border: rgba(150, 75, 15, 0.18);
+		--text-primary: rgba(35, 22, 5, 0.96);
+		--text-secondary: rgba(35, 22, 5, 0.72);
+		--text-muted: rgba(90, 60, 18, 0.6);
+		--text-faint: rgba(90, 60, 18, 0.4);
+		--text-faintest: rgba(90, 60, 18, 0.3);
+		--icon-color: rgba(170, 110, 15, 0.5);
+		--icon-shadow: drop-shadow(0 0 6px rgba(170, 110, 15, 0.18));
+		--temp-shadow: 0 0 16px rgba(170, 110, 15, 0.1);
+		background: linear-gradient(145deg, #ddd5c6, #d9d0c0);
 	}
 
 	/* ── Da Vinci geometric construction — Night mode ── */
@@ -961,51 +983,51 @@ function meterToKm(m) {
 	.geo-phi-label     { fill:   rgba(var(--accent), 0.05); }
 
 	/* ── Da Vinci geometric construction — Day mode ── */
-	#dashboard-main[data-theme="day"] .geo-axis          { stroke: rgba(var(--accent), 0.08); }
-	#dashboard-main[data-theme="day"] .geo-diagonal      { stroke: rgba(var(--accent), 0.07); }
-	#dashboard-main[data-theme="day"] .geo-radial        { stroke: rgba(var(--accent), 0.06); }
+	#dashboard-main[data-theme^="day"] .geo-axis          { stroke: rgba(var(--accent), 0.08); }
+	#dashboard-main[data-theme^="day"] .geo-diagonal      { stroke: rgba(var(--accent), 0.07); }
+	#dashboard-main[data-theme^="day"] .geo-radial        { stroke: rgba(var(--accent), 0.06); }
 
-	#dashboard-main[data-theme="day"] .geo-circle-outer  { stroke: rgba(var(--accent-copper), 0.14); }
-	#dashboard-main[data-theme="day"] .geo-circle-mid    { stroke: rgba(var(--accent-copper), 0.12); }
-	#dashboard-main[data-theme="day"] .geo-circle-inner  { stroke: rgba(var(--accent-copper), 0.09); }
-	#dashboard-main[data-theme="day"] .geo-ecliptic ellipse  { stroke: rgba(var(--accent-copper), 0.1); }
-	#dashboard-main[data-theme="day"] .geo-ecliptic circle   { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme^="day"] .geo-circle-outer  { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme^="day"] .geo-circle-mid    { stroke: rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme^="day"] .geo-circle-inner  { stroke: rgba(var(--accent-copper), 0.09); }
+	#dashboard-main[data-theme^="day"] .geo-ecliptic ellipse  { stroke: rgba(var(--accent-copper), 0.1); }
+	#dashboard-main[data-theme^="day"] .geo-ecliptic circle   { stroke: rgba(var(--accent-copper), 0.14); }
 
-	#dashboard-main[data-theme="day"] .geo-degree-major  { stroke: rgba(var(--accent-copper), 0.16); }
-	#dashboard-main[data-theme="day"] .geo-degree-minor  { stroke: rgba(var(--accent-copper), 0.09); }
-	#dashboard-main[data-theme="day"] .geo-degree-micro  { stroke: rgba(var(--accent-copper), 0.05); }
+	#dashboard-main[data-theme^="day"] .geo-degree-major  { stroke: rgba(var(--accent-copper), 0.16); }
+	#dashboard-main[data-theme^="day"] .geo-degree-minor  { stroke: rgba(var(--accent-copper), 0.09); }
+	#dashboard-main[data-theme^="day"] .geo-degree-micro  { stroke: rgba(var(--accent-copper), 0.05); }
 
-	#dashboard-main[data-theme="day"] .geo-hexagon       { stroke: rgba(var(--accent-copper), 0.1);  }
-	#dashboard-main[data-theme="day"] .geo-flower        { stroke: rgba(var(--accent-copper), 0.07); }
-	#dashboard-main[data-theme="day"] .geo-flower-center { stroke: rgba(var(--accent-copper), 0.1);  }
-	#dashboard-main[data-theme="day"] .geo-pentagon      { stroke: rgba(var(--accent-copper), 0.1);  }
-	#dashboard-main[data-theme="day"] .geo-star          { stroke: rgba(var(--accent-copper), 0.08); }
-	#dashboard-main[data-theme="day"] .geo-vesica        { stroke: rgba(var(--accent-copper), 0.1);  }
-	#dashboard-main[data-theme="day"] .geo-spiral        { stroke: rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme^="day"] .geo-hexagon       { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme^="day"] .geo-flower        { stroke: rgba(var(--accent-copper), 0.07); }
+	#dashboard-main[data-theme^="day"] .geo-flower-center { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme^="day"] .geo-pentagon      { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme^="day"] .geo-star          { stroke: rgba(var(--accent-copper), 0.08); }
+	#dashboard-main[data-theme^="day"] .geo-vesica        { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme^="day"] .geo-spiral        { stroke: rgba(var(--accent-copper), 0.12); }
 
-	#dashboard-main[data-theme="day"] .geo-solar-ray line  { stroke: rgba(var(--accent-warm), 0.07); }
-	#dashboard-main[data-theme="day"] .geo-solar-disk    { stroke: rgba(var(--accent-warm), 0.16); }
+	#dashboard-main[data-theme^="day"] .geo-solar-ray line  { stroke: rgba(var(--accent-warm), 0.07); }
+	#dashboard-main[data-theme^="day"] .geo-solar-disk    { stroke: rgba(var(--accent-warm), 0.16); }
 
-	#dashboard-main[data-theme="day"] .geo-arc           { stroke: rgba(var(--accent-copper), 0.1);  }
-	#dashboard-main[data-theme="day"] .geo-arc-small     { stroke: rgba(var(--accent-copper), 0.07); }
-	#dashboard-main[data-theme="day"] .geo-compass-rose path { stroke: rgba(var(--accent-copper), 0.12); }
-	#dashboard-main[data-theme="day"] .geo-angle-arc     { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme^="day"] .geo-arc           { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme^="day"] .geo-arc-small     { stroke: rgba(var(--accent-copper), 0.07); }
+	#dashboard-main[data-theme^="day"] .geo-compass-rose path { stroke: rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme^="day"] .geo-angle-arc     { stroke: rgba(var(--accent-copper), 0.1);  }
 
-	#dashboard-main[data-theme="day"] .geo-wave-path     { stroke: rgba(var(--accent-copper), 0.08); }
+	#dashboard-main[data-theme^="day"] .geo-wave-path     { stroke: rgba(var(--accent-copper), 0.08); }
 
-	#dashboard-main[data-theme="day"] .geo-constellation circle { fill: rgba(var(--accent-warm), 0.14); }
-	#dashboard-main[data-theme="day"] .geo-constellation line   { stroke: rgba(var(--accent-warm), 0.08); }
+	#dashboard-main[data-theme^="day"] .geo-constellation circle { fill: rgba(var(--accent-warm), 0.14); }
+	#dashboard-main[data-theme^="day"] .geo-constellation line   { stroke: rgba(var(--accent-warm), 0.08); }
 
-	#dashboard-main[data-theme="day"] .geo-meander path  { stroke: rgba(var(--accent-copper), 0.1);  }
-	#dashboard-main[data-theme="day"] .geo-meander line  { stroke: rgba(var(--accent-copper), 0.07); }
+	#dashboard-main[data-theme^="day"] .geo-meander path  { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme^="day"] .geo-meander line  { stroke: rgba(var(--accent-copper), 0.07); }
 
-	#dashboard-main[data-theme="day"] .geo-mark circle   { stroke: rgba(var(--accent-copper), 0.14); }
-	#dashboard-main[data-theme="day"] .geo-fib-dot       { fill:   rgba(var(--accent-warm), 0.12); }
-	#dashboard-main[data-theme="day"] .geo-corner        { stroke: rgba(var(--accent-copper), 0.12); }
-	#dashboard-main[data-theme="day"] .geo-prop-tick     { stroke: rgba(var(--accent-warm), 0.14); }
-	#dashboard-main[data-theme="day"] .geo-label         { fill:   rgba(var(--accent-copper), 0.12); }
-	#dashboard-main[data-theme="day"] .geo-cardinal      { fill:   rgba(var(--accent-copper), 0.16); }
-	#dashboard-main[data-theme="day"] .geo-phi-label     { fill:   rgba(var(--accent-warm), 0.08); }
+	#dashboard-main[data-theme^="day"] .geo-mark circle   { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme^="day"] .geo-fib-dot       { fill:   rgba(var(--accent-warm), 0.12); }
+	#dashboard-main[data-theme^="day"] .geo-corner        { stroke: rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme^="day"] .geo-prop-tick     { stroke: rgba(var(--accent-warm), 0.14); }
+	#dashboard-main[data-theme^="day"] .geo-label         { fill:   rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme^="day"] .geo-cardinal      { fill:   rgba(var(--accent-copper), 0.16); }
+	#dashboard-main[data-theme^="day"] .geo-phi-label     { fill:   rgba(var(--accent-warm), 0.08); }
 
 	/* ── Text utilities ── */
 	.dash-primary { color: var(--text-primary); transition: color 0.6s ease; }
@@ -1026,7 +1048,7 @@ function meterToKm(m) {
 		z-index: 1;
 		transition: background 0.6s ease, border-color 0.6s ease;
 	}
-	#dashboard-main[data-theme="day"] .hud-card {
+	#dashboard-main[data-theme^="day"] .hud-card {
 		box-shadow: 0 1px 6px rgba(110, 78, 30, 0.05);
 	}
 
@@ -1055,7 +1077,7 @@ function meterToKm(m) {
 		line-height: 1;
 		transition: color 0.6s ease;
 	}
-	#dashboard-main[data-theme="day"] .detail-label {
+	#dashboard-main[data-theme^="day"] .detail-label {
 		color: rgba(var(--accent-copper), 0.45);
 	}
 	.detail-value {
@@ -1073,7 +1095,7 @@ function meterToKm(m) {
 		margin-left: 1px;
 		transition: color 0.6s ease;
 	}
-	#dashboard-main[data-theme="day"] .detail-unit {
+	#dashboard-main[data-theme^="day"] .detail-unit {
 		color: rgba(var(--accent-copper), 0.4);
 	}
 
@@ -1082,7 +1104,7 @@ function meterToKm(m) {
 		color: rgba(var(--accent), 0.3);
 		transition: color 0.6s ease;
 	}
-	#dashboard-main[data-theme="day"] .weekly-label {
+	#dashboard-main[data-theme^="day"] .weekly-label {
 		color: rgba(var(--accent-copper), 0.45);
 	}
 	.weekly-temp {
@@ -1093,7 +1115,62 @@ function meterToKm(m) {
 		filter: drop-shadow(0 0 5px rgba(var(--accent), 0.06));
 		transition: filter 0.6s ease;
 	}
-	#dashboard-main[data-theme="day"] .weekly-icon-shadow {
+	#dashboard-main[data-theme^="day"] .weekly-icon-shadow {
 		filter: drop-shadow(0 0 5px rgba(var(--accent-warm), 0.08));
+	}
+
+	/* ── High-contrast day — geometric elements ── */
+	#dashboard-main[data-theme="day-hc"] .geo-axis          { stroke: rgba(var(--accent), 0.12); }
+	#dashboard-main[data-theme="day-hc"] .geo-diagonal      { stroke: rgba(var(--accent), 0.1);  }
+	#dashboard-main[data-theme="day-hc"] .geo-radial        { stroke: rgba(var(--accent), 0.09); }
+	#dashboard-main[data-theme="day-hc"] .geo-circle-outer  { stroke: rgba(var(--accent-copper), 0.2);  }
+	#dashboard-main[data-theme="day-hc"] .geo-circle-mid    { stroke: rgba(var(--accent-copper), 0.17); }
+	#dashboard-main[data-theme="day-hc"] .geo-circle-inner  { stroke: rgba(var(--accent-copper), 0.13); }
+	#dashboard-main[data-theme="day-hc"] .geo-ecliptic ellipse  { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-ecliptic circle   { stroke: rgba(var(--accent-copper), 0.2);  }
+	#dashboard-main[data-theme="day-hc"] .geo-degree-major  { stroke: rgba(var(--accent-copper), 0.22); }
+	#dashboard-main[data-theme="day-hc"] .geo-degree-minor  { stroke: rgba(var(--accent-copper), 0.13); }
+	#dashboard-main[data-theme="day-hc"] .geo-degree-micro  { stroke: rgba(var(--accent-copper), 0.07); }
+	#dashboard-main[data-theme="day-hc"] .geo-hexagon       { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-flower        { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme="day-hc"] .geo-flower-center { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-pentagon      { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-star          { stroke: rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme="day-hc"] .geo-vesica        { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-spiral        { stroke: rgba(var(--accent-copper), 0.17); }
+	#dashboard-main[data-theme="day-hc"] .geo-solar-ray line  { stroke: rgba(var(--accent-warm), 0.1);  }
+	#dashboard-main[data-theme="day-hc"] .geo-solar-disk    { stroke: rgba(var(--accent-warm), 0.22); }
+	#dashboard-main[data-theme="day-hc"] .geo-arc           { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-arc-small     { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme="day-hc"] .geo-compass-rose path { stroke: rgba(var(--accent-copper), 0.17); }
+	#dashboard-main[data-theme="day-hc"] .geo-angle-arc     { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-wave-path     { stroke: rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme="day-hc"] .geo-constellation circle { fill: rgba(var(--accent-warm), 0.2); }
+	#dashboard-main[data-theme="day-hc"] .geo-constellation line   { stroke: rgba(var(--accent-warm), 0.12); }
+	#dashboard-main[data-theme="day-hc"] .geo-meander path  { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-meander line  { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme="day-hc"] .geo-mark circle   { stroke: rgba(var(--accent-copper), 0.2);  }
+	#dashboard-main[data-theme="day-hc"] .geo-fib-dot       { fill:   rgba(var(--accent-warm), 0.17); }
+	#dashboard-main[data-theme="day-hc"] .geo-corner        { stroke: rgba(var(--accent-copper), 0.17); }
+	#dashboard-main[data-theme="day-hc"] .geo-prop-tick     { stroke: rgba(var(--accent-warm), 0.2);  }
+	#dashboard-main[data-theme="day-hc"] .geo-label         { fill:   rgba(var(--accent-copper), 0.17); }
+	#dashboard-main[data-theme="day-hc"] .geo-cardinal      { fill:   rgba(var(--accent-copper), 0.22); }
+	#dashboard-main[data-theme="day-hc"] .geo-phi-label     { fill:   rgba(var(--accent-warm), 0.12); }
+
+	/* ── High-contrast day overrides — stronger labels, borders, shadows ── */
+	#dashboard-main[data-theme="day-hc"] .hud-card {
+		box-shadow: 0 1px 8px rgba(90, 60, 18, 0.1);
+	}
+	#dashboard-main[data-theme="day-hc"] .detail-label {
+		color: rgba(var(--accent-copper), 0.7);
+	}
+	#dashboard-main[data-theme="day-hc"] .detail-unit {
+		color: rgba(var(--accent-copper), 0.6);
+	}
+	#dashboard-main[data-theme="day-hc"] .weekly-label {
+		color: rgba(var(--accent-copper), 0.7);
+	}
+	#dashboard-main[data-theme="day-hc"] .weekly-icon-shadow {
+		filter: drop-shadow(0 0 4px rgba(var(--accent-warm), 0.14));
 	}
 </style>
