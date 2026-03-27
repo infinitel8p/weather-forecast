@@ -1,90 +1,706 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import { IconArrowRight, IconRadar2 } from "@tabler/icons-react";
+
+// Precompute outer tick marks (every 30°)
+const ticks = [...Array(12)].map((_, i) => {
+	const a = (i * 30 * Math.PI) / 180;
+	const r1 = 178;
+	const r2 = 188;
+	return {
+		x1: 200 + r1 * Math.sin(a),
+		y1: 200 - r1 * Math.cos(a),
+		x2: 200 + r2 * Math.sin(a),
+		y2: 200 - r2 * Math.cos(a),
+	};
+});
+
+// Small ticks every 10° (skip 30° positions)
+const smallTicks = [...Array(36)]
+	.map((_, i) => {
+		if (i % 3 === 0) return null;
+		const a = (i * 10 * Math.PI) / 180;
+		const r1 = 181;
+		const r2 = 186;
+		return {
+			x1: 200 + r1 * Math.sin(a),
+			y1: 200 - r1 * Math.cos(a),
+			x2: 200 + r2 * Math.sin(a),
+			y2: 200 - r2 * Math.cos(a),
+		};
+	})
+	.filter(Boolean);
 ---
 
 <Layout>
-	<main
-		class="flex flex-col items-center justify-center h-screen w-full bg-gray-50 text-gray-900">
-		<form
-			id="location-form"
-			class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md space-y-6">
-			<h1 class="text-2xl font-bold">Standort einrichten</h1>
+	<main class="h-screen w-full overflow-hidden flex" id="setup-main">
+		<!-- Left: Doppler radar display -->
+		<div class="relative flex-1 overflow-hidden flex items-center justify-center">
+			<!-- Day mode: warm ambient glow behind radar -->
+			<div id="radar-glow" class="absolute rounded-full pointer-events-none" style="width:420px;height:420px;"></div>
+			<!-- Doppler Radar SVG -->
+			<svg viewBox="-15 -5 430 415" class="w-95 h-95">
+				<defs>
+					<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+						<feGaussianBlur stdDeviation="3" result="blur"/>
+						<feMerge>
+							<feMergeNode in="blur"/>
+							<feMergeNode in="SourceGraphic"/>
+						</feMerge>
+					</filter>
+					<linearGradient id="sweepGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+						<stop id="sweep-stop-0" offset="0%" stop-color="rgba(56,189,168,0.45)"/>
+						<stop id="sweep-stop-1" offset="100%" stop-color="rgba(56,189,168,0.03)"/>
+					</linearGradient>
+					<!-- Doppler echo gradient -->
+					<radialGradient id="echoGrad" cx="50%" cy="50%" r="50%">
+						<stop id="echo-stop-0" offset="0%" stop-color="rgba(56,189,168,0)"/>
+						<stop id="echo-stop-40" offset="40%" stop-color="rgba(56,189,168,0)"/>
+						<stop id="echo-stop-60" offset="60%" stop-color="rgba(56,189,168,0.06)"/>
+						<stop id="echo-stop-80" offset="80%" stop-color="rgba(45,160,200,0.04)"/>
+						<stop id="echo-stop-100" offset="100%" stop-color="rgba(56,189,168,0)"/>
+					</radialGradient>
+				</defs>
 
-			<label class="block">
-				<span class="text-sm font-medium">Breitengrad (Latitude)</span>
-				<input
-					id="lat"
-					name="lat"
-					type="number"
-					step="any"
-					class="w-full mt-1 p-2 border border-gray-300 rounded"
-				/>
-			</label>
+				<!-- Static doppler echo (faint weather pattern) -->
+				<circle cx="200" cy="200" r="180" fill="url(#echoGrad)"/>
 
-			<label class="block">
-				<span class="text-sm font-medium">Längengrad (Longitude)</span>
-				<input
-					id="lon"
-					name="lon"
-					type="number"
-					step="any"
-					class="w-full mt-1 p-2 border border-gray-300 rounded"
-				/>
-			</label>
+				<!-- Outer tick marks every 30° -->
+				{ticks.map((t) => (
+					<line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} class="svg-tick-major" stroke-width="0.8"/>
+				))}
+				<!-- Small ticks every 10° -->
+				{smallTicks.map((t) => (
+					<line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} class="svg-tick-minor" stroke-width="0.5"/>
+				))}
 
-			<!-- or -->
+				<!-- Range rings -->
+				<circle cx="200" cy="200" r="40" fill="none" class="svg-ring" stroke-width="0.5"/>
+				<circle cx="200" cy="200" r="85" fill="none" class="svg-ring-mid" stroke-width="0.5"/>
+				<circle cx="200" cy="200" r="130" fill="none" class="svg-ring-far" stroke-width="0.5"/>
+				<circle cx="200" cy="200" r="180" fill="none" class="svg-ring-outer" stroke-width="0.5" stroke-dasharray="2 4"/>
 
-			<hr class="text-gray-300 mt-8" />
+				<!-- Crosshairs -->
+				<line x1="15" y1="200" x2="385" y2="200" class="svg-crosshair" stroke-width="0.5"/>
+				<line x1="200" y1="15" x2="200" y2="385" class="svg-crosshair" stroke-width="0.5"/>
+				<!-- Range intersection ticks -->
+				<line x1="113" y1="198" x2="113" y2="202" class="svg-intersection" stroke-width="0.5"/>
+				<line x1="287" y1="198" x2="287" y2="202" class="svg-intersection" stroke-width="0.5"/>
+				<line x1="198" y1="113" x2="202" y2="113" class="svg-intersection" stroke-width="0.5"/>
+				<line x1="198" y1="287" x2="202" y2="287" class="svg-intersection" stroke-width="0.5"/>
 
-			<label class="block">
-				<span class="text-sm font-medium">Stadt/PLZ (City/ZIP)</span>
-				<input
-					id="city"
-					name="city"
-					type="text"
-					class="w-full mt-1 p-2 border border-gray-300 rounded"
-				/>
-			</label>
+				<!-- Doppler echoes (revealed by sweep, animated via JS) -->
+				<g id="echo-group" opacity="0"></g>
 
-			<button
-				type="submit"
-				class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700">
-				Speichern & Starten
-			</button>
-		</form>
+				<!-- Sweep arm + trail -->
+				<g id="sweep-group">
+					<path id="sweep-trail" d="" class="svg-sweep-trail"/>
+					<line id="sweep-line" x1="200" y1="200" x2="380" y2="200" stroke="url(#sweepGrad)" stroke-width="1"/>
+				</g>
 
-		<script type="module">
-			const form = document.getElementById("location-form");
+				<!-- Ping rings -->
+				<circle id="ping-1" cx="200" cy="200" r="3" fill="none" class="svg-ping" stroke-width="0.5"/>
+				<circle id="ping-2" cx="200" cy="200" r="3" fill="none" class="svg-ping" stroke-width="0.5"/>
 
-			form.addEventListener("submit", async (e) => {
-				e.preventDefault();
+				<!-- Station dot with glow -->
+				<circle id="station-dot" cx="200" cy="200" r="2.5" filter="url(#glow)"/>
 
-				const lat = document.getElementById("lat").value;
-				const lon = document.getElementById("lon").value;
-				const other = document.getElementById("city").value;
+				<!-- Cardinal labels -->
+				<text x="200" y="8" text-anchor="middle" class="svg-cardinal" font-size="7" font-family="ui-monospace, monospace">N</text>
+				<text x="396" y="203" text-anchor="end" class="svg-cardinal" font-size="7" font-family="ui-monospace, monospace">E</text>
+				<text x="200" y="398" text-anchor="middle" class="svg-cardinal" font-size="7" font-family="ui-monospace, monospace">S</text>
+				<text x="2" y="203" text-anchor="start" class="svg-cardinal" font-size="7" font-family="ui-monospace, monospace">W</text>
 
-				// Send data to your API using fetch
-				const res = await fetch("/api/set-location", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ lat, lon, other }),
-				});
+				<!-- Range labels -->
+				<text x="200" y="157" text-anchor="middle" class="svg-range-label" font-size="5" font-family="ui-monospace, monospace">50km</text>
+				<text x="200" y="112" text-anchor="middle" class="svg-range-label" font-size="5" font-family="ui-monospace, monospace">100km</text>
+			</svg>
 
-				if (!res.ok) {
-					alert("Fehler beim Speichern der Position");
-					return;
-				}
+			<!-- Corner labels -->
+			<div class="absolute top-4 right-5 font-mono text-[10px] tracking-[0.15em] neon-sign">
+				WEATHER//<span id="neon-flicker" class="neon-sign">FORECAST</span>
+			</div>
+			<div class="absolute top-4 left-5 font-mono text-[9px] setup-text-faint tracking-[0.1em]">
+				DOPPLER RADAR
+			</div>
+			<div class="absolute bottom-4 left-5 font-mono text-[10px] setup-text-faint leading-relaxed">
+				<div id="coord-lat">51.0504° N</div>
+				<div id="coord-lon">7.1491° E</div>
+			</div>
+		</div>
 
-				// Fullscreen
-				if (document.documentElement.requestFullscreen) {
-					await document.documentElement.requestFullscreen();
-				}
+		<!-- Right: Form panel -->
+		<div class="w-85 h-full setup-panel border-l flex flex-col justify-center px-8">
+			<div class="space-y-6">
+				<div class="space-y-1.5">
+					<div class="flex items-center gap-2">
+						<IconRadar2 size={14} className="setup-icon-accent" />
+						<p class="font-mono text-[10px] setup-text-accent uppercase tracking-[0.2em]">Konfiguration</p>
+					</div>
+					<h1 class="text-xl font-semibold setup-heading tracking-tight">Standort</h1>
+				</div>
 
-				// Navigate to homepage
-				window.location.href = "/";
-			});
-		</script>
+				<div class="space-y-3">
+					<div class="grid grid-cols-2 gap-4">
+						<div class="setup-field">
+							<label class="setup-label" for="lat">Lat</label>
+							<input id="lat" name="lat" type="number" step="any" placeholder="51.05" class="setup-input"/>
+							<div class="setup-underline"></div>
+						</div>
+						<div class="setup-field">
+							<label class="setup-label" for="lon">Lon</label>
+							<input id="lon" name="lon" type="number" step="any" placeholder="7.15" class="setup-input"/>
+							<div class="setup-underline"></div>
+						</div>
+					</div>
+
+					<div class="flex items-center gap-3 py-1">
+						<div class="flex-1 h-px setup-divider"></div>
+						<span class="font-mono text-[9px] setup-text-faint uppercase tracking-[0.2em]">oder</span>
+						<div class="flex-1 h-px setup-divider"></div>
+					</div>
+
+					<div class="setup-field">
+						<label class="setup-label" for="city">Stadt / PLZ</label>
+						<input id="city" name="city" type="text" placeholder="Berlin" class="setup-input"/>
+						<div class="setup-underline"></div>
+					</div>
+				</div>
+
+				<button
+					type="button"
+					id="submit-btn"
+					class="group w-full py-2.5 setup-btn rounded-lg font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all duration-300">
+					Starten
+					<IconArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-0.5" />
+				</button>
+			</div>
+
+			<a
+				href="https://github.com/infinitel8p"
+				target="_blank"
+				rel="noopener noreferrer"
+				id="footer-link"
+				class="absolute bottom-4 font-mono text-[9px] setup-text-faint no-underline transition-all duration-500"
+			>@InfiniteL8p</a>
+		</div>
 	</main>
+
+	<style is:global>
+		/* ── Theme custom properties ── */
+		#setup-main {
+			--accent: 56, 189, 168;
+			--accent-alt: 45, 160, 200;
+			--bg-main: #050d12;
+			--bg-panel: #0a1219;
+			--border-panel: rgba(56, 189, 168, 0.06);
+			--text-heading: rgba(204, 251, 241, 0.9);
+			--text-input: rgba(204, 251, 241, 0.9);
+			--text-placeholder: rgba(56, 189, 168, 0.07);
+			--neon-full: rgba(56, 189, 168, 0.85);
+			--neon-glow-1: rgba(56, 189, 168, 0.4);
+			--neon-glow-2: rgba(56, 189, 168, 0.2);
+			--neon-glow-3: rgba(56, 189, 168, 0.1);
+			--neon-off: rgba(56, 189, 168, 0.12);
+			--neon-dim: rgba(56, 189, 168, 0.35);
+			--neon-dim-glow: rgba(56, 189, 168, 0.15);
+			background: var(--bg-main);
+			transition: background 0.6s ease;
+		}
+
+		#setup-main[data-theme="day"] {
+			--accent: 110, 78, 30;
+			--accent-alt: 140, 95, 35;
+			--accent-warm: 200, 140, 30;
+			--accent-copper: 180, 95, 30;
+			--bg-main: #e8e0d4;
+			--bg-panel: #f0ebe2;
+			--border-panel: rgba(180, 95, 30, 0.1);
+			--text-heading: rgba(50, 35, 15, 0.94);
+			--text-input: rgba(50, 35, 15, 0.82);
+			--text-placeholder: rgba(140, 95, 35, 0.3);
+			--neon-full: rgba(190, 110, 20, 0.88);
+			--neon-glow-1: rgba(200, 140, 30, 0.35);
+			--neon-glow-2: rgba(200, 140, 30, 0.18);
+			--neon-glow-3: rgba(200, 140, 30, 0.08);
+			--neon-off: rgba(180, 95, 30, 0.22);
+			--neon-dim: rgba(190, 110, 20, 0.45);
+			--neon-dim-glow: rgba(200, 140, 30, 0.15);
+			background: linear-gradient(145deg, #e8e1d5, #e5dccf);
+		}
+
+		/* ── Panel & text ── */
+		.setup-panel {
+			background: var(--bg-panel);
+			border-color: var(--border-panel);
+			transition: background 0.6s ease, border-color 0.6s ease;
+		}
+		.setup-heading {
+			color: var(--text-heading);
+			transition: color 0.6s ease;
+		}
+		.setup-icon-accent {
+			color: rgba(var(--accent), 0.3);
+			transition: color 0.6s ease;
+		}
+		.setup-text-accent {
+			color: rgba(var(--accent), 0.35);
+			transition: color 0.6s ease;
+		}
+		.setup-text-faint {
+			color: rgba(var(--accent), 0.13);
+			transition: color 0.6s ease;
+		}
+		.setup-divider {
+			background: rgba(var(--accent), 0.06);
+			transition: background 0.6s ease;
+		}
+
+		/* ── Form fields ── */
+		.setup-field {
+			position: relative;
+			padding-left: 10px;
+			border-left: 1px solid rgba(var(--accent), 0);
+			transition: border-color 0.3s;
+		}
+		.setup-field:focus-within {
+			border-left-color: rgba(var(--accent), 0.2);
+		}
+		.setup-label {
+			display: block;
+			font-size: 10px;
+			font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+			color: rgba(var(--accent), 0.22);
+			text-transform: uppercase;
+			letter-spacing: 0.12em;
+			margin-bottom: 2px;
+			transition: color 0.3s;
+		}
+		.setup-field:focus-within .setup-label {
+			color: rgba(var(--accent), 0.45);
+		}
+		.setup-input {
+			width: 100%;
+			padding: 5px 0;
+			background: transparent;
+			border: none;
+			border-bottom: 1px solid transparent;
+			font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+			font-size: 16px;
+			color: var(--text-input);
+			outline: none;
+			transition: border-color 0.4s, color 0.6s ease;
+			letter-spacing: 0.03em;
+		}
+		.setup-input::placeholder {
+			color: var(--text-placeholder);
+			letter-spacing: 0.05em;
+		}
+		.setup-input:focus {
+			border-bottom-color: transparent;
+		}
+		.setup-input:not(:placeholder-shown):not(:focus) {
+			border-bottom-color: rgba(var(--accent), 0.06);
+		}
+		.setup-underline {
+			position: absolute;
+			bottom: 0;
+			left: 10px;
+			right: 0;
+			height: 1px;
+			background: linear-gradient(90deg, rgb(var(--accent)), rgba(var(--accent-alt), 0.6));
+			transform: scaleX(0);
+			transform-origin: left;
+			transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+			box-shadow: 0 0 12px rgba(var(--accent), 0.2), 0 0 4px rgba(var(--accent), 0.1);
+		}
+		.setup-input:focus ~ .setup-underline {
+			transform: scaleX(1);
+		}
+		.setup-input[type="number"]::-webkit-inner-spin-button,
+		.setup-input[type="number"]::-webkit-outer-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+		.setup-input[type="number"] {
+			-moz-appearance: textfield;
+		}
+
+		/* ── Button ── */
+		.setup-btn {
+			background: rgba(var(--accent), 0.05);
+			border: 1px solid rgba(var(--accent), 0.1);
+			color: rgba(var(--accent), 0.5);
+			transition: all 0.3s;
+		}
+		.setup-btn:hover {
+			background: rgba(var(--accent), 0.1);
+			color: rgba(var(--accent), 0.7);
+			border-color: rgba(var(--accent), 0.2);
+		}
+
+		/* ── Neon sign ── */
+		.neon-sign {
+			color: var(--neon-full);
+			text-shadow:
+				0 0 4px var(--neon-glow-1),
+				0 0 12px var(--neon-glow-2),
+				0 0 30px var(--neon-glow-3);
+			transition: color 0.6s ease, text-shadow 0.6s ease;
+		}
+		.neon-sign.flicker-off {
+			color: var(--neon-off);
+			text-shadow: none;
+		}
+		.neon-sign.flicker-dim {
+			color: var(--neon-dim);
+			text-shadow: 0 0 2px var(--neon-dim-glow);
+		}
+
+		/* ── SVG theming via CSS ── */
+		.svg-tick-major { stroke: rgba(var(--accent), 0.12); transition: stroke 0.6s ease; }
+		.svg-tick-minor { stroke: rgba(var(--accent), 0.06); transition: stroke 0.6s ease; }
+		.svg-ring { stroke: rgba(var(--accent), 0.09); transition: stroke 0.6s ease; }
+		.svg-ring-mid { stroke: rgba(var(--accent), 0.07); transition: stroke 0.6s ease; }
+		.svg-ring-far { stroke: rgba(var(--accent), 0.05); transition: stroke 0.6s ease; }
+		.svg-ring-outer { stroke: rgba(var(--accent), 0.04); transition: stroke 0.6s ease; }
+		.svg-crosshair { stroke: rgba(var(--accent), 0.035); transition: stroke 0.6s ease; }
+		.svg-intersection { stroke: rgba(var(--accent), 0.1); transition: stroke 0.6s ease; }
+		.svg-sweep-trail { fill: rgba(var(--accent), 0.035); transition: fill 0.6s ease; }
+		.svg-ping { stroke: rgba(var(--accent), 0.4); transition: stroke 0.6s ease; }
+		.svg-cardinal { fill: rgba(var(--accent), 0.14); transition: fill 0.6s ease; }
+		.svg-range-label { fill: rgba(var(--accent), 0.08); transition: fill 0.6s ease; }
+		#station-dot { fill: rgb(var(--accent)); transition: fill 0.6s ease; }
+
+		/* ── Day mode: richer colors + depth ── */
+		#setup-main[data-theme="day"] .svg-tick-major { stroke: rgba(var(--accent-copper), 0.35); }
+		#setup-main[data-theme="day"] .svg-tick-minor { stroke: rgba(var(--accent), 0.2); }
+		#setup-main[data-theme="day"] .svg-ring { stroke: rgba(var(--accent-copper), 0.22); }
+		#setup-main[data-theme="day"] .svg-ring-mid { stroke: rgba(var(--accent-copper), 0.18); }
+		#setup-main[data-theme="day"] .svg-ring-far { stroke: rgba(var(--accent), 0.14); }
+		#setup-main[data-theme="day"] .svg-ring-outer { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme="day"] .svg-crosshair { stroke: rgba(var(--accent-copper), 0.1); }
+		#setup-main[data-theme="day"] .svg-intersection { stroke: rgba(var(--accent-copper), 0.3); }
+		#setup-main[data-theme="day"] .svg-sweep-trail { fill: rgba(var(--accent-warm), 0.07); }
+		#setup-main[data-theme="day"] .svg-ping { stroke: rgba(var(--accent-warm), 0.22); }
+		#setup-main[data-theme="day"] .svg-cardinal { fill: rgba(var(--accent-copper), 0.45); }
+		#setup-main[data-theme="day"] .svg-range-label { fill: rgba(var(--accent-copper), 0.32); }
+		#setup-main[data-theme="day"] #station-dot {
+			fill: rgb(var(--accent-warm));
+			filter: url(#glow) drop-shadow(0 0 3px rgba(var(--accent-warm), 0.5));
+		}
+		#setup-main[data-theme="day"] .setup-text-faint { color: rgba(var(--accent-copper), 0.4); }
+		#setup-main[data-theme="day"] .setup-icon-accent { color: rgba(var(--accent-warm), 0.65); }
+		#setup-main[data-theme="day"] .setup-text-accent { color: rgba(var(--accent-copper), 0.6); }
+		#setup-main[data-theme="day"] .setup-label { color: rgba(var(--accent-copper), 0.5); }
+		#setup-main[data-theme="day"] .setup-field:focus-within .setup-label { color: rgba(var(--accent-copper), 0.8); }
+		#setup-main[data-theme="day"] .setup-field:focus-within {
+			border-left-color: rgba(var(--accent-warm), 0.35);
+		}
+		#setup-main[data-theme="day"] .setup-divider {
+			background: linear-gradient(90deg, transparent, rgba(var(--accent-copper), 0.18), transparent);
+		}
+		#setup-main[data-theme="day"] .setup-underline {
+			background: linear-gradient(90deg, rgb(var(--accent-warm)), rgba(var(--accent-copper), 0.8));
+			box-shadow: 0 0 12px rgba(var(--accent-warm), 0.3), 0 0 4px rgba(var(--accent-warm), 0.15);
+		}
+		#setup-main[data-theme="day"] .setup-btn {
+			background: linear-gradient(145deg, rgba(var(--accent-warm), 0.08), rgba(var(--accent-copper), 0.1));
+			border-color: rgba(var(--accent-copper), 0.18);
+			color: rgba(var(--accent-copper), 0.7);
+			box-shadow: 0 1px 4px rgba(var(--accent), 0.06);
+		}
+		#setup-main[data-theme="day"] .setup-btn:hover {
+			background: linear-gradient(145deg, rgba(var(--accent-warm), 0.14), rgba(var(--accent-copper), 0.18));
+			color: rgba(var(--accent-copper), 0.9);
+			border-color: rgba(var(--accent-warm), 0.3);
+			box-shadow: 0 2px 8px rgba(var(--accent-warm), 0.12);
+		}
+		#setup-main[data-theme="day"] .setup-input:not(:placeholder-shown):not(:focus) {
+			border-bottom-color: rgba(var(--accent-copper), 0.15);
+		}
+		#setup-main[data-theme="day"] #radar-glow {
+			background: radial-gradient(circle,
+				rgba(var(--accent-warm), 0.08) 0%,
+				rgba(var(--accent-warm), 0.04) 35%,
+				transparent 65%
+			);
+		}
+		#setup-main[data-theme="day"] .setup-panel {
+			background: linear-gradient(180deg, #f2ece3, #ede6db);
+			border-color: rgba(var(--accent-copper), 0.1);
+			box-shadow: -1px 0 12px rgba(var(--accent), 0.04);
+		}
+		#setup-main[data-theme="day"] .neon-sign {
+			text-shadow:
+				0 0 5px var(--neon-glow-1),
+				0 0 15px var(--neon-glow-2),
+				0 0 35px var(--neon-glow-3);
+		}
+
+		/* Footer link */
+		#footer-link {
+			text-shadow: 0 0 8px rgba(var(--accent), 0.08);
+		}
+		#footer-link:hover {
+			color: rgba(var(--accent), 0.4);
+			text-shadow: 0 0 6px rgba(var(--accent), 0.2), 0 0 15px rgba(var(--accent), 0.1);
+		}
+		#setup-main[data-theme="day"] #footer-link {
+			color: rgba(var(--accent-copper), 0.2);
+		}
+		#setup-main[data-theme="day"] #footer-link:hover {
+			color: rgba(var(--accent-warm), 0.55);
+			text-shadow: 0 0 8px rgba(var(--accent-warm), 0.15);
+		}
+	</style>
+
+	<script>
+		// ── Theme detection (day 06:00–21:59, night 22:00–05:59) ──
+		const main = document.getElementById("setup-main");
+		const hour = new Date().getHours();
+		const isDay = hour >= 6 && hour <= 21;
+		main.setAttribute("data-theme", isDay ? "day" : "night");
+
+		// Accent RGB for JS-driven SVG attributes
+		const accent = isDay ? [110, 78, 30] : [56, 189, 168];
+		const accentAlt = isDay ? [180, 95, 30] : [45, 160, 200];
+		// Warm highlight color for animated SVG elements in day mode
+		const echoColor = isDay ? [180, 120, 35] : [56, 189, 168];
+
+		// Update SVG gradient stops for current theme
+		function applyGradientTheme() {
+			const [er, eg, eb] = echoColor;
+			const [ar, ag, ab] = accentAlt;
+			const sweepA = isDay ? 0.28 : 0.45;
+			const sweepB = isDay ? 0.04 : 0.03;
+			const echoA = isDay ? 0.07 : 0.06;
+			const echoB = isDay ? 0.05 : 0.04;
+
+			document.getElementById("sweep-stop-0").setAttribute("stop-color", `rgba(${er},${eg},${eb},${sweepA})`);
+			document.getElementById("sweep-stop-1").setAttribute("stop-color", `rgba(${er},${eg},${eb},${sweepB})`);
+
+			document.getElementById("echo-stop-0").setAttribute("stop-color", `rgba(${er},${eg},${eb},0)`);
+			document.getElementById("echo-stop-40").setAttribute("stop-color", `rgba(${er},${eg},${eb},0)`);
+			document.getElementById("echo-stop-60").setAttribute("stop-color", `rgba(${er},${eg},${eb},${echoA})`);
+			document.getElementById("echo-stop-80").setAttribute("stop-color", `rgba(${ar},${ag},${ab},${echoB})`);
+			document.getElementById("echo-stop-100").setAttribute("stop-color", `rgba(${er},${eg},${eb},0)`);
+		}
+		applyGradientTheme();
+
+		const sweepGroup = document.getElementById("sweep-group");
+		const sweepTrail = document.getElementById("sweep-trail");
+		const ping1 = document.getElementById("ping-1");
+		const ping2 = document.getElementById("ping-2");
+		const echoGroup = document.getElementById("echo-group");
+		const CX = 200;
+		const CY = 200;
+		const R = 180;
+
+		// Coordinate ticker — cycles through real city coordinates
+		const coordLat = document.getElementById("coord-lat");
+		const coordLon = document.getElementById("coord-lon");
+		const locations = [
+			{ lat: 51.0504, latD: "N", lon: 7.1491, lonD: "E" },   // Bergisch Gladbach
+			{ lat: 48.8566, latD: "N", lon: 2.3522, lonD: "E" },   // Paris
+			{ lat: 35.6762, latD: "N", lon: 139.6503, lonD: "E" },  // Tokyo
+			{ lat: 40.7128, latD: "N", lon: 74.0060, lonD: "W" },   // New York
+			{ lat: 55.7558, latD: "N", lon: 37.6173, lonD: "E" },   // Moscow
+			{ lat: 33.8688, latD: "S", lon: 151.2093, lonD: "E" },  // Sydney
+			{ lat: 52.5200, latD: "N", lon: 13.4050, lonD: "E" },   // Berlin
+			{ lat: 64.1466, latD: "N", lon: 21.9426, lonD: "W" },   // Reykjavik
+			{ lat: 1.3521, latD: "N", lon: 103.8198, lonD: "E" },   // Singapore
+			{ lat: 37.5665, latD: "N", lon: 126.9780, lonD: "E" },  // Seoul
+		];
+
+		let coordFrom = locations[0];
+		let coordTo = locations[1];
+		let coordIdx = 1;
+		let coordProgress = 0;
+		const HOLD_TIME = 3;    // seconds to hold before scrolling
+		const SCROLL_TIME = 1.2; // seconds to animate between coordinates
+		let coordTimer = 0;
+		let coordPhase = "hold"; // "hold" or "scroll"
+
+		function updateCoords(dt) {
+			coordTimer += dt;
+
+			if (coordPhase === "hold") {
+				if (coordTimer >= HOLD_TIME) {
+					coordTimer = 0;
+					coordPhase = "scroll";
+					coordFrom = locations[coordIdx];
+					coordIdx = (coordIdx + 1) % locations.length;
+					coordTo = locations[coordIdx];
+				}
+			} else {
+				coordProgress = Math.min(coordTimer / SCROLL_TIME, 1);
+				// Smooth ease in-out
+				const t = coordProgress < 0.5
+					? 4 * coordProgress * coordProgress * coordProgress
+					: 1 - Math.pow(-2 * coordProgress + 2, 3) / 2;
+
+				const lat = coordFrom.lat + (coordTo.lat - coordFrom.lat) * t;
+				const lon = coordFrom.lon + (coordTo.lon - coordFrom.lon) * t;
+				const latD = t > 0.5 ? coordTo.latD : coordFrom.latD;
+				const lonD = t > 0.5 ? coordTo.lonD : coordFrom.lonD;
+
+				coordLat.textContent = `${lat.toFixed(4)}° ${latD}`;
+				coordLon.textContent = `${Math.abs(lon).toFixed(4)}° ${lonD}`;
+
+				if (coordProgress >= 1) {
+					coordTimer = 0;
+					coordPhase = "hold";
+				}
+			}
+		}
+
+		// Neon Wackelkontakt — only "FORECAST" flickers
+		const neonEl = document.getElementById("neon-flicker");
+		let neonTimer = 0;
+		let nextFlicker = 2 + Math.random() * 4;
+
+		function updateNeon(dt) {
+			neonTimer += dt;
+			if (neonTimer < nextFlicker) return;
+
+			const pattern = [];
+			// 2-6 rapid flickers per burst, irregular
+			const flickerCount = 2 + Math.floor(Math.random() * 5);
+
+			let t = 0;
+			for (let i = 0; i < flickerCount; i++) {
+				// Randomize: sometimes off, sometimes dim, varying durations
+				const roll = Math.random();
+				const state = roll < 0.6 ? "flicker-off" : "flicker-dim";
+				const offDuration = 20 + Math.random() * 70;
+				const onDuration = 15 + Math.random() * 80;
+
+				pattern.push({ time: t, state });
+				t += offDuration;
+
+				// Sometimes double-tap: brief on then off again
+				if (Math.random() < 0.3) {
+					pattern.push({ time: t, state: "" });
+					t += 15 + Math.random() * 30;
+					pattern.push({ time: t, state: "flicker-off" });
+					t += 20 + Math.random() * 40;
+				}
+
+				pattern.push({ time: t, state: "" });
+				t += onDuration;
+			}
+
+			for (const step of pattern) {
+				setTimeout(() => {
+					neonEl.classList.remove("flicker-off", "flicker-dim");
+					if (step.state) neonEl.classList.add(step.state);
+				}, step.time);
+			}
+
+			neonTimer = 0;
+			nextFlicker = 2 + Math.random() * 6; // every 2-8s
+		}
+
+		// Generate random doppler echo blobs (weather cells)
+		const [er, eg, eb] = echoColor;
+		const echoes = [];
+		for (let i = 0; i < 5; i++) {
+			const echoAngle = Math.random() * 360;
+			const echoDist = 50 + Math.random() * 120;
+			const echoR = 8 + Math.random() * 18;
+			const rad = (echoAngle * Math.PI) / 180;
+			const ex = CX + echoDist * Math.cos(rad);
+			const ey = CY + echoDist * Math.sin(rad);
+			const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+			circle.setAttribute("cx", String(ex));
+			circle.setAttribute("cy", String(ey));
+			circle.setAttribute("r", String(echoR));
+			const baseOp = isDay ? (0.04 + Math.random() * 0.05) : (0.02 + Math.random() * 0.04);
+			circle.setAttribute("fill", `rgba(${er},${eg},${eb},${baseOp})`);
+			circle.setAttribute("filter", "url(#glow)");
+			echoGroup.appendChild(circle);
+			echoes.push({ angle: echoAngle, el: circle, baseOpacity: baseOp });
+		}
+		echoGroup.setAttribute("opacity", "1");
+
+		let lastTime = 0;
+		let angle = 0;
+
+		function animateRadar(timestamp) {
+			const dt = lastTime ? (timestamp - lastTime) / 1000 : 0.016;
+			lastTime = timestamp;
+
+			// Coordinate ticker + neon flicker
+			updateCoords(dt);
+			updateNeon(dt);
+
+			// ~12 seconds per full revolution
+			angle = (angle + dt * 30) % 360;
+
+			// Rotate sweep
+			sweepGroup.setAttribute("transform", `rotate(${angle}, ${CX}, ${CY})`);
+
+			// Trail cone: 35° arc
+			const trailDeg = 35;
+			const startRad = (-trailDeg * Math.PI) / 180;
+			const x1 = CX + R * Math.cos(startRad);
+			const y1 = CY + R * Math.sin(startRad);
+			const x2 = CX + R;
+			const y2 = CY;
+			sweepTrail.setAttribute("d", `M${CX},${CY} L${x1},${y1} A${R},${R} 0 0,1 ${x2},${y2} Z`);
+
+			// Doppler echoes: brighten when sweep passes, then fade
+			for (const echo of echoes) {
+				let diff = ((angle - echo.angle) % 360 + 360) % 360;
+				let brightness;
+				if (diff < 30) {
+					brightness = echo.baseOpacity + (isDay ? 0.14 : 0.08) * (1 - diff / 30);
+				} else {
+					const fade = Math.min((diff - 30) / 300, 1);
+					brightness = echo.baseOpacity * (1 - fade * 0.6);
+				}
+				echo.el.setAttribute("fill", `rgba(${er},${eg},${eb},${brightness})`);
+			}
+
+			// Ping pulses with cubic ease-out
+			const p1 = (angle % 360) / 360;
+			const p2 = ((angle + 180) % 360) / 360;
+			const ease = (t) => 1 - Math.pow(1 - t, 3);
+
+			ping1.setAttribute("r", String(3 + ease(p1) * 80));
+			ping1.setAttribute("stroke-opacity", String(0.35 * Math.pow(1 - p1, 2)));
+
+			ping2.setAttribute("r", String(3 + ease(p2) * 80));
+			ping2.setAttribute("stroke-opacity", String(0.35 * Math.pow(1 - p2, 2)));
+
+			requestAnimationFrame(animateRadar);
+		}
+
+		requestAnimationFrame(animateRadar);
+
+		// Form submit
+		document.getElementById("submit-btn").addEventListener("click", async () => {
+			const lat = document.getElementById("lat").value;
+			const lon = document.getElementById("lon").value;
+			const other = document.getElementById("city").value;
+
+			const res = await fetch("/api/set-location", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ lat, lon, other }),
+			});
+
+			if (!res.ok) {
+				alert("Fehler beim Speichern der Position");
+				return;
+			}
+
+			if (document.documentElement.requestFullscreen) {
+				await document.documentElement.requestFullscreen();
+			}
+
+			window.location.href = "/";
+		});
+	</script>
 </Layout>

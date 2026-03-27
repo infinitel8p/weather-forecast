@@ -5,16 +5,12 @@ import WeatherChart from "@/components/WeatherChart.jsx";
 import {
 	IconSunrise,
 	IconSunset,
-	IconTemperaturePlus,
-	IconTemperatureMinus,
-	IconWindsockFilled,
+	IconWind,
 	IconDroplet,
 	IconGauge,
 	IconUvIndex,
-	IconBinoculars,
+	IconEye,
 	IconCloud,
-	IconRefresh,
-	IconReload,
 } from "@tabler/icons-react";
 
 const env = import.meta.env;
@@ -46,18 +42,11 @@ const currentDate = time.toLocaleDateString("de-DE", {
 	hour12: false,
 });
 
-// res = await fetch(
-// 	`https://api.openweathermap.org/data/2.5/forecast/daily?lat=${lat}&lon=${lon}&cnt=8&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
-// );
 res = await fetch(
 	`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&cnt=8&lang=DE&units=metric&exclude=current,minutely,hourly,alerts&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
 );
 const weeklyWeather = await res.json();
-console.log(weeklyWeather);
 
-// res = await fetch(
-// 	`https://api.openweathermap.org/data/2.5/forecast/hourly?lat=${lat}&lon=${lon}&cnt=24&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
-// );
 res = await fetch(
 	`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&cnt=8&lang=DE&units=metric&exclude=current,minutely,daily,alerts&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
 );
@@ -96,7 +85,7 @@ const hourlyUVIndex = oneCall.hourly.slice(1, 25).map((h) => {
 });
 
 function formatToBerlinTime(unixTimestamp) {
-	const date = new Date(unixTimestamp * 1000); // Convert to ms
+	const date = new Date(unixTimestamp * 1000);
 	return date.toLocaleTimeString("de-DE", {
 		timeZone: "Europe/Berlin",
 		hour: "2-digit",
@@ -106,7 +95,7 @@ function formatToBerlinTime(unixTimestamp) {
 }
 
 function formatToBerlinDate(unixTimestamp) {
-	const date = new Date(unixTimestamp * 1000); // Convert to ms
+	const date = new Date(unixTimestamp * 1000);
 	return date.toLocaleDateString("de-DE", {
 		timeZone: "Europe/Berlin",
 		weekday: "short",
@@ -116,335 +105,364 @@ function formatToBerlinDate(unixTimestamp) {
 function meterToKm(m) {
 	return m / 1000;
 }
-
-// some random color stuff
-const hour = new Date().toLocaleTimeString("de-DE", {
-	timeZone: "Europe/Berlin",
-	hour: "2-digit",
-	hour12: false,
-});
-const hourNumber = parseInt(hour, 10);
-const isNight = hourNumber >= 22 || hourNumber < 6;
-const colors = [
-	"text-red-950",
-	"text-orange-950",
-	"text-amber-950",
-	"text-yellow-950",
-	"text-lime-950",
-	"text-green-950",
-	"text-emerald-950",
-	"text-teal-950",
-	"text-cyan-950",
-	"text-sky-950",
-	"text-blue-950",
-	"text-indigo-950",
-	"text-violet-950",
-	"text-purple-950",
-	"text-fuchsia-950",
-	"text-pink-950",
-	"text-rose-950",
-	"text-slate-950",
-	"text-gray-950",
-	"text-zinc-950",
-	"text-neutral-950",
-	"text-stone-950",
-];
-const darkColors = [
-	"text-red-100",
-	"text-orange-100",
-	"text-amber-100",
-	"text-yellow-100",
-	"text-lime-100",
-	"text-green-100",
-	"text-emerald-100",
-	"text-teal-100",
-	"text-cyan-100",
-	"text-sky-100",
-	"text-blue-100",
-	"text-indigo-100",
-	"text-violet-100",
-	"text-purple-100",
-	"text-fuchsia-100",
-	"text-pink-100",
-	"text-rose-100",
-	"text-slate-100",
-	"text-gray-100",
-	"text-zinc-100",
-	"text-neutral-100",
-	"text-stone-100",
-];
 ---
 
 <Layout>
-	<main
-		class="flex flex-col items-center h-screen w-full"
-		style={{
-			backgroundColor: isNight ? "#111927" : "#fdfdfd",
-			backgroundImage: isNight
-				? `radial-gradient(at 50% 50%, hsl(200, 77%, 50%) 0px, transparent 59%),
-         radial-gradient(at 82% 65%, hsl(218, 39%, 11%) 0px, transparent 55%)`
-				: `radial-gradient(at 50% 50%, hsl(45, 100%, 80%) 0px, transparent 59%),
-         radial-gradient(at 82% 65%, #f5f5f4 0px, transparent 55%)`,
-		}}>
-		<div class="flex flex-col gap-4 w-full">
-			<section
-				class="grid grid-cols-2 max-w-[1475px] items-center gap-4 mt-5 mx-auto">
-				<div
-					class:list={[
-						"flex items-center gap-16 shadow-md rounded-lg p-8 backdrop-blur-lg backdrop-saturate-150 border h-full",
-						{
-							[`bg-[rgba(17,25,39,0.5)] border-white/10 text-slate-100`]:
-								// ${darkColors[Math.floor(Math.random() * colors.length)]}
-								isNight,
-							[`bg-[rgba(245,245,244,0.75)] border-black/10 text-slate-900`]:
-								//  ${colors[Math.floor(Math.random() * colors.length)]}
-								!isNight,
-						},
-					]}>
-					<div class="flex flex-col items-center">
-						<div class="text-2xl font-bold">
-							{city ? city : currentWeather.name}
-						</div>
-						<div class="text-xl font-semibold">
-							{currentDate}
-						</div>
-						<img
-							class="size-100 drop-shadow-md object-contain -my-24"
-							src=`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@4x.png`
-						/>
-						<p class="text-4xl font-semibold text-center">
-							{currentWeather.weather[0].description}
+	<main id="dashboard-main" class="flex flex-col h-screen w-screen overflow-hidden p-2 gap-1.5 relative">
+		<!-- Da Vinci-inspired geometric construction lines -->
+		<svg class="absolute inset-0 w-full h-full pointer-events-none davinci-geo" viewBox="0 0 800 480" preserveAspectRatio="xMidYMid slice" style="z-index: 0;" font-family="ui-monospace, monospace">
+
+			<!-- ── Axes & diagonals ── -->
+			<line x1="400" y1="10" x2="400" y2="470" class="geo-axis" stroke-width="0.5"/>
+			<line x1="30" y1="240" x2="770" y2="240" class="geo-axis" stroke-width="0.5"/>
+			<line x1="60" y1="20" x2="740" y2="460" class="geo-diagonal" stroke-width="0.4"/>
+			<line x1="740" y1="20" x2="60" y2="460" class="geo-diagonal" stroke-width="0.4"/>
+			<!-- 30°/60° construction lines through center -->
+			<line x1="400" y1="240" x2="40" y2="32"  class="geo-radial" stroke-width="0.4"/>
+			<line x1="400" y1="240" x2="760" y2="32"  class="geo-radial" stroke-width="0.4"/>
+			<line x1="400" y1="240" x2="40" y2="448"  class="geo-radial" stroke-width="0.4"/>
+			<line x1="400" y1="240" x2="760" y2="448" class="geo-radial" stroke-width="0.4"/>
+
+			<!-- ── Vitruvian circles ── -->
+			<!-- Outer circle + spirals: slow clockwise rotation -->
+			<g id="geo-outer-ring">
+				<animateTransform attributeName="transform" type="rotate" from="0 400 240" to="360 400 240" dur="240s" repeatCount="indefinite"/>
+				<circle cx="400" cy="240" r="200" fill="none" class="geo-circle-outer" stroke-width="0.7"/>
+			</g>
+			<!-- Mid circle + pentagram: rotates counter-clockwise -->
+			<g id="geo-pentagram-ring">
+				<animateTransform attributeName="transform" type="rotate" from="0 400 240" to="-360 400 240" dur="180s" repeatCount="indefinite"/>
+				<circle cx="400" cy="240" r="124" fill="none" class="geo-circle-mid" stroke-width="0.8"/>
+				<polygon points="400,116 518,202 473,340 327,340 282,202" fill="none" class="geo-pentagon" stroke-width="0.6"/>
+				<line x1="400" y1="116" x2="473" y2="340" class="geo-star" stroke-width="0.5"/>
+				<line x1="473" y1="340" x2="282" y2="202" class="geo-star" stroke-width="0.5"/>
+				<line x1="282" y1="202" x2="518" y2="202" class="geo-star" stroke-width="0.5"/>
+				<line x1="518" y1="202" x2="327" y2="340" class="geo-star" stroke-width="0.5"/>
+				<line x1="327" y1="340" x2="400" y2="116" class="geo-star" stroke-width="0.5"/>
+			</g>
+			<circle cx="400" cy="240" r="76"  fill="none" class="geo-circle-inner" stroke-width="0.6" stroke-dasharray="5 8">
+				<animate attributeName="stroke-dashoffset" from="0" to="52" dur="18s" repeatCount="indefinite"/>
+			</circle>
+			<circle cx="400" cy="240" r="40"  fill="none" class="geo-circle-inner" stroke-width="0.4" stroke-dasharray="2 6">
+				<animate attributeName="stroke-dashoffset" from="0" to="-32" dur="24s" repeatCount="indefinite"/>
+			</circle>
+
+			<!-- ── Degree ring: major + minor ticks, rotating like an astrolabe ── -->
+			<g id="geo-astrolabe">
+				<animateTransform attributeName="transform" type="rotate" from="0 400 240" to="360 400 240" dur="120s" repeatCount="indefinite"/>
+				<g class="geo-degree-major" stroke-width="1.2">
+					<g transform="rotate(0,400,240)">  <line x1="400" y1="40"  x2="400" y2="56"/></g>
+					<g transform="rotate(30,400,240)"> <line x1="400" y1="40"  x2="400" y2="56"/></g>
+					<g transform="rotate(60,400,240)"> <line x1="400" y1="40"  x2="400" y2="56"/></g>
+					<g transform="rotate(90,400,240)"> <line x1="400" y1="40"  x2="400" y2="56"/></g>
+					<g transform="rotate(120,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
+					<g transform="rotate(150,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
+					<g transform="rotate(180,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
+					<g transform="rotate(210,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
+					<g transform="rotate(240,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
+					<g transform="rotate(270,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
+					<g transform="rotate(300,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
+					<g transform="rotate(330,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
+				</g>
+				<g class="geo-degree-minor" stroke-width="0.6">
+					<g transform="rotate(10,400,240)"> <line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(20,400,240)"> <line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(40,400,240)"> <line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(50,400,240)"> <line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(70,400,240)"> <line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(80,400,240)"> <line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(100,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(110,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(130,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(140,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(160,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(170,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(190,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(200,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(220,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(230,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(250,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(260,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(280,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(290,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(310,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(320,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(340,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+					<g transform="rotate(350,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+				</g>
+			</g>
+
+			<!-- ── Degree labels every 30° ── -->
+			<g class="geo-label" font-size="6.5" text-anchor="middle">
+				<text x="400"  y="27">0°</text>
+				<text x="506"  y="57">30°</text>
+				<text x="584"  y="135">60°</text>
+				<text x="615"  y="243">90°</text>
+				<text x="584"  y="350">120°</text>
+				<text x="506"  y="428">150°</text>
+				<text x="400"  y="458">180°</text>
+				<text x="293"  y="428">210°</text>
+				<text x="212"  y="350">240°</text>
+				<text x="180"  y="243">270°</text>
+				<text x="212"  y="135">300°</text>
+				<text x="293"  y="57">330°</text>
+			</g>
+
+			<!-- ── Vesica piscis ── -->
+			<path d="M 362 240 A 76 76 0 0 1 438 240 A 76 76 0 0 1 362 240" fill="none" class="geo-vesica" stroke-width="0.6" stroke-dasharray="3 4">
+				<animate attributeName="stroke-dashoffset" from="0" to="28" dur="14s" repeatCount="indefinite"/>
+			</path>
+			<path d="M 362 240 A 76 76 0 0 0 438 240 A 76 76 0 0 0 362 240" fill="none" class="geo-vesica" stroke-width="0.6" stroke-dasharray="3 4">
+				<animate attributeName="stroke-dashoffset" from="0" to="-28" dur="14s" repeatCount="indefinite"/>
+			</path>
+
+			<!-- ── Proportion ticks on horizontal axis ── -->
+			<!-- Golden ratio division: 400 ± 123.6 ≈ 276, 524 -->
+			<line x1="276" y1="236" x2="276" y2="244" class="geo-prop-tick" stroke-width="0.8"/>
+			<line x1="524" y1="236" x2="524" y2="244" class="geo-prop-tick" stroke-width="0.8"/>
+			<!-- Thirds -->
+			<line x1="333" y1="237" x2="333" y2="243" class="geo-prop-tick" stroke-width="0.6"/>
+			<line x1="467" y1="237" x2="467" y2="243" class="geo-prop-tick" stroke-width="0.6"/>
+			<!-- φ annotations -->
+			<text x="276" y="230" text-anchor="middle" class="geo-label" font-size="5.5">φ</text>
+			<text x="524" y="230" text-anchor="middle" class="geo-label" font-size="5.5">φ</text>
+
+			<!-- ── Proportion ticks on vertical axis ── -->
+			<line x1="396" y1="116" x2="404" y2="116" class="geo-prop-tick" stroke-width="0.8"/>
+			<line x1="396" y1="364" x2="404" y2="364" class="geo-prop-tick" stroke-width="0.8"/>
+			<line x1="397" y1="163" x2="403" y2="163" class="geo-prop-tick" stroke-width="0.6"/>
+			<line x1="397" y1="317" x2="403" y2="317" class="geo-prop-tick" stroke-width="0.6"/>
+			<text x="410" y="119" class="geo-label" font-size="5.5">φ</text>
+			<text x="410" y="367" class="geo-label" font-size="5.5">φ</text>
+
+			<!-- ── Compass arcs (quadrant construction) ── -->
+			<path d="M 200 240 A 200 200 0 0 1 400 40"  fill="none" class="geo-arc" stroke-width="0.6"/>
+			<path d="M 600 240 A 200 200 0 0 0 400 40"  fill="none" class="geo-arc" stroke-width="0.6"/>
+			<path d="M 200 240 A 200 200 0 0 0 400 440" fill="none" class="geo-arc" stroke-width="0.6"/>
+			<path d="M 600 240 A 200 200 0 0 1 400 440" fill="none" class="geo-arc" stroke-width="0.6"/>
+			<!-- Smaller arcs -->
+			<path d="M 276 240 A 124 124 0 0 1 400 116" fill="none" class="geo-arc-small" stroke-width="0.4" stroke-dasharray="3 5">
+				<animate attributeName="stroke-dashoffset" from="0" to="40" dur="20s" repeatCount="indefinite"/>
+			</path>
+			<path d="M 524 240 A 124 124 0 0 0 400 116" fill="none" class="geo-arc-small" stroke-width="0.4" stroke-dasharray="3 5">
+				<animate attributeName="stroke-dashoffset" from="0" to="-40" dur="20s" repeatCount="indefinite"/>
+			</path>
+
+			<!-- ── Annotation marks at key intersections ── -->
+			<circle cx="400" cy="116" r="3"   fill="none" class="geo-mark" stroke-width="0.8"/>
+			<circle cx="400" cy="364" r="3"   fill="none" class="geo-mark" stroke-width="0.8"/>
+			<circle cx="276" cy="240" r="3"   fill="none" class="geo-mark" stroke-width="0.8"/>
+			<circle cx="524" cy="240" r="3"   fill="none" class="geo-mark" stroke-width="0.8"/>
+			<circle cx="518" cy="202" r="2.5" fill="none" class="geo-mark" stroke-width="0.7"/>
+			<circle cx="282" cy="202" r="2.5" fill="none" class="geo-mark" stroke-width="0.7"/>
+			<circle cx="473" cy="340" r="2.5" fill="none" class="geo-mark" stroke-width="0.7"/>
+			<circle cx="327" cy="340" r="2.5" fill="none" class="geo-mark" stroke-width="0.7"/>
+			<!-- Axis endpoints -->
+			<circle cx="400" cy="40"  r="2" fill="none" class="geo-mark" stroke-width="0.6"/>
+			<circle cx="400" cy="440" r="2" fill="none" class="geo-mark" stroke-width="0.6"/>
+			<circle cx="200" cy="240" r="2" fill="none" class="geo-mark" stroke-width="0.6"/>
+			<circle cx="600" cy="240" r="2" fill="none" class="geo-mark" stroke-width="0.6"/>
+
+			<!-- ── Fibonacci dots ── -->
+			<circle cx="524" cy="240" r="2" class="geo-fib-dot"/>
+			<circle cx="524" cy="316" r="2" class="geo-fib-dot"/>
+			<circle cx="477" cy="316" r="2" class="geo-fib-dot"/>
+			<circle cx="276" cy="240" r="2" class="geo-fib-dot"/>
+			<circle cx="276" cy="164" r="2" class="geo-fib-dot"/>
+			<circle cx="323" cy="164" r="2" class="geo-fib-dot"/>
+
+			<!-- ── Corner registration marks ── -->
+			<path d="M 30 24 L 80 24 M 30 24 L 30 74"   fill="none" class="geo-corner" stroke-width="0.8"/>
+			<path d="M 770 24 L 720 24 M 770 24 L 770 74"  fill="none" class="geo-corner" stroke-width="0.8"/>
+			<path d="M 30 456 L 80 456 M 30 456 L 30 406"  fill="none" class="geo-corner" stroke-width="0.8"/>
+			<path d="M 770 456 L 720 456 M 770 456 L 770 406" fill="none" class="geo-corner" stroke-width="0.8"/>
+			<!-- Corner degree annotations -->
+			<text x="90"  y="30"  class="geo-label" font-size="5.5">0,0</text>
+			<text x="710" y="30"  text-anchor="end" class="geo-label" font-size="5.5">800,0</text>
+			<text x="90"  y="464" class="geo-label" font-size="5.5">0,480</text>
+			<text x="710" y="464" text-anchor="end" class="geo-label" font-size="5.5">800,480</text>
+
+			<!-- ── Angle arc indicators at center ── -->
+			<path d="M 430 240 A 30 30 0 0 0 421 211" fill="none" class="geo-angle-arc" stroke-width="0.6"/>
+			<text x="438" y="223" class="geo-label" font-size="5">45°</text>
+			<path d="M 430 240 A 30 30 0 0 1 421 269" fill="none" class="geo-angle-arc" stroke-width="0.6"/>
+			<text x="438" y="257" class="geo-label" font-size="5">45°</text>
+
+			<!-- ── φ = 1.618 label ── -->
+			<text x="405" y="237" class="geo-phi-label" font-size="7" text-anchor="middle">φ</text>
+		</svg>
+
+		<!-- Sonar background -->
+		<svg id="sonar-bg" class="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" style="z-index: 0; opacity: 0.04;">
+			<defs>
+				<radialGradient id="sweep-fade" cx="0" cy="1" r="1">
+					<stop id="sweep-fade-start" offset="0%" stop-color="rgb(56,189,168)" stop-opacity="0.3" />
+					<stop id="sweep-fade-end" offset="100%" stop-color="rgb(56,189,168)" stop-opacity="0" />
+				</radialGradient>
+			</defs>
+			<!-- Concentric rings from bottom-left -->
+			<g id="sonar-rings"></g>
+			<!-- Radial grid lines from bottom-left -->
+			<g id="sonar-radials"></g>
+			<!-- Horizontal scan lines -->
+			<g id="sonar-scanlines"></g>
+			<!-- Sweep arm -->
+			<line id="sweep-arm" x1="0" x2="0" y1="0" y2="0" stroke="rgb(56,189,168)" stroke-width="1.5" opacity="0.5" />
+			<!-- Sweep glow trail -->
+			<path id="sweep-trail" fill="url(#sweep-fade)" opacity="0.3" />
+		</svg>
+
+		<!-- Top row -->
+		<div class="flex gap-1.5 shrink-0" style="height: 40%;">
+			<!-- Left: Current weather -->
+			<div class="hud-card flex-1 flex flex-col p-3 relative overflow-hidden">
+				<!-- Header -->
+				<div class="flex items-baseline justify-between">
+					<div>
+						<div class="text-xl font-semibold dash-primary">{city ? city : currentWeather.name}</div>
+						<div class="font-mono text-[11px] dash-faint">{currentDate}</div>
+					</div>
+					<div class="font-mono text-md dash-secondary">
+						{Math.round(weeklyWeather.daily[0].temp.min)}° <span class="dash-faintest">/</span> {Math.round(weeklyWeather.daily[0].temp.max)}°
+					</div>
+				</div>
+				<!-- Center: icon + temp -->
+				<div class="flex items-center justify-center flex-1 -mt-6">
+					<img
+						class="w-32 h-32 object-contain weather-icon-shadow -mr-2 mt-2"
+						src=`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@4x.png`
+					/>
+					<div class="flex flex-col items-start">
+						<p class="text-8xl font-bold font-mono dash-primary leading-none temp-glow">
+							{Math.round(currentWeather.main.temp)}°
+						</p>
+						<p class="font-mono text-sm dash-muted -mt-2">
+							Gefühlt {Math.round(currentWeather.main.feels_like)}°
 						</p>
 					</div>
-					<div
-						class="flex flex-col items-center justify-evenly self-stretch pr-8 -ml-8 text-center">
-						<div class="ml-8 pb-4">
-							<p class="text-9xl font-semibold">
-								{Math.round(currentWeather.main.temp)}°C
-							</p>
-							<p
-								class="text-4xl font-semibold flex items-baseline gap-2">
-								Gefühlt:
-								<span class="text-5xl font-semibold">
-									{
-										Math.round(
-											currentWeather.main.feels_like
-										)
-									}°C
-								</span>
-							</p>
-						</div>
-						<div
-							class="grid grid-cols-2 text-xl gap-x-8 font-semibold">
-							<div class="flex items-end gap-4">
-								<span><IconTemperatureMinus size={60} /></span>
-								<div
-									class="flex flex-col justify-center items-center w-full">
-									Min:
-									<span class="text-4xl font-bold">
-										{
-											Math.round(
-												weeklyWeather.daily[0].temp.min
-											)
-										}<span class="text-2xl">°C</span>
-									</span>
-								</div>
-							</div>
-							<div class="flex items-end gap-4">
-								<span><IconTemperaturePlus size={60} /></span>
-								<div
-									class="flex flex-col justify-center items-center w-full">
-									Max:
-									<span class="text-4xl font-bold">
-										{
-											Math.round(
-												weeklyWeather.daily[0].temp.max
-											)
-										}<span class="text-2xl">°C</span>
-									</span>
-								</div>
-							</div>
-						</div>
+				</div>
+				<!-- Footer: description -->
+				<p class="text-base font-medium dash-secondary text-center -mt-3">
+					{currentWeather.weather[0].description}
+				</p>
+			</div>
+
+			<!-- Right: Details grid -->
+			<div class="hud-card flex-1 grid grid-cols-2 grid-rows-4 gap-x-2 gap-y-0 px-3 py-2 items-center justify-items-center">
+				<div class="detail-item">
+					<IconSunrise size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">Aufgang</span>
+						<span class="detail-value">{formatToBerlinTime(currentWeather.sys.sunrise)}</span>
 					</div>
 				</div>
-				<div
-					class:list={[
-						"grid grid-cols-2 grid-rows-4 text-lg font-semibold gap-x-16 gap-y-4 shadow-md rounded-lg p-8 backdrop-blur-lg backdrop-saturate-150 border pl-24 h-full text-center",
-						{
-							[`bg-[rgba(17,25,39,0.5)] border-white/10 text-slate-100`]:
-								// ${darkColors[Math.floor(Math.random() * colors.length)]}
-								isNight,
-							[`bg-[rgba(245,245,244,0.75)] border-black/10 text-slate-900`]:
-								//  ${colors[Math.floor(Math.random() * colors.length)]}
-								!isNight,
-						},
-					]}>
-					<div class="flex items-end">
-						<span><IconSunrise size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							Sonnenaufgang:
-							<span class="text-4xl font-bold">
-								{formatToBerlinTime(currentWeather.sys.sunrise)}
-							</span>
-						</div>
-					</div>
-					<div class="flex items-end">
-						<span><IconSunset size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							Sonnenuntergang:
-							<span class="text-4xl font-bold">
-								{formatToBerlinTime(currentWeather.sys.sunset)}
-							</span>
-						</div>
-					</div>
-					<div class="flex items-end">
-						<span><IconWindsockFilled size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							Wind:
-							<span class="text-4xl font-bold">
-								{currentWeather.wind.speed}<span
-									class="text-2xl">m/s</span
-								>
-							</span>
-						</div>
-					</div>
-					<div class="flex items-end">
-						<span><IconDroplet size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							Luftfeuchtigkeit:
-							<span class="text-4xl font-bold">
-								{currentWeather.main.humidity}<span
-									class="text-2xl">%</span
-								>
-							</span>
-						</div>
-					</div>
-					<div class="flex items-end">
-						<span><IconGauge size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							Luftdruck:
-							<span class="text-4xl font-bold">
-								{currentWeather.main.pressure}<span
-									class="text-2xl">hPa</span
-								>
-							</span>
-						</div>
-					</div>
-					<div class="flex items-end">
-						<span><IconUvIndex size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							UV-Index:
-							<span
-								class:list={[
-									"text-4xl font-bold",
-									{
-										"text-red-600":
-											oneCall.current.uvi >= 11,
-										"text-red-400":
-											oneCall.current.uvi >= 8,
-										"text-orange-500":
-											oneCall.current.uvi >= 6,
-										"text-yellow-500":
-											oneCall.current.uvi >= 3,
-									},
-								]}>
-								{Math.round(oneCall.current.uvi)}
-							</span>
-						</div>
-					</div>
-					<div class="flex items-end">
-						<span><IconBinoculars size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							Sicht:
-							<span class="text-4xl font-bold">
-								{meterToKm(currentWeather.visibility)}<span
-									class="text-2xl">km</span
-								>
-							</span>
-						</div>
-					</div>
-					<div class="flex items-end">
-						<span><IconCloud size={60} /></span>
-						<div
-							class="flex flex-col justify-center items-center w-full">
-							Wolken:
-							<span class="text-4xl font-bold">
-								{currentWeather.clouds.all}<span
-									class="text-2xl">%</span
-								>
-							</span>
-						</div>
+				<div class="detail-item">
+					<IconSunset size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">Untergang</span>
+						<span class="detail-value">{formatToBerlinTime(currentWeather.sys.sunset)}</span>
 					</div>
 				</div>
-			</section>
-
-			<section
-				class:list={[
-					"w-full flex items-center justify-center shadow-md rounded-lg px-8 py-3 max-w-[1475px] mx-auto backdrop-blur-lg backdrop-saturate-150 border",
-					{
-						[`bg-[rgba(17,25,39,0.5)] border-white/10 ${darkColors[Math.floor(Math.random() * colors.length)]}`]:
-							isNight,
-						[`bg-[rgba(245,245,244,0.75)] border-black/10 ${colors[Math.floor(Math.random() * colors.length)]}`]:
-							!isNight,
-					},
-				]}>
-				<WeatherChart
-					client:load
-					labels={hourlyChartLabels}
-					temperatureData={hourlyTemperatures}
-					precipitationData={hourlyPrecipitation}
-					uviData={hourlyUVIndex}
-					sunrise={formatToBerlinTime(currentWeather.sys.sunrise)}
-					sunset={formatToBerlinTime(currentWeather.sys.sunset)}
-					textColor={isNight
-						? darkColors[
-								Math.floor(Math.random() * darkColors.length)
-							]
-						: colors[Math.floor(Math.random() * colors.length)]}
-				/>
-			</section>
-
-			<section
-				class:list={[
-					"flex gap-4 justify-between w-[1475px] mx-auto shadow-md rounded-lg p-4 backdrop-blur-lg backdrop-saturate-150 border",
-					{
-						[`bg-[rgba(17,25,39,0.5)] border-white/10 ${darkColors[Math.floor(Math.random() * colors.length)]}`]:
-							isNight,
-						[`bg-[rgba(245,245,244,0.55)] border-black/10 ${colors[Math.floor(Math.random() * colors.length)]}`]:
-							!isNight,
-					},
-				]}>
-				{
-					weeklyWeather.daily
-						.slice(1)
-						.map((item) => (
-							<SingleWeatherCard
-								title={formatToBerlinDate(item.dt)}
-								temperature={Math.round(item.temp.day)}
-								icon={item.weather[0].icon}
-								textColor={
-									isNight
-										? "text-slate-100"
-										: "text-slate-900"
-								}
-							/>
-						))
-				}
-			</section>
+				<div class="detail-item">
+					<IconWind size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">Wind</span>
+						<span class="detail-value">{currentWeather.wind.speed}<span class="detail-unit">m/s</span></span>
+					</div>
+				</div>
+				<div class="detail-item">
+					<IconDroplet size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">Feuchte</span>
+						<span class="detail-value">{currentWeather.main.humidity}<span class="detail-unit">%</span></span>
+					</div>
+				</div>
+				<div class="detail-item">
+					<IconGauge size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">Druck</span>
+						<span class="detail-value">{currentWeather.main.pressure}<span class="detail-unit">hPa</span></span>
+					</div>
+				</div>
+				<div class="detail-item">
+					<IconUvIndex size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">UV</span>
+						<span class:list={[
+							"detail-value",
+							{
+								"!text-red-500": oneCall.current.uvi >= 11,
+								"!text-red-400": oneCall.current.uvi >= 8 && oneCall.current.uvi < 11,
+								"!text-orange-400": oneCall.current.uvi >= 6 && oneCall.current.uvi < 8,
+								"!text-yellow-400": oneCall.current.uvi >= 3 && oneCall.current.uvi < 6,
+							},
+						]}>{Math.round(oneCall.current.uvi)}</span>
+					</div>
+				</div>
+				<div class="detail-item">
+					<IconEye size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">Sicht</span>
+						<span class="detail-value">{meterToKm(currentWeather.visibility)}<span class="detail-unit">km</span></span>
+					</div>
+				</div>
+				<div class="detail-item">
+					<IconCloud size={32} className="detail-icon" />
+					<div class="detail-text">
+						<span class="detail-label">Wolken</span>
+						<span class="detail-value">{currentWeather.clouds.all}<span class="detail-unit">%</span></span>
+					</div>
+				</div>
+			</div>
 		</div>
 
-		<p id="countdown" class="absolute left-4 bottom-4 text-slate-900">
+		<!-- Chart -->
+		<div class="hud-card flex-1 min-h-0 px-2 py-1">
+			<WeatherChart
+				client:load
+				labels={hourlyChartLabels}
+				temperatureData={hourlyTemperatures}
+				precipitationData={hourlyPrecipitation}
+				uviData={hourlyUVIndex}
+				sunrise={formatToBerlinTime(currentWeather.sys.sunrise)}
+				sunset={formatToBerlinTime(currentWeather.sys.sunset)}
+			/>
+		</div>
+
+		<!-- Weekly forecast -->
+		<div class="hud-card flex justify-between items-center px-3 py-3 shrink-0 gap-2">
+			{
+				weeklyWeather.daily
+					.slice(1)
+					.map((item) => (
+						<SingleWeatherCard
+							title={formatToBerlinDate(item.dt)}
+							temperature={Math.round(item.temp.day)}
+							icon={item.weather[0].icon}
+						/>
+					))
+			}
+		</div>
+
+		<span id="countdown" class="absolute left-2.5 bottom-1.5 font-mono text-[9px] dash-muted">
 			20:00
-		</p>
+		</span>
 
 		<script>
+			// Theme detection (day 06:00–21:59, night 22:00–05:59)
+			const dashMain = document.getElementById("dashboard-main");
+			const hour = new Date().getHours();
+			const isDay = hour >= 6 && hour <= 21;
+			dashMain.setAttribute("data-theme", isDay ? "day" : "night");
+
+			const sonarColor = isDay ? "rgb(180,95,30)" : "rgb(56,189,168)";
+
+			// Update sonar gradient
+			document.getElementById("sweep-fade-start").setAttribute("stop-color", sonarColor);
+			document.getElementById("sweep-fade-end").setAttribute("stop-color", sonarColor);
+			document.getElementById("sweep-arm").setAttribute("stroke", sonarColor);
+
+			// Countdown
 			let seconds = 1200;
 			const countdownEl = document.getElementById("countdown");
 			function updateCountdown() {
@@ -459,9 +477,288 @@ const darkColors = [
 				if (seconds <= 0) {
 					clearInterval(interval);
 					window.location.reload();
-					console.log("Reloading...");
 				}
 			}, 1000);
+
+			// Sonar background
+			const svgEl = document.getElementById("sonar-bg");
+			const sweepArm = document.getElementById("sweep-arm");
+			const sweepTrail = document.getElementById("sweep-trail");
+			const ringsG = document.getElementById("sonar-rings");
+			const radialsG = document.getElementById("sonar-radials");
+			const scanlinesG = document.getElementById("sonar-scanlines");
+
+			function buildSonar() {
+				const w = svgEl.clientWidth;
+				const h = svgEl.clientHeight;
+				const ns = "http://www.w3.org/2000/svg";
+
+				// Clear previous
+				ringsG.innerHTML = "";
+				radialsG.innerHTML = "";
+				scanlinesG.innerHTML = "";
+
+				// Rings from bottom-left
+				const ringSpacing = 100;
+				const maxR = Math.sqrt(w * w + h * h);
+				for (let r = ringSpacing; r < maxR; r += ringSpacing) {
+					const c = document.createElementNS(ns, "circle");
+					c.setAttribute("cx", 0);
+					c.setAttribute("cy", h);
+					c.setAttribute("r", r);
+					c.setAttribute("fill", "none");
+					c.setAttribute("stroke", sonarColor);
+					c.setAttribute("stroke-width", "0.5");
+					ringsG.appendChild(c);
+				}
+
+				// Radial lines every 15° from bottom-left (0-90° quadrant)
+				for (let a = 15; a < 90; a += 15) {
+					const rad = (a * Math.PI) / 180;
+					const l = document.createElementNS(ns, "line");
+					l.setAttribute("x1", 0);
+					l.setAttribute("y1", h);
+					l.setAttribute("x2", Math.cos(rad) * maxR);
+					l.setAttribute("y2", h - Math.sin(rad) * maxR);
+					l.setAttribute("stroke", sonarColor);
+					l.setAttribute("stroke-width", "0.3");
+					l.setAttribute("stroke-dasharray", "2 6");
+					radialsG.appendChild(l);
+				}
+
+				// Horizontal scan lines
+				for (let y = 0.2; y < 1; y += 0.2) {
+					const l = document.createElementNS(ns, "line");
+					l.setAttribute("x1", 0);
+					l.setAttribute("y1", h * y);
+					l.setAttribute("x2", w);
+					l.setAttribute("y2", h * y);
+					l.setAttribute("stroke", sonarColor);
+					l.setAttribute("stroke-width", "0.3");
+					l.setAttribute("stroke-dasharray", "3 10");
+					scanlinesG.appendChild(l);
+				}
+			}
+			buildSonar();
+
+			// Sweep animation
+			let sweepAngle = 0;
+			let lastTime = performance.now();
+			const SWEEP_SPEED = 12;
+			const TRAIL_DEG = 30;
+
+			function animateSweep(now) {
+				const dt = (now - lastTime) / 1000;
+				lastTime = now;
+				sweepAngle = (sweepAngle + SWEEP_SPEED * dt) % 90;
+
+				const h = svgEl.clientHeight;
+				const len = Math.sqrt(svgEl.clientWidth ** 2 + h ** 2);
+				const rad = (sweepAngle * Math.PI) / 180;
+
+				// Arm
+				sweepArm.setAttribute("x1", 0);
+				sweepArm.setAttribute("y1", h);
+				sweepArm.setAttribute("x2", Math.cos(rad) * len);
+				sweepArm.setAttribute("y2", h - Math.sin(rad) * len);
+
+				// Trail arc
+				const trailStart = Math.max(0, sweepAngle - TRAIL_DEG);
+				const r1 = (trailStart * Math.PI) / 180;
+				const r2 = rad;
+				const arcR = len * 0.6;
+				const x1 = Math.cos(r1) * arcR;
+				const y1 = h - Math.sin(r1) * arcR;
+				const x2 = Math.cos(r2) * arcR;
+				const y2 = h - Math.sin(r2) * arcR;
+				sweepTrail.setAttribute("d",
+					`M 0 ${h} L ${x1} ${y1} A ${arcR} ${arcR} 0 0 1 ${x2} ${y2} Z`
+				);
+
+				requestAnimationFrame(animateSweep);
+			}
+			requestAnimationFrame(animateSweep);
 		</script>
 	</main>
 </Layout>
+
+<style is:global>
+	/* ── Theme custom properties ── */
+	#dashboard-main {
+		--accent: 56, 189, 168;
+		--accent-warm: 56, 189, 168;
+		--accent-copper: 45, 160, 200;
+		--bg-main: #050d12;
+		--card-bg: rgba(10, 18, 25, 0.45);
+		--card-border: rgba(56, 189, 168, 0.06);
+		--text-primary: rgba(204, 251, 241, 0.9);
+		--text-secondary: rgba(204, 251, 241, 0.5);
+		--text-muted: rgba(56, 189, 168, 0.25);
+		--text-faint: rgba(56, 189, 168, 0.2);
+		--text-faintest: rgba(56, 189, 168, 0.12);
+		--icon-color: rgba(56, 189, 168, 0.2);
+		--icon-shadow: drop-shadow(0 0 12px rgba(56, 189, 168, 0.08));
+		--temp-shadow: 0 0 25px rgba(56, 189, 168, 0.06);
+		background: var(--bg-main);
+		transition: background 0.6s ease;
+	}
+
+	#dashboard-main[data-theme="day"] {
+		--accent: 110, 78, 30;
+		--accent-warm: 200, 140, 30;
+		--accent-copper: 180, 95, 30;
+		--bg-main: #e8e0d4;
+		--card-bg: rgba(243, 238, 228, 0.45);
+		--card-border: rgba(180, 95, 30, 0.1);
+		--text-primary: rgba(50, 35, 15, 0.92);
+		--text-secondary: rgba(50, 35, 15, 0.55);
+		--text-muted: rgba(110, 78, 30, 0.4);
+		--text-faint: rgba(110, 78, 30, 0.25);
+		--text-faintest: rgba(110, 78, 30, 0.2);
+		--icon-color: rgba(200, 140, 30, 0.3);
+		--icon-shadow: drop-shadow(0 0 8px rgba(200, 140, 30, 0.1));
+		--temp-shadow: 0 0 20px rgba(200, 140, 30, 0.06);
+		background: linear-gradient(145deg, #e8e1d5, #e5dccf);
+	}
+
+	/* ── Da Vinci geometric construction lines ── */
+	.davinci-geo { transition: opacity 0.6s ease; }
+	/* Night mode — gentle hierarchy, nothing stands out */
+	.geo-spiral       { stroke: rgba(var(--accent), 0.12); }
+	.geo-circle-outer { stroke: rgba(var(--accent), 0.1);  }
+	.geo-circle-mid   { stroke: rgba(var(--accent), 0.1);  }
+	.geo-circle-inner { stroke: rgba(var(--accent), 0.08); }
+	.geo-diagonal     { stroke: rgba(var(--accent), 0.07); }
+	.geo-axis         { stroke: rgba(var(--accent), 0.06); }
+	.geo-arc          { stroke: rgba(var(--accent), 0.09); }
+	.geo-arc-small    { stroke: rgba(var(--accent), 0.07); }
+	.geo-rect         { stroke: rgba(var(--accent), 0.08); }
+	.geo-rect-inner   { stroke: rgba(var(--accent), 0.06); }
+	.geo-radial       { stroke: rgba(var(--accent), 0.06); }
+	.geo-mark         { stroke: rgba(var(--accent), 0.1);  }
+	.geo-fib-dot      { fill:   rgba(var(--accent), 0.09); }
+	.geo-corner       { stroke: rgba(var(--accent), 0.09); }
+	.geo-degree-major { stroke: rgba(var(--accent), 0.12); }
+	.geo-degree-minor { stroke: rgba(var(--accent), 0.07); }
+	.geo-label        { fill:   rgba(var(--accent), 0.08); }
+	.geo-pentagon     { stroke: rgba(var(--accent), 0.09); }
+	.geo-star         { stroke: rgba(var(--accent), 0.07); }
+	.geo-vesica       { stroke: rgba(var(--accent), 0.08); }
+	.geo-prop-tick    { stroke: rgba(var(--accent), 0.1);  }
+	.geo-angle-arc    { stroke: rgba(var(--accent), 0.08); }
+	.geo-phi-label    { fill:   rgba(var(--accent), 0.05); }
+
+	/* Day mode — same relative hierarchy, slightly warmer & more visible */
+	#dashboard-main[data-theme="day"] .geo-spiral       { stroke: rgba(var(--accent-copper), 0.18); }
+	#dashboard-main[data-theme="day"] .geo-circle-outer { stroke: rgba(var(--accent-copper), 0.15); }
+	#dashboard-main[data-theme="day"] .geo-circle-mid   { stroke: rgba(var(--accent-copper), 0.15); }
+	#dashboard-main[data-theme="day"] .geo-circle-inner { stroke: rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme="day"] .geo-diagonal     { stroke: rgba(var(--accent), 0.1);  }
+	#dashboard-main[data-theme="day"] .geo-axis         { stroke: rgba(var(--accent), 0.09); }
+	#dashboard-main[data-theme="day"] .geo-arc          { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day"] .geo-arc-small    { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme="day"] .geo-rect         { stroke: rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme="day"] .geo-rect-inner   { stroke: rgba(var(--accent), 0.09); }
+	#dashboard-main[data-theme="day"] .geo-radial       { stroke: rgba(var(--accent), 0.09); }
+	#dashboard-main[data-theme="day"] .geo-mark         { stroke: rgba(var(--accent-copper), 0.16); }
+	#dashboard-main[data-theme="day"] .geo-fib-dot      { fill:   rgba(var(--accent-warm), 0.14); }
+	#dashboard-main[data-theme="day"] .geo-corner       { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day"] .geo-degree-major { stroke: rgba(var(--accent-copper), 0.18); }
+	#dashboard-main[data-theme="day"] .geo-degree-minor { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme="day"] .geo-label        { fill:   rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day"] .geo-pentagon     { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day"] .geo-star         { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme="day"] .geo-vesica       { stroke: rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme="day"] .geo-prop-tick    { stroke: rgba(var(--accent-warm), 0.16); }
+	#dashboard-main[data-theme="day"] .geo-angle-arc    { stroke: rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme="day"] .geo-phi-label    { fill:   rgba(var(--accent-warm), 0.1);  }
+
+	/* ── Text utilities ── */
+	.dash-primary { color: var(--text-primary); transition: color 0.6s ease; }
+	.dash-secondary { color: var(--text-secondary); transition: color 0.6s ease; }
+	.dash-muted { color: var(--text-muted); transition: color 0.6s ease; }
+	.dash-faint { color: var(--text-faint); transition: color 0.6s ease; }
+	.dash-faintest { color: var(--text-faintest); transition: color 0.6s ease; }
+
+	.temp-glow { text-shadow: var(--temp-shadow); }
+	.weather-icon-shadow { filter: var(--icon-shadow); }
+
+	/* ── Cards ── */
+	.hud-card {
+		background: var(--card-bg);
+		border: 1px solid var(--card-border);
+		border-radius: 6px;
+		position: relative;
+		z-index: 1;
+		transition: background 0.6s ease, border-color 0.6s ease;
+	}
+	#dashboard-main[data-theme="day"] .hud-card {
+		box-shadow: 0 1px 6px rgba(110, 78, 30, 0.05);
+	}
+
+	/* ── Detail items ── */
+	.detail-item {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+	.detail-icon {
+		color: var(--icon-color);
+		flex-shrink: 0;
+		transition: color 0.6s ease;
+	}
+	.detail-text {
+		display: flex;
+		flex-direction: column;
+	}
+	.detail-label {
+		font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+		font-size: 11px;
+		color: rgba(var(--accent), 0.22);
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		line-height: 1;
+		transition: color 0.6s ease;
+	}
+	#dashboard-main[data-theme="day"] .detail-label {
+		color: rgba(var(--accent-copper), 0.45);
+	}
+	.detail-value {
+		font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+		font-size: 22px;
+		font-weight: 700;
+		color: var(--text-primary);
+		line-height: 1.2;
+		transition: color 0.6s ease;
+	}
+	.detail-unit {
+		font-size: 11px;
+		font-weight: 500;
+		color: rgba(var(--accent), 0.25);
+		margin-left: 1px;
+		transition: color 0.6s ease;
+	}
+	#dashboard-main[data-theme="day"] .detail-unit {
+		color: rgba(var(--accent-copper), 0.4);
+	}
+
+	/* ── Weekly card (SingleWeatherCard) ── */
+	.weekly-label {
+		color: rgba(var(--accent), 0.3);
+		transition: color 0.6s ease;
+	}
+	#dashboard-main[data-theme="day"] .weekly-label {
+		color: rgba(var(--accent-copper), 0.45);
+	}
+	.weekly-temp {
+		color: var(--text-primary);
+		transition: color 0.6s ease;
+	}
+	.weekly-icon-shadow {
+		filter: drop-shadow(0 0 5px rgba(var(--accent), 0.06));
+		transition: filter 0.6s ease;
+	}
+	#dashboard-main[data-theme="day"] .weekly-icon-shadow {
+		filter: drop-shadow(0 0 5px rgba(var(--accent-warm), 0.08));
+	}
+</style>
