@@ -38,8 +38,8 @@ const smallTicks = [...Array(36)]
 		<div class="relative flex-1 overflow-hidden flex items-center justify-center">
 			<!-- Day mode: warm ambient glow behind radar -->
 			<div id="radar-glow" class="absolute rounded-full pointer-events-none" style="width:420px;height:420px;"></div>
-			<!-- Doppler Radar SVG -->
-			<svg viewBox="-15 -5 430 415" class="w-95 h-95">
+			<!-- Doppler Radar SVG — with integrated Da Vinci geometric construction -->
+			<svg viewBox="-15 -5 430 415" class="w-95 h-95" font-family="ui-monospace, monospace">
 				<defs>
 					<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
 						<feGaussianBlur stdDeviation="3" result="blur"/>
@@ -48,11 +48,14 @@ const smallTicks = [...Array(36)]
 							<feMergeNode in="SourceGraphic"/>
 						</feMerge>
 					</filter>
+					<filter id="geo-glow" x="-20%" y="-20%" width="140%" height="140%">
+						<feGaussianBlur stdDeviation="1.2" result="blur"/>
+						<feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+					</filter>
 					<linearGradient id="sweepGrad" x1="0%" y1="0%" x2="100%" y2="0%">
 						<stop id="sweep-stop-0" offset="0%" stop-color="rgba(56,189,168,0.45)"/>
 						<stop id="sweep-stop-1" offset="100%" stop-color="rgba(56,189,168,0.03)"/>
 					</linearGradient>
-					<!-- Doppler echo gradient -->
 					<radialGradient id="echoGrad" cx="50%" cy="50%" r="50%">
 						<stop id="echo-stop-0" offset="0%" stop-color="rgba(56,189,168,0)"/>
 						<stop id="echo-stop-40" offset="40%" stop-color="rgba(56,189,168,0)"/>
@@ -60,7 +63,109 @@ const smallTicks = [...Array(36)]
 						<stop id="echo-stop-80" offset="80%" stop-color="rgba(45,160,200,0.04)"/>
 						<stop id="echo-stop-100" offset="100%" stop-color="rgba(56,189,168,0)"/>
 					</radialGradient>
+					<clipPath id="wave-clip">
+						<rect x="-15" y="360" width="430" height="55"/>
+					</clipPath>
 				</defs>
+
+				<!-- ═══════════════════════════════════════════════ -->
+				<!-- LAYER 0: GEOMETRIC CONSTRUCTION (behind radar) -->
+				<!-- ═══════════════════════════════════════════════ -->
+
+				<!-- Ecliptic ring — Earth's 23.4° tilt, very slow rotation -->
+				<g class="sg-ecliptic">
+					<animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="300s" repeatCount="indefinite"/>
+					<ellipse cx="200" cy="200" rx="196" ry="118" fill="none" stroke-width="0.4" transform="rotate(23.4,200,200)"/>
+					<!-- Equinox / solstice markers -->
+					<circle cx="396" cy="200" r="2" fill="none" stroke-width="0.5" transform="rotate(23.4,200,200)"/>
+					<circle cx="4" cy="200" r="2" fill="none" stroke-width="0.5" transform="rotate(23.4,200,200)"/>
+					<circle cx="200" cy="82" r="2" fill="none" stroke-width="0.5" transform="rotate(23.4,200,200)"/>
+					<circle cx="200" cy="318" r="2" fill="none" stroke-width="0.5" transform="rotate(23.4,200,200)"/>
+				</g>
+
+				<!-- Solar rays — 12 hours of Ra, slow counter-rotation behind radar rings -->
+				<g class="sg-solar-ray">
+					<animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="360s" repeatCount="indefinite"/>
+					<line x1="200" y1="172" x2="200" y2="30"  stroke-width="0.25"/>
+					<line x1="200" y1="172" x2="200" y2="30"  stroke-width="0.25" transform="rotate(30,200,200)"/>
+					<line x1="200" y1="172" x2="200" y2="30"  stroke-width="0.25" transform="rotate(60,200,200)"/>
+					<line x1="200" y1="172" x2="200" y2="30"  stroke-width="0.25" transform="rotate(90,200,200)"/>
+					<line x1="200" y1="172" x2="200" y2="30"  stroke-width="0.25" transform="rotate(120,200,200)"/>
+					<line x1="200" y1="172" x2="200" y2="30"  stroke-width="0.25" transform="rotate(150,200,200)"/>
+					<line x1="200" y1="172" x2="200" y2="30"  stroke-width="0.25" transform="rotate(180,200,200)"/>
+					<line x1="200" y1="172" x2="200" y2="30"  stroke-width="0.25" transform="rotate(210,200,200)"/>
+					<line x1="200" y1="172" x2="200" y2="30"  stroke-width="0.25" transform="rotate(240,200,200)"/>
+					<line x1="200" y1="172" x2="200" y2="30"  stroke-width="0.25" transform="rotate(270,200,200)"/>
+					<line x1="200" y1="172" x2="200" y2="30"  stroke-width="0.25" transform="rotate(300,200,200)"/>
+					<line x1="200" y1="172" x2="200" y2="30"  stroke-width="0.25" transform="rotate(330,200,200)"/>
+					<!-- Dashed interstitial rays at 15° -->
+					<line x1="200" y1="165" x2="200" y2="60" stroke-width="0.15" stroke-dasharray="2 4" transform="rotate(15,200,200)"/>
+					<line x1="200" y1="165" x2="200" y2="60" stroke-width="0.15" stroke-dasharray="2 4" transform="rotate(45,200,200)"/>
+					<line x1="200" y1="165" x2="200" y2="60" stroke-width="0.15" stroke-dasharray="2 4" transform="rotate(75,200,200)"/>
+					<line x1="200" y1="165" x2="200" y2="60" stroke-width="0.15" stroke-dasharray="2 4" transform="rotate(105,200,200)"/>
+					<line x1="200" y1="165" x2="200" y2="60" stroke-width="0.15" stroke-dasharray="2 4" transform="rotate(135,200,200)"/>
+					<line x1="200" y1="165" x2="200" y2="60" stroke-width="0.15" stroke-dasharray="2 4" transform="rotate(165,200,200)"/>
+					<line x1="200" y1="165" x2="200" y2="60" stroke-width="0.15" stroke-dasharray="2 4" transform="rotate(195,200,200)"/>
+					<line x1="200" y1="165" x2="200" y2="60" stroke-width="0.15" stroke-dasharray="2 4" transform="rotate(225,200,200)"/>
+					<line x1="200" y1="165" x2="200" y2="60" stroke-width="0.15" stroke-dasharray="2 4" transform="rotate(255,200,200)"/>
+					<line x1="200" y1="165" x2="200" y2="60" stroke-width="0.15" stroke-dasharray="2 4" transform="rotate(285,200,200)"/>
+					<line x1="200" y1="165" x2="200" y2="60" stroke-width="0.15" stroke-dasharray="2 4" transform="rotate(315,200,200)"/>
+					<line x1="200" y1="165" x2="200" y2="60" stroke-width="0.15" stroke-dasharray="2 4" transform="rotate(345,200,200)"/>
+				</g>
+
+				<!-- Flower of Life — inscribed inside the 85km ring, counter-rotating -->
+				<g class="sg-flower-group">
+					<animateTransform attributeName="transform" type="rotate" from="0 200 200" to="-360 200 200" dur="240s" repeatCount="indefinite"/>
+					<!-- Hexagon frame -->
+					<polygon points="200,160 234.6,180 234.6,220 200,240 165.4,220 165.4,180" fill="none" class="sg-hexagon" stroke-width="0.35"/>
+					<!-- 6 petals -->
+					<circle cx="200" cy="160" r="40" fill="none" class="sg-flower" stroke-width="0.25" stroke-dasharray="2.5 4">
+						<animate attributeName="stroke-dashoffset" from="0" to="251" dur="40s" repeatCount="indefinite"/>
+					</circle>
+					<circle cx="234.6" cy="180" r="40" fill="none" class="sg-flower" stroke-width="0.25" stroke-dasharray="2.5 4">
+						<animate attributeName="stroke-dashoffset" from="0" to="251" dur="40s" repeatCount="indefinite"/>
+					</circle>
+					<circle cx="234.6" cy="220" r="40" fill="none" class="sg-flower" stroke-width="0.25" stroke-dasharray="2.5 4">
+						<animate attributeName="stroke-dashoffset" from="0" to="251" dur="40s" repeatCount="indefinite"/>
+					</circle>
+					<circle cx="200" cy="240" r="40" fill="none" class="sg-flower" stroke-width="0.25" stroke-dasharray="2.5 4">
+						<animate attributeName="stroke-dashoffset" from="0" to="251" dur="40s" repeatCount="indefinite"/>
+					</circle>
+					<circle cx="165.4" cy="220" r="40" fill="none" class="sg-flower" stroke-width="0.25" stroke-dasharray="2.5 4">
+						<animate attributeName="stroke-dashoffset" from="0" to="251" dur="40s" repeatCount="indefinite"/>
+					</circle>
+					<circle cx="165.4" cy="180" r="40" fill="none" class="sg-flower" stroke-width="0.25" stroke-dasharray="2.5 4">
+						<animate attributeName="stroke-dashoffset" from="0" to="251" dur="40s" repeatCount="indefinite"/>
+					</circle>
+					<!-- Center binding circle -->
+					<circle cx="200" cy="200" r="40" fill="none" class="sg-flower-center" stroke-width="0.3"/>
+				</g>
+
+				<!-- Pentagram — inscribed in the 130km ring, slow counter-rotation -->
+				<g class="sg-pentagram-group">
+					<animateTransform attributeName="transform" type="rotate" from="0 200 200" to="-360 200 200" dur="200s" repeatCount="indefinite"/>
+					<!-- 10-pointed star (pentagram) -->
+					<polygon points="200,70 226,148 310,148 242,194 264,273 200,230 136,273 158,194 90,148 174,148" fill="none" class="sg-star" stroke-width="0.3" stroke-linejoin="round"/>
+					<!-- Inner pentagon -->
+					<polygon points="200,70 310,148 264,273 136,273 90,148" fill="none" class="sg-pentagon" stroke-width="0.25"/>
+				</g>
+
+				<!-- Vesica piscis at center — sacred intersection -->
+				<path d="M 175 200 A 50 50 0 0 1 225 200 A 50 50 0 0 1 175 200" fill="none" class="sg-vesica" stroke-width="0.35" stroke-dasharray="2 3">
+					<animate attributeName="stroke-dashoffset" from="0" to="20" dur="16s" repeatCount="indefinite"/>
+				</path>
+				<path d="M 175 200 A 50 50 0 0 0 225 200 A 50 50 0 0 0 175 200" fill="none" class="sg-vesica" stroke-width="0.35" stroke-dasharray="2 3">
+					<animate attributeName="stroke-dashoffset" from="0" to="-20" dur="16s" repeatCount="indefinite"/>
+				</path>
+
+				<!-- Golden spiral — logarithmic curve from center outward -->
+				<path d="M 200 200 A 5 5 0 0 1 205 200 A 8 8 0 0 1 197 208 A 13 13 0 0 1 187 195 A 21 21 0 0 1 205 179 A 34 34 0 0 1 238 206 A 55 55 0 0 1 187 260" fill="none" class="sg-spiral" stroke-width="0.3" stroke-dasharray="2.5 4">
+					<animate attributeName="stroke-dashoffset" from="0" to="280" dur="35s" repeatCount="indefinite"/>
+				</path>
+
+				<!-- ═══════════════════════════════════════════════ -->
+				<!-- LAYER 1: ORIGINAL RADAR ELEMENTS ───────────── -->
+				<!-- ═══════════════════════════════════════════════ -->
 
 				<!-- Static doppler echo (faint weather pattern) -->
 				<circle cx="200" cy="200" r="180" fill="url(#echoGrad)"/>
@@ -74,6 +179,46 @@ const smallTicks = [...Array(36)]
 					<line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} class="svg-tick-minor" stroke-width="0.5"/>
 				))}
 
+				<!-- Micro ticks every 5° — premium density ring -->
+				<g class="sg-tick-micro" stroke-width="0.3">
+					<g transform="rotate(5,200,200)">  <line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(15,200,200)"> <line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(25,200,200)"> <line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(35,200,200)"> <line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(45,200,200)"> <line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(55,200,200)"> <line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(65,200,200)"> <line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(75,200,200)"> <line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(85,200,200)"> <line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(95,200,200)"> <line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(105,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(115,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(125,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(135,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(145,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(155,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(165,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(175,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(185,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(195,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(205,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(215,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(225,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(235,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(245,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(255,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(265,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(275,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(285,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(295,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(305,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(315,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(325,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(335,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(345,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+					<g transform="rotate(355,200,200)"><line x1="200" y1="17" x2="200" y2="22"/></g>
+				</g>
+
 				<!-- Range rings -->
 				<circle cx="200" cy="200" r="40" fill="none" class="svg-ring" stroke-width="0.5"/>
 				<circle cx="200" cy="200" r="85" fill="none" class="svg-ring-mid" stroke-width="0.5"/>
@@ -83,11 +228,39 @@ const smallTicks = [...Array(36)]
 				<!-- Crosshairs -->
 				<line x1="15" y1="200" x2="385" y2="200" class="svg-crosshair" stroke-width="0.5"/>
 				<line x1="200" y1="15" x2="200" y2="385" class="svg-crosshair" stroke-width="0.5"/>
+				<!-- 30°/60° diagonal crosshairs -->
+				<line x1="200" y1="200" x2="44" y2="110"  class="sg-radial" stroke-width="0.3"/>
+				<line x1="200" y1="200" x2="356" y2="110" class="sg-radial" stroke-width="0.3"/>
+				<line x1="200" y1="200" x2="44" y2="290"  class="sg-radial" stroke-width="0.3"/>
+				<line x1="200" y1="200" x2="356" y2="290" class="sg-radial" stroke-width="0.3"/>
+
 				<!-- Range intersection ticks -->
 				<line x1="113" y1="198" x2="113" y2="202" class="svg-intersection" stroke-width="0.5"/>
 				<line x1="287" y1="198" x2="287" y2="202" class="svg-intersection" stroke-width="0.5"/>
 				<line x1="198" y1="113" x2="202" y2="113" class="svg-intersection" stroke-width="0.5"/>
 				<line x1="198" y1="287" x2="202" y2="287" class="svg-intersection" stroke-width="0.5"/>
+
+				<!-- Golden ratio proportion marks on axes -->
+				<line x1="76" y1="197" x2="76" y2="203" class="sg-prop-tick" stroke-width="0.5"/>
+				<line x1="324" y1="197" x2="324" y2="203" class="sg-prop-tick" stroke-width="0.5"/>
+				<line x1="197" y1="76" x2="203" y2="76" class="sg-prop-tick" stroke-width="0.5"/>
+				<line x1="197" y1="324" x2="203" y2="324" class="sg-prop-tick" stroke-width="0.5"/>
+				<text x="76" y="193" text-anchor="middle" class="sg-label" font-size="4">φ</text>
+				<text x="324" y="193" text-anchor="middle" class="sg-label" font-size="4">φ</text>
+
+				<!-- Compass arcs — quadrant construction -->
+				<path d="M 20 200 A 180 180 0 0 1 200 20"  fill="none" class="sg-arc" stroke-width="0.4"/>
+				<path d="M 380 200 A 180 180 0 0 0 200 20"  fill="none" class="sg-arc" stroke-width="0.4"/>
+				<path d="M 20 200 A 180 180 0 0 0 200 380" fill="none" class="sg-arc" stroke-width="0.4"/>
+				<path d="M 380 200 A 180 180 0 0 1 200 380" fill="none" class="sg-arc" stroke-width="0.4"/>
+
+				<!-- Compass rose arrows at cardinal points -->
+				<g class="sg-compass-rose">
+					<path d="M 200 172 L 196 182 L 200 178 L 204 182 Z" fill="none" stroke-width="0.4"/>
+					<path d="M 200 228 L 196 218 L 200 222 L 204 218 Z" fill="none" stroke-width="0.4"/>
+					<path d="M 228 200 L 218 196 L 222 200 L 218 204 Z" fill="none" stroke-width="0.4"/>
+					<path d="M 172 200 L 182 196 L 178 200 L 182 204 Z" fill="none" stroke-width="0.4"/>
+				</g>
 
 				<!-- Doppler echoes (revealed by sweep, animated via JS) -->
 				<g id="echo-group" opacity="0"></g>
@@ -102,18 +275,118 @@ const smallTicks = [...Array(36)]
 				<circle id="ping-1" cx="200" cy="200" r="3" fill="none" class="svg-ping" stroke-width="0.5"/>
 				<circle id="ping-2" cx="200" cy="200" r="3" fill="none" class="svg-ping" stroke-width="0.5"/>
 
+				<!-- ═══════════════════════════════════════════════ -->
+				<!-- LAYER 2: TOP ELEMENTS (above sweep) ─────────── -->
+				<!-- ═══════════════════════════════════════════════ -->
+
+				<!-- Solar disk at center — pulsing Eye of Ra, behind station dot -->
+				<circle cx="200" cy="200" r="16" fill="none" class="sg-solar-disk" stroke-width="0.5" filter="url(#geo-glow)">
+					<animate attributeName="r" values="16;17.5;16" dur="8s" repeatCount="indefinite"/>
+				</circle>
+				<circle cx="200" cy="200" r="8" fill="none" class="sg-solar-disk" stroke-width="0.3">
+					<animate attributeName="r" values="8;9;8" dur="8s" repeatCount="indefinite"/>
+				</circle>
+
 				<!-- Station dot with glow -->
 				<circle id="station-dot" cx="200" cy="200" r="2.5" filter="url(#glow)"/>
 
+				<!-- Degree labels at 30° intervals -->
+				<g class="sg-label" font-size="4.5" text-anchor="middle">
+					<text x="228" y="17">30°</text>
+					<text x="384" y="175" text-anchor="end">60°</text>
+					<text x="384" y="230" text-anchor="end">120°</text>
+					<text x="228" y="393">150°</text>
+					<text x="172" y="393">210°</text>
+					<text x="14" y="230">240°</text>
+					<text x="14" y="175">300°</text>
+					<text x="172" y="17">330°</text>
+				</g>
+
 				<!-- Cardinal labels -->
-				<text x="200" y="8" text-anchor="middle" class="svg-cardinal" font-size="7" font-family="ui-monospace, monospace">N</text>
-				<text x="396" y="203" text-anchor="end" class="svg-cardinal" font-size="7" font-family="ui-monospace, monospace">E</text>
-				<text x="200" y="398" text-anchor="middle" class="svg-cardinal" font-size="7" font-family="ui-monospace, monospace">S</text>
-				<text x="2" y="203" text-anchor="start" class="svg-cardinal" font-size="7" font-family="ui-monospace, monospace">W</text>
+				<text x="200" y="8" text-anchor="middle" class="svg-cardinal" font-size="7">N</text>
+				<text x="396" y="203" text-anchor="end" class="svg-cardinal" font-size="7">E</text>
+				<text x="200" y="398" text-anchor="middle" class="svg-cardinal" font-size="7">S</text>
+				<text x="2" y="203" text-anchor="start" class="svg-cardinal" font-size="7">W</text>
 
 				<!-- Range labels -->
-				<text x="200" y="157" text-anchor="middle" class="svg-range-label" font-size="5" font-family="ui-monospace, monospace">50km</text>
-				<text x="200" y="112" text-anchor="middle" class="svg-range-label" font-size="5" font-family="ui-monospace, monospace">100km</text>
+				<text x="200" y="157" text-anchor="middle" class="svg-range-label" font-size="5">50km</text>
+				<text x="200" y="112" text-anchor="middle" class="svg-range-label" font-size="5">100km</text>
+
+				<!-- Angle indicator at center -->
+				<path d="M 218 200 A 18 18 0 0 0 213 183" fill="none" class="sg-angle-arc" stroke-width="0.4"/>
+				<text x="222" y="190" class="sg-label" font-size="3.5">23.4°</text>
+
+				<!-- Ocean waves — Poseidon's sea at the very bottom -->
+				<g clip-path="url(#wave-clip)">
+					<path class="sg-wave-path" stroke-width="0.4" fill="none">
+						<animate attributeName="d"
+							values="M -15 370 Q 15 364 45 370 T 105 370 T 165 370 T 225 370 T 285 370 T 345 370 T 415 370;
+									M -15 370 Q 15 376 45 370 T 105 370 T 165 370 T 225 370 T 285 370 T 345 370 T 415 370;
+									M -15 370 Q 15 364 45 370 T 105 370 T 165 370 T 225 370 T 285 370 T 345 370 T 415 370"
+							dur="12s" repeatCount="indefinite"/>
+					</path>
+					<path class="sg-wave-path" stroke-width="0.3" fill="none">
+						<animate attributeName="d"
+							values="M -15 382 Q 10 377 35 382 T 85 382 T 135 382 T 185 382 T 235 382 T 285 382 T 335 382 T 385 382 T 415 382;
+									M -15 382 Q 10 387 35 382 T 85 382 T 135 382 T 185 382 T 235 382 T 285 382 T 335 382 T 385 382 T 415 382;
+									M -15 382 Q 10 377 35 382 T 85 382 T 135 382 T 185 382 T 235 382 T 285 382 T 335 382 T 385 382 T 415 382"
+							dur="8s" repeatCount="indefinite"/>
+					</path>
+					<path class="sg-wave-path" stroke-width="0.2" fill="none" stroke-dasharray="2 4">
+						<animate attributeName="d"
+							values="M -15 394 Q 5 392 25 394 T 65 394 T 105 394 T 145 394 T 185 394 T 225 394 T 265 394 T 305 394 T 345 394 T 385 394 T 415 394;
+									M -15 394 Q 5 396 25 394 T 65 394 T 105 394 T 145 394 T 185 394 T 225 394 T 265 394 T 305 394 T 345 394 T 385 394 T 415 394;
+									M -15 394 Q 5 392 25 394 T 65 394 T 105 394 T 145 394 T 185 394 T 225 394 T 265 394 T 305 394 T 345 394 T 385 394 T 415 394"
+							dur="6s" repeatCount="indefinite"/>
+					</path>
+				</g>
+
+				<!-- Greek meander — top-left & bottom-right corners -->
+				<g class="sg-meander">
+					<path d="M -10 0 L -10 -4 L -2 -4 L -2 4 L -6 4 L -6 0 Z" fill="none" stroke-width="0.4"/>
+					<path d="M 2 0 L 2 -4 L 10 -4 L 10 4 L 6 4 L 6 0 Z" fill="none" stroke-width="0.4"/>
+					<path d="M 14 0 L 14 -4 L 22 -4 L 22 4 L 18 4 L 18 0 Z" fill="none" stroke-width="0.4"/>
+					<path d="M 26 0 L 26 -4 L 34 -4 L 34 4 L 30 4 L 30 0 Z" fill="none" stroke-width="0.4"/>
+					<line x1="-10" y1="0" x2="34" y2="0" stroke-width="0.25"/>
+				</g>
+				<g class="sg-meander">
+					<path d="M 375 405 L 375 409 L 383 409 L 383 401 L 379 401 L 379 405 Z" fill="none" stroke-width="0.4"/>
+					<path d="M 387 405 L 387 409 L 395 409 L 395 401 L 391 401 L 391 405 Z" fill="none" stroke-width="0.4"/>
+					<path d="M 399 405 L 399 409 L 407 409 L 407 401 L 403 401 L 403 405 Z" fill="none" stroke-width="0.4"/>
+					<path d="M 411 405 L 411 409 L 415 409 L 415 401 L 413 401 L 413 405 Z" fill="none" stroke-width="0.4"/>
+					<line x1="375" y1="405" x2="415" y2="405" stroke-width="0.25"/>
+				</g>
+
+				<!-- Constellation markers — scattered in the outer void -->
+				<g class="sg-constellation">
+					<!-- Orion's belt (top-right) -->
+					<circle cx="360" cy="22" r="1"/><circle cx="372" cy="18" r="1"/><circle cx="384" cy="24" r="1"/>
+					<line x1="360" y1="22" x2="372" y2="18" stroke-width="0.2"/>
+					<line x1="372" y1="18" x2="384" y2="24" stroke-width="0.2"/>
+					<circle cx="350" cy="10" r="1.3"/>
+					<circle cx="394" cy="34" r="1.3"/>
+					<!-- Ursa Major (top-left) -->
+					<circle cx="8" cy="18" r="1"/><circle cx="22" cy="12" r="1"/>
+					<circle cx="34" cy="20" r="1"/><circle cx="42" cy="30" r="1"/>
+					<line x1="8" y1="18" x2="22" y2="12" stroke-width="0.2"/>
+					<line x1="22" y1="12" x2="34" y2="20" stroke-width="0.2"/>
+					<line x1="34" y1="20" x2="42" y2="30" stroke-width="0.2"/>
+					<circle cx="52" cy="24" r="0.8"/><circle cx="62" cy="16" r="0.8"/>
+					<line x1="42" y1="30" x2="52" y2="24" stroke-width="0.15"/>
+					<line x1="52" y1="24" x2="62" y2="16" stroke-width="0.15"/>
+				</g>
+
+				<!-- Corner cartouches — Egyptian style -->
+				<g class="sg-corner">
+					<path d="M -10 -2 L -10 -5 Q -10 -7 -8 -7 L 8 -7 M -10 -2 L -13 -2 Q -15 -2 -15 0 L -15 14" fill="none" stroke-width="0.45"/>
+					<circle cx="-10" cy="-2" r="1.5" fill="none" stroke-width="0.35"/>
+					<path d="M 410 -2 L 410 -5 Q 410 -7 408 -7 L 392 -7 M 410 -2 L 413 -2 Q 415 -2 415 0 L 415 14" fill="none" stroke-width="0.45"/>
+					<circle cx="410" cy="-2" r="1.5" fill="none" stroke-width="0.35"/>
+					<path d="M -10 407 L -10 410 Q -10 412 -8 412 L 8 412 M -10 407 L -13 407 Q -15 407 -15 405 L -15 391" fill="none" stroke-width="0.45"/>
+					<circle cx="-10" cy="407" r="1.5" fill="none" stroke-width="0.35"/>
+					<path d="M 410 407 L 410 410 Q 410 412 408 412 L 392 412 M 410 407 L 413 407 Q 415 407 415 405 L 415 391" fill="none" stroke-width="0.45"/>
+					<circle cx="410" cy="407" r="1.5" fill="none" stroke-width="0.35"/>
+				</g>
 			</svg>
 
 			<!-- Corner labels -->
@@ -208,7 +481,7 @@ const smallTicks = [...Array(36)]
 			transition: background 0.6s ease;
 		}
 
-		#setup-main[data-theme="day"] {
+		#setup-main[data-theme^="day"] {
 			--accent: 110, 78, 30;
 			--accent-alt: 140, 95, 35;
 			--accent-warm: 200, 140, 30;
@@ -227,6 +500,28 @@ const smallTicks = [...Array(36)]
 			--neon-dim: rgba(190, 110, 20, 0.45);
 			--neon-dim-glow: rgba(200, 140, 30, 0.15);
 			background: linear-gradient(145deg, #e8e1d5, #e5dccf);
+		}
+
+		/* High-contrast day — for small/low-quality screens */
+		#setup-main[data-theme="day-hc"] {
+			--accent: 90, 60, 18;
+			--accent-alt: 120, 78, 20;
+			--accent-warm: 170, 110, 15;
+			--accent-copper: 150, 75, 15;
+			--bg-main: #ddd4c4;
+			--bg-panel: #e8e1d5;
+			--border-panel: rgba(150, 75, 15, 0.16);
+			--text-heading: rgba(35, 22, 5, 0.97);
+			--text-input: rgba(35, 22, 5, 0.9);
+			--text-placeholder: rgba(120, 78, 20, 0.4);
+			--neon-full: rgba(160, 85, 10, 0.92);
+			--neon-glow-1: rgba(170, 110, 15, 0.45);
+			--neon-glow-2: rgba(170, 110, 15, 0.25);
+			--neon-glow-3: rgba(170, 110, 15, 0.12);
+			--neon-off: rgba(150, 75, 15, 0.3);
+			--neon-dim: rgba(160, 85, 10, 0.55);
+			--neon-dim-glow: rgba(170, 110, 15, 0.2);
+			background: linear-gradient(145deg, #ddd5c6, #d9d0c0);
 		}
 
 		/* ── Panel & text ── */
@@ -373,70 +668,124 @@ const smallTicks = [...Array(36)]
 		#station-dot { fill: rgb(var(--accent)); transition: fill 0.6s ease; }
 
 		/* ── Day mode: richer colors + depth ── */
-		#setup-main[data-theme="day"] .svg-tick-major { stroke: rgba(var(--accent-copper), 0.35); }
-		#setup-main[data-theme="day"] .svg-tick-minor { stroke: rgba(var(--accent), 0.2); }
-		#setup-main[data-theme="day"] .svg-ring { stroke: rgba(var(--accent-copper), 0.22); }
-		#setup-main[data-theme="day"] .svg-ring-mid { stroke: rgba(var(--accent-copper), 0.18); }
-		#setup-main[data-theme="day"] .svg-ring-far { stroke: rgba(var(--accent), 0.14); }
-		#setup-main[data-theme="day"] .svg-ring-outer { stroke: rgba(var(--accent-copper), 0.12); }
-		#setup-main[data-theme="day"] .svg-crosshair { stroke: rgba(var(--accent-copper), 0.1); }
-		#setup-main[data-theme="day"] .svg-intersection { stroke: rgba(var(--accent-copper), 0.3); }
-		#setup-main[data-theme="day"] .svg-sweep-trail { fill: rgba(var(--accent-warm), 0.07); }
-		#setup-main[data-theme="day"] .svg-ping { stroke: rgba(var(--accent-warm), 0.22); }
-		#setup-main[data-theme="day"] .svg-cardinal { fill: rgba(var(--accent-copper), 0.45); }
-		#setup-main[data-theme="day"] .svg-range-label { fill: rgba(var(--accent-copper), 0.32); }
-		#setup-main[data-theme="day"] #station-dot {
+		#setup-main[data-theme^="day"] .svg-tick-major { stroke: rgba(var(--accent-copper), 0.35); }
+		#setup-main[data-theme^="day"] .svg-tick-minor { stroke: rgba(var(--accent), 0.2); }
+		#setup-main[data-theme^="day"] .svg-ring { stroke: rgba(var(--accent-copper), 0.22); }
+		#setup-main[data-theme^="day"] .svg-ring-mid { stroke: rgba(var(--accent-copper), 0.18); }
+		#setup-main[data-theme^="day"] .svg-ring-far { stroke: rgba(var(--accent), 0.14); }
+		#setup-main[data-theme^="day"] .svg-ring-outer { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme^="day"] .svg-crosshair { stroke: rgba(var(--accent-copper), 0.1); }
+		#setup-main[data-theme^="day"] .svg-intersection { stroke: rgba(var(--accent-copper), 0.3); }
+		#setup-main[data-theme^="day"] .svg-sweep-trail { fill: rgba(var(--accent-warm), 0.07); }
+		#setup-main[data-theme^="day"] .svg-ping { stroke: rgba(var(--accent-warm), 0.22); }
+		#setup-main[data-theme^="day"] .svg-cardinal { fill: rgba(var(--accent-copper), 0.45); }
+		#setup-main[data-theme^="day"] .svg-range-label { fill: rgba(var(--accent-copper), 0.32); }
+		#setup-main[data-theme^="day"] #station-dot {
 			fill: rgb(var(--accent-warm));
 			filter: url(#glow) drop-shadow(0 0 3px rgba(var(--accent-warm), 0.5));
 		}
-		#setup-main[data-theme="day"] .setup-text-faint { color: rgba(var(--accent-copper), 0.4); }
-		#setup-main[data-theme="day"] .setup-icon-accent { color: rgba(var(--accent-warm), 0.65); }
-		#setup-main[data-theme="day"] .setup-text-accent { color: rgba(var(--accent-copper), 0.6); }
-		#setup-main[data-theme="day"] .setup-label { color: rgba(var(--accent-copper), 0.5); }
-		#setup-main[data-theme="day"] .setup-field:focus-within .setup-label { color: rgba(var(--accent-copper), 0.8); }
-		#setup-main[data-theme="day"] .setup-field:focus-within {
+		#setup-main[data-theme^="day"] .setup-text-faint { color: rgba(var(--accent-copper), 0.4); }
+		#setup-main[data-theme^="day"] .setup-icon-accent { color: rgba(var(--accent-warm), 0.65); }
+		#setup-main[data-theme^="day"] .setup-text-accent { color: rgba(var(--accent-copper), 0.6); }
+		#setup-main[data-theme^="day"] .setup-label { color: rgba(var(--accent-copper), 0.5); }
+		#setup-main[data-theme^="day"] .setup-field:focus-within .setup-label { color: rgba(var(--accent-copper), 0.8); }
+		#setup-main[data-theme^="day"] .setup-field:focus-within {
 			border-left-color: rgba(var(--accent-warm), 0.35);
 		}
-		#setup-main[data-theme="day"] .setup-divider {
+		#setup-main[data-theme^="day"] .setup-divider {
 			background: linear-gradient(90deg, transparent, rgba(var(--accent-copper), 0.18), transparent);
 		}
-		#setup-main[data-theme="day"] .setup-underline {
+		#setup-main[data-theme^="day"] .setup-underline {
 			background: linear-gradient(90deg, rgb(var(--accent-warm)), rgba(var(--accent-copper), 0.8));
 			box-shadow: 0 0 12px rgba(var(--accent-warm), 0.3), 0 0 4px rgba(var(--accent-warm), 0.15);
 		}
-		#setup-main[data-theme="day"] .setup-btn {
+		#setup-main[data-theme^="day"] .setup-btn {
 			background: linear-gradient(145deg, rgba(var(--accent-warm), 0.08), rgba(var(--accent-copper), 0.1));
 			border-color: rgba(var(--accent-copper), 0.18);
 			color: rgba(var(--accent-copper), 0.7);
 			box-shadow: 0 1px 4px rgba(var(--accent), 0.06);
 		}
-		#setup-main[data-theme="day"] .setup-btn:hover {
+		#setup-main[data-theme^="day"] .setup-btn:hover {
 			background: linear-gradient(145deg, rgba(var(--accent-warm), 0.14), rgba(var(--accent-copper), 0.18));
 			color: rgba(var(--accent-copper), 0.9);
 			border-color: rgba(var(--accent-warm), 0.3);
 			box-shadow: 0 2px 8px rgba(var(--accent-warm), 0.12);
 		}
-		#setup-main[data-theme="day"] .setup-input:not(:placeholder-shown):not(:focus) {
+		#setup-main[data-theme^="day"] .setup-input:not(:placeholder-shown):not(:focus) {
 			border-bottom-color: rgba(var(--accent-copper), 0.15);
 		}
-		#setup-main[data-theme="day"] #radar-glow {
+		#setup-main[data-theme^="day"] #radar-glow {
 			background: radial-gradient(circle,
 				rgba(var(--accent-warm), 0.08) 0%,
 				rgba(var(--accent-warm), 0.04) 35%,
 				transparent 65%
 			);
 		}
-		#setup-main[data-theme="day"] .setup-panel {
+		#setup-main[data-theme^="day"] .setup-panel {
 			background: linear-gradient(180deg, #f2ece3, #ede6db);
 			border-color: rgba(var(--accent-copper), 0.1);
 			box-shadow: -1px 0 12px rgba(var(--accent), 0.04);
 		}
-		#setup-main[data-theme="day"] .neon-sign {
+		#setup-main[data-theme^="day"] .neon-sign {
 			text-shadow:
 				0 0 5px var(--neon-glow-1),
 				0 0 15px var(--neon-glow-2),
 				0 0 35px var(--neon-glow-3);
 		}
+
+		/* ── High-contrast day overrides ── */
+		#setup-main[data-theme="day-hc"] .setup-text-faint { color: rgba(var(--accent-copper), 0.6); }
+		#setup-main[data-theme="day-hc"] .setup-label { color: rgba(var(--accent-copper), 0.7); }
+		#setup-main[data-theme="day-hc"] .setup-text-accent { color: rgba(var(--accent-copper), 0.8); }
+		#setup-main[data-theme="day-hc"] .setup-btn {
+			border-color: rgba(var(--accent-copper), 0.28);
+			color: rgba(var(--accent-copper), 0.85);
+		}
+		#setup-main[data-theme="day-hc"] .setup-btn:hover {
+			color: rgba(var(--accent-copper), 1);
+			border-color: rgba(var(--accent-warm), 0.4);
+		}
+		#setup-main[data-theme="day-hc"] .setup-panel {
+			background: linear-gradient(180deg, #e8e1d5, #e3dace);
+			border-color: rgba(var(--accent-copper), 0.16);
+			box-shadow: -1px 0 12px rgba(var(--accent), 0.07);
+		}
+		#setup-main[data-theme="day-hc"] .svg-cardinal { fill: rgba(var(--accent-copper), 0.65); }
+		#setup-main[data-theme="day-hc"] .svg-range-label { fill: rgba(var(--accent-copper), 0.5); }
+		#setup-main[data-theme="day-hc"] .svg-tick-major { stroke: rgba(var(--accent-copper), 0.5); }
+		#setup-main[data-theme="day-hc"] .svg-tick-minor { stroke: rgba(var(--accent), 0.3); }
+		#setup-main[data-theme="day-hc"] .svg-ring { stroke: rgba(var(--accent-copper), 0.3); }
+		#setup-main[data-theme="day-hc"] .svg-ring-mid { stroke: rgba(var(--accent-copper), 0.25); }
+		#setup-main[data-theme="day-hc"] .svg-ring-far { stroke: rgba(var(--accent), 0.2); }
+		#setup-main[data-theme="day-hc"] .svg-ring-outer { stroke: rgba(var(--accent-copper), 0.18); }
+		#setup-main[data-theme="day-hc"] .svg-crosshair { stroke: rgba(var(--accent-copper), 0.14); }
+		#setup-main[data-theme="day-hc"] .svg-intersection { stroke: rgba(var(--accent-copper), 0.4); }
+
+		/* Geometric elements — high contrast */
+		#setup-main[data-theme="day-hc"] .sg-radial         { stroke: rgba(var(--accent), 0.08); }
+		#setup-main[data-theme="day-hc"] .sg-ecliptic ellipse   { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme="day-hc"] .sg-ecliptic circle    { stroke: rgba(var(--accent-copper), 0.16); }
+		#setup-main[data-theme="day-hc"] .sg-tick-micro     { stroke: rgba(var(--accent-copper), 0.06); }
+		#setup-main[data-theme="day-hc"] .sg-hexagon        { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme="day-hc"] .sg-flower         { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme="day-hc"] .sg-flower-center  { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme="day-hc"] .sg-pentagon       { stroke: rgba(var(--accent-copper), 0.1);  }
+		#setup-main[data-theme="day-hc"] .sg-star           { stroke: rgba(var(--accent-copper), 0.09); }
+		#setup-main[data-theme="day-hc"] .sg-vesica         { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme="day-hc"] .sg-spiral         { stroke: rgba(var(--accent-copper), 0.14); }
+		#setup-main[data-theme="day-hc"] .sg-solar-ray line { stroke: rgba(var(--accent-warm), 0.08); }
+		#setup-main[data-theme="day-hc"] .sg-solar-disk     { stroke: rgba(var(--accent-warm), 0.18); }
+		#setup-main[data-theme="day-hc"] .sg-arc            { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme="day-hc"] .sg-compass-rose path { stroke: rgba(var(--accent-copper), 0.14); }
+		#setup-main[data-theme="day-hc"] .sg-prop-tick      { stroke: rgba(var(--accent-warm), 0.18); }
+		#setup-main[data-theme="day-hc"] .sg-label          { fill: rgba(var(--accent-copper), 0.15); }
+		#setup-main[data-theme="day-hc"] .sg-angle-arc      { stroke: rgba(var(--accent-copper), 0.13); }
+		#setup-main[data-theme="day-hc"] .sg-wave-path      { stroke: rgba(var(--accent-copper), 0.1);  }
+		#setup-main[data-theme="day-hc"] .sg-constellation circle { fill: rgba(var(--accent-warm), 0.16); }
+		#setup-main[data-theme="day-hc"] .sg-constellation line   { stroke: rgba(var(--accent-warm), 0.1); }
+		#setup-main[data-theme="day-hc"] .sg-meander path   { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme="day-hc"] .sg-meander line   { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme="day-hc"] .sg-corner         { stroke: rgba(var(--accent-copper), 0.14); }
 
 		/* Footer link */
 		#footer-link {
@@ -446,27 +795,96 @@ const smallTicks = [...Array(36)]
 			color: rgba(var(--accent), 0.4);
 			text-shadow: 0 0 6px rgba(var(--accent), 0.2), 0 0 15px rgba(var(--accent), 0.1);
 		}
-		#setup-main[data-theme="day"] #footer-link {
+		#setup-main[data-theme^="day"] #footer-link {
 			color: rgba(var(--accent-copper), 0.2);
 		}
-		#setup-main[data-theme="day"] #footer-link:hover {
+		#setup-main[data-theme^="day"] #footer-link:hover {
 			color: rgba(var(--accent-warm), 0.55);
 			text-shadow: 0 0 8px rgba(var(--accent-warm), 0.15);
 		}
+
+		/* ── Integrated geometric construction — Night mode ── */
+		.sg-radial         { stroke: rgba(var(--accent), 0.03); }
+		.sg-ecliptic ellipse   { stroke: rgba(var(--accent), 0.05); }
+		.sg-ecliptic circle    { stroke: rgba(var(--accent), 0.07); }
+		.sg-tick-micro     { stroke: rgba(var(--accent), 0.03); }
+
+		.sg-hexagon        { stroke: rgba(var(--accent), 0.05); }
+		.sg-flower         { stroke: rgba(var(--accent), 0.035); }
+		.sg-flower-center  { stroke: rgba(var(--accent), 0.05); }
+		.sg-pentagon       { stroke: rgba(var(--accent), 0.04); }
+		.sg-star           { stroke: rgba(var(--accent), 0.04); }
+		.sg-vesica         { stroke: rgba(var(--accent), 0.05); }
+		.sg-spiral         { stroke: rgba(var(--accent), 0.06); }
+
+		.sg-solar-ray line { stroke: rgba(var(--accent), 0.025); }
+		.sg-solar-disk     { stroke: rgba(var(--accent), 0.08); }
+
+		.sg-arc            { stroke: rgba(var(--accent), 0.05); }
+		.sg-compass-rose path { stroke: rgba(var(--accent), 0.06); }
+		.sg-prop-tick      { stroke: rgba(var(--accent), 0.08); }
+		.sg-label          { fill: rgba(var(--accent), 0.06); }
+		.sg-angle-arc      { stroke: rgba(var(--accent), 0.06); }
+
+		.sg-wave-path      { stroke: rgba(var(--accent), 0.045); }
+
+		.sg-constellation circle { fill: rgba(var(--accent), 0.08); stroke: none; }
+		.sg-constellation line   { stroke: rgba(var(--accent), 0.04); }
+
+		.sg-meander path   { stroke: rgba(var(--accent), 0.05); }
+		.sg-meander line   { stroke: rgba(var(--accent), 0.035); }
+
+		.sg-corner         { stroke: rgba(var(--accent), 0.06); }
+
+		/* ── Integrated geometric construction — Day mode ── */
+		#setup-main[data-theme^="day"] .sg-radial         { stroke: rgba(var(--accent), 0.05); }
+		#setup-main[data-theme^="day"] .sg-ecliptic ellipse   { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme^="day"] .sg-ecliptic circle    { stroke: rgba(var(--accent-copper), 0.11); }
+		#setup-main[data-theme^="day"] .sg-tick-micro     { stroke: rgba(var(--accent-copper), 0.04); }
+
+		#setup-main[data-theme^="day"] .sg-hexagon        { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme^="day"] .sg-flower         { stroke: rgba(var(--accent-copper), 0.05); }
+		#setup-main[data-theme^="day"] .sg-flower-center  { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme^="day"] .sg-pentagon       { stroke: rgba(var(--accent-copper), 0.07); }
+		#setup-main[data-theme^="day"] .sg-star           { stroke: rgba(var(--accent-copper), 0.06); }
+		#setup-main[data-theme^="day"] .sg-vesica         { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme^="day"] .sg-spiral         { stroke: rgba(var(--accent-copper), 0.09); }
+
+		#setup-main[data-theme^="day"] .sg-solar-ray line { stroke: rgba(var(--accent-warm), 0.05); }
+		#setup-main[data-theme^="day"] .sg-solar-disk     { stroke: rgba(var(--accent-warm), 0.12); }
+
+		#setup-main[data-theme^="day"] .sg-arc            { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme^="day"] .sg-compass-rose path { stroke: rgba(var(--accent-copper), 0.09); }
+		#setup-main[data-theme^="day"] .sg-prop-tick      { stroke: rgba(var(--accent-warm), 0.12); }
+		#setup-main[data-theme^="day"] .sg-label          { fill: rgba(var(--accent-copper), 0.1); }
+		#setup-main[data-theme^="day"] .sg-angle-arc      { stroke: rgba(var(--accent-copper), 0.09); }
+
+		#setup-main[data-theme^="day"] .sg-wave-path      { stroke: rgba(var(--accent-copper), 0.06); }
+
+		#setup-main[data-theme^="day"] .sg-constellation circle { fill: rgba(var(--accent-warm), 0.1); }
+		#setup-main[data-theme^="day"] .sg-constellation line   { stroke: rgba(var(--accent-warm), 0.06); }
+
+		#setup-main[data-theme^="day"] .sg-meander path   { stroke: rgba(var(--accent-copper), 0.08); }
+		#setup-main[data-theme^="day"] .sg-meander line   { stroke: rgba(var(--accent-copper), 0.05); }
+
+		#setup-main[data-theme^="day"] .sg-corner         { stroke: rgba(var(--accent-copper), 0.09); }
 	</style>
 
 	<script>
 		// ── Theme detection (day 06:00–21:59, night 22:00–05:59) ──
+		// Append ?hc to the URL for high-contrast day mode (e.g. on Raspberry Pi)
 		const main = document.getElementById("setup-main");
 		const hour = new Date().getHours();
 		const isDay = hour >= 6 && hour <= 21;
-		main.setAttribute("data-theme", isDay ? "day" : "night");
+		const hc = new URLSearchParams(window.location.search).has("hc");
+		const dayTheme = hc ? "day-hc" : "day";
+		main.setAttribute("data-theme", isDay ? dayTheme : "night");
 
 		// Accent RGB for JS-driven SVG attributes
-		const accent = isDay ? [110, 78, 30] : [56, 189, 168];
-		const accentAlt = isDay ? [180, 95, 30] : [45, 160, 200];
+		const accent = isDay ? (hc ? [90, 60, 18] : [110, 78, 30]) : [56, 189, 168];
+		const accentAlt = isDay ? (hc ? [150, 75, 15] : [180, 95, 30]) : [45, 160, 200];
 		// Warm highlight color for animated SVG elements in day mode
-		const echoColor = isDay ? [180, 120, 35] : [56, 189, 168];
+		const echoColor = isDay ? (hc ? [150, 90, 20] : [180, 120, 35]) : [56, 189, 168];
 
 		// Update SVG gradient stops for current theme
 		function applyGradientTheme() {

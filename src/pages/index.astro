@@ -109,187 +109,467 @@ function meterToKm(m) {
 
 <Layout>
 	<main id="dashboard-main" class="flex flex-col h-screen w-screen overflow-hidden p-2 gap-1.5 relative">
-		<!-- Da Vinci-inspired geometric construction lines -->
+		<!-- Da Vinci-inspired geometric construction — celestial, oceanic & mythological -->
 		<svg class="absolute inset-0 w-full h-full pointer-events-none davinci-geo" viewBox="0 0 800 480" preserveAspectRatio="xMidYMid slice" style="z-index: 0;" font-family="ui-monospace, monospace">
+			<defs>
+				<!-- Subtle glow for celestial elements -->
+				<filter id="geo-glow" x="-20%" y="-20%" width="140%" height="140%">
+					<feGaussianBlur stdDeviation="1.5" result="blur"/>
+					<feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+				</filter>
+				<!-- Wave clip to keep ocean contained -->
+				<clipPath id="wave-clip">
+					<rect x="0" y="380" width="800" height="100"/>
+				</clipPath>
+			</defs>
 
-			<!-- ── Axes & diagonals ── -->
-			<line x1="400" y1="10" x2="400" y2="470" class="geo-axis" stroke-width="0.5"/>
-			<line x1="30" y1="240" x2="770" y2="240" class="geo-axis" stroke-width="0.5"/>
-			<line x1="60" y1="20" x2="740" y2="460" class="geo-diagonal" stroke-width="0.4"/>
-			<line x1="740" y1="20" x2="60" y2="460" class="geo-diagonal" stroke-width="0.4"/>
-			<!-- 30°/60° construction lines through center -->
-			<line x1="400" y1="240" x2="40" y2="32"  class="geo-radial" stroke-width="0.4"/>
-			<line x1="400" y1="240" x2="760" y2="32"  class="geo-radial" stroke-width="0.4"/>
-			<line x1="400" y1="240" x2="40" y2="448"  class="geo-radial" stroke-width="0.4"/>
-			<line x1="400" y1="240" x2="760" y2="448" class="geo-radial" stroke-width="0.4"/>
+			<!-- ═══════════════════════════════════════════ -->
+			<!-- ── I. CELESTIAL CONSTRUCTION GRID ──────── -->
+			<!-- ═══════════════════════════════════════════ -->
 
-			<!-- ── Vitruvian circles ── -->
-			<!-- Outer circle + spirals: slow clockwise rotation -->
-			<g id="geo-outer-ring">
-				<animateTransform attributeName="transform" type="rotate" from="0 400 240" to="360 400 240" dur="240s" repeatCount="indefinite"/>
-				<circle cx="400" cy="240" r="200" fill="none" class="geo-circle-outer" stroke-width="0.7"/>
+			<!-- Primary axes — thin, precise -->
+			<line x1="400" y1="8" x2="400" y2="472" class="geo-axis" stroke-width="0.35"/>
+			<line x1="20" y1="240" x2="780" y2="240" class="geo-axis" stroke-width="0.35"/>
+
+			<!-- 45° diagonals -->
+			<line x1="60" y1="20" x2="740" y2="460" class="geo-diagonal" stroke-width="0.3"/>
+			<line x1="740" y1="20" x2="60" y2="460" class="geo-diagonal" stroke-width="0.3"/>
+
+			<!-- 30°/60° radials from center — star-chart construction -->
+			<line x1="400" y1="240" x2="54" y2="40"   class="geo-radial" stroke-width="0.25"/>
+			<line x1="400" y1="240" x2="746" y2="40"   class="geo-radial" stroke-width="0.25"/>
+			<line x1="400" y1="240" x2="54" y2="440"  class="geo-radial" stroke-width="0.25"/>
+			<line x1="400" y1="240" x2="746" y2="440" class="geo-radial" stroke-width="0.25"/>
+			<!-- 15°/75° finer radials -->
+			<line x1="400" y1="240" x2="146" y2="14"  class="geo-radial" stroke-width="0.2" stroke-dasharray="4 8"/>
+			<line x1="400" y1="240" x2="654" y2="14"  class="geo-radial" stroke-width="0.2" stroke-dasharray="4 8"/>
+			<line x1="400" y1="240" x2="146" y2="466" class="geo-radial" stroke-width="0.2" stroke-dasharray="4 8"/>
+			<line x1="400" y1="240" x2="654" y2="466" class="geo-radial" stroke-width="0.2" stroke-dasharray="4 8"/>
+
+			<!-- ═══════════════════════════════════════════ -->
+			<!-- ── II. ARMILLARY SPHERE — PLANETARY ORBITS  -->
+			<!-- ═══════════════════════════════════════════ -->
+
+			<!-- Ecliptic ring — tilted 23.4° like Earth's axial tilt, slow rotation -->
+			<g class="geo-ecliptic">
+				<animateTransform attributeName="transform" type="rotate" from="0 400 240" to="360 400 240" dur="300s" repeatCount="indefinite"/>
+				<ellipse cx="400" cy="240" rx="218" ry="130" fill="none" stroke-width="0.5" transform="rotate(23.4,400,240)"/>
+				<!-- Equinox / solstice markers on the ecliptic -->
+				<circle cx="618" cy="240" r="2.5" fill="none" stroke-width="0.6" transform="rotate(23.4,400,240)"/>
+				<circle cx="182" cy="240" r="2.5" fill="none" stroke-width="0.6" transform="rotate(23.4,400,240)"/>
+				<circle cx="400" cy="110" r="2.5" fill="none" stroke-width="0.6" transform="rotate(23.4,400,240)"/>
+				<circle cx="400" cy="370" r="2.5" fill="none" stroke-width="0.6" transform="rotate(23.4,400,240)"/>
 			</g>
-			<!-- Mid circle + pentagram: rotates counter-clockwise -->
-			<g id="geo-pentagram-ring">
-				<animateTransform attributeName="transform" type="rotate" from="0 400 240" to="-360 400 240" dur="180s" repeatCount="indefinite"/>
-				<circle cx="400" cy="240" r="124" fill="none" class="geo-circle-mid" stroke-width="0.8"/>
-				<polygon points="400,116 518,202 473,340 327,340 282,202" fill="none" class="geo-pentagon" stroke-width="0.6"/>
-				<line x1="400" y1="116" x2="473" y2="340" class="geo-star" stroke-width="0.5"/>
-				<line x1="473" y1="340" x2="282" y2="202" class="geo-star" stroke-width="0.5"/>
-				<line x1="282" y1="202" x2="518" y2="202" class="geo-star" stroke-width="0.5"/>
-				<line x1="518" y1="202" x2="327" y2="340" class="geo-star" stroke-width="0.5"/>
-				<line x1="327" y1="340" x2="400" y2="116" class="geo-star" stroke-width="0.5"/>
-			</g>
-			<circle cx="400" cy="240" r="76"  fill="none" class="geo-circle-inner" stroke-width="0.6" stroke-dasharray="5 8">
-				<animate attributeName="stroke-dashoffset" from="0" to="52" dur="18s" repeatCount="indefinite"/>
-			</circle>
-			<circle cx="400" cy="240" r="40"  fill="none" class="geo-circle-inner" stroke-width="0.4" stroke-dasharray="2 6">
-				<animate attributeName="stroke-dashoffset" from="0" to="-32" dur="24s" repeatCount="indefinite"/>
-			</circle>
 
-			<!-- ── Degree ring: major + minor ticks, rotating like an astrolabe ── -->
+			<!-- Outer celestial ring — astrolabe bezel with degree ticks -->
 			<g id="geo-astrolabe">
-				<animateTransform attributeName="transform" type="rotate" from="0 400 240" to="360 400 240" dur="120s" repeatCount="indefinite"/>
-				<g class="geo-degree-major" stroke-width="1.2">
-					<g transform="rotate(0,400,240)">  <line x1="400" y1="40"  x2="400" y2="56"/></g>
-					<g transform="rotate(30,400,240)"> <line x1="400" y1="40"  x2="400" y2="56"/></g>
-					<g transform="rotate(60,400,240)"> <line x1="400" y1="40"  x2="400" y2="56"/></g>
-					<g transform="rotate(90,400,240)"> <line x1="400" y1="40"  x2="400" y2="56"/></g>
-					<g transform="rotate(120,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
-					<g transform="rotate(150,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
-					<g transform="rotate(180,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
-					<g transform="rotate(210,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
-					<g transform="rotate(240,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
-					<g transform="rotate(270,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
-					<g transform="rotate(300,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
-					<g transform="rotate(330,400,240)"><line x1="400" y1="40"  x2="400" y2="56"/></g>
+				<animateTransform attributeName="transform" type="rotate" from="0 400 240" to="360 400 240" dur="180s" repeatCount="indefinite"/>
+				<circle cx="400" cy="240" r="210" fill="none" class="geo-circle-outer" stroke-width="0.6"/>
+				<!-- Major ticks every 30° -->
+				<g class="geo-degree-major" stroke-width="0.9">
+					<g transform="rotate(0,400,240)">  <line x1="400" y1="30"  x2="400" y2="48"/></g>
+					<g transform="rotate(30,400,240)"> <line x1="400" y1="30"  x2="400" y2="48"/></g>
+					<g transform="rotate(60,400,240)"> <line x1="400" y1="30"  x2="400" y2="48"/></g>
+					<g transform="rotate(90,400,240)"> <line x1="400" y1="30"  x2="400" y2="48"/></g>
+					<g transform="rotate(120,400,240)"><line x1="400" y1="30"  x2="400" y2="48"/></g>
+					<g transform="rotate(150,400,240)"><line x1="400" y1="30"  x2="400" y2="48"/></g>
+					<g transform="rotate(180,400,240)"><line x1="400" y1="30"  x2="400" y2="48"/></g>
+					<g transform="rotate(210,400,240)"><line x1="400" y1="30"  x2="400" y2="48"/></g>
+					<g transform="rotate(240,400,240)"><line x1="400" y1="30"  x2="400" y2="48"/></g>
+					<g transform="rotate(270,400,240)"><line x1="400" y1="30"  x2="400" y2="48"/></g>
+					<g transform="rotate(300,400,240)"><line x1="400" y1="30"  x2="400" y2="48"/></g>
+					<g transform="rotate(330,400,240)"><line x1="400" y1="30"  x2="400" y2="48"/></g>
 				</g>
-				<g class="geo-degree-minor" stroke-width="0.6">
-					<g transform="rotate(10,400,240)"> <line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(20,400,240)"> <line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(40,400,240)"> <line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(50,400,240)"> <line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(70,400,240)"> <line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(80,400,240)"> <line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(100,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(110,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(130,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(140,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(160,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(170,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(190,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(200,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(220,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(230,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(250,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(260,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(280,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(290,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(310,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(320,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(340,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
-					<g transform="rotate(350,400,240)"><line x1="400" y1="40" x2="400" y2="48"/></g>
+				<!-- Minor ticks every 10° -->
+				<g class="geo-degree-minor" stroke-width="0.4">
+					<g transform="rotate(10,400,240)"> <line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(20,400,240)"> <line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(40,400,240)"> <line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(50,400,240)"> <line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(70,400,240)"> <line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(80,400,240)"> <line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(100,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(110,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(130,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(140,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(160,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(170,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(190,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(200,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(220,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(230,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(250,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(260,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(280,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(290,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(310,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(320,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(340,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+					<g transform="rotate(350,400,240)"><line x1="400" y1="30" x2="400" y2="40"/></g>
+				</g>
+				<!-- Micro ticks every 5° for premium density -->
+				<g class="geo-degree-micro" stroke-width="0.25">
+					<g transform="rotate(5,400,240)">  <line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(15,400,240)"> <line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(25,400,240)"> <line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(35,400,240)"> <line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(45,400,240)"> <line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(55,400,240)"> <line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(65,400,240)"> <line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(75,400,240)"> <line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(85,400,240)"> <line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(95,400,240)"> <line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(105,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(115,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(125,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(135,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(145,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(155,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(165,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(175,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(185,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(195,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(205,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(215,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(225,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(235,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(245,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(255,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(265,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(275,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(285,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(295,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(305,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(315,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(325,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(335,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(345,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
+					<g transform="rotate(355,400,240)"><line x1="400" y1="30" x2="400" y2="36"/></g>
 				</g>
 			</g>
 
-			<!-- ── Degree labels every 30° ── -->
-			<g class="geo-label" font-size="6.5" text-anchor="middle">
-				<text x="400"  y="27">0°</text>
-				<text x="506"  y="57">30°</text>
-				<text x="584"  y="135">60°</text>
-				<text x="615"  y="243">90°</text>
-				<text x="584"  y="350">120°</text>
-				<text x="506"  y="428">150°</text>
-				<text x="400"  y="458">180°</text>
-				<text x="293"  y="428">210°</text>
-				<text x="212"  y="350">240°</text>
-				<text x="180"  y="243">270°</text>
-				<text x="212"  y="135">300°</text>
-				<text x="293"  y="57">330°</text>
+			<!-- Cardinal direction labels — compass rose style -->
+			<g class="geo-label geo-cardinal" font-size="7" text-anchor="middle" font-weight="600" letter-spacing="1">
+				<text x="400" y="22">N</text>
+				<text x="622" y="244">E</text>
+				<text x="400" y="462">S</text>
+				<text x="178" y="244">W</text>
+			</g>
+			<!-- Degree labels -->
+			<g class="geo-label" font-size="5" text-anchor="middle">
+				<text x="506"  y="50">30°</text>
+				<text x="580"  y="130">60°</text>
+				<text x="580"  y="354">120°</text>
+				<text x="506"  y="434">150°</text>
+				<text x="293"  y="434">210°</text>
+				<text x="218"  y="354">240°</text>
+				<text x="218"  y="130">300°</text>
+				<text x="293"  y="50">330°</text>
 			</g>
 
-			<!-- ── Vesica piscis ── -->
-			<path d="M 362 240 A 76 76 0 0 1 438 240 A 76 76 0 0 1 362 240" fill="none" class="geo-vesica" stroke-width="0.6" stroke-dasharray="3 4">
-				<animate attributeName="stroke-dashoffset" from="0" to="28" dur="14s" repeatCount="indefinite"/>
+			<!-- ═══════════════════════════════════════════ -->
+			<!-- ── III. SACRED GEOMETRY — HEXAGONAL GRID ── -->
+			<!-- ═══════════════════════════════════════════ -->
+
+			<!-- Hexagonal Flower of Life pattern — counter-rotating -->
+			<g id="geo-flower-of-life">
+				<animateTransform attributeName="transform" type="rotate" from="0 400 240" to="-360 400 240" dur="240s" repeatCount="indefinite"/>
+				<!-- Central hexagon -->
+				<polygon points="400,180 452,210 452,270 400,300 348,270 348,210" fill="none" class="geo-hexagon" stroke-width="0.5"/>
+				<!-- Inner Flower of Life — 6 overlapping circles -->
+				<circle cx="400" cy="180" r="60" fill="none" class="geo-flower" stroke-width="0.35" stroke-dasharray="3 5">
+					<animate attributeName="stroke-dashoffset" from="0" to="377" dur="40s" repeatCount="indefinite"/>
+				</circle>
+				<circle cx="452" cy="210" r="60" fill="none" class="geo-flower" stroke-width="0.35" stroke-dasharray="3 5">
+					<animate attributeName="stroke-dashoffset" from="0" to="377" dur="40s" repeatCount="indefinite"/>
+				</circle>
+				<circle cx="452" cy="270" r="60" fill="none" class="geo-flower" stroke-width="0.35" stroke-dasharray="3 5">
+					<animate attributeName="stroke-dashoffset" from="0" to="377" dur="40s" repeatCount="indefinite"/>
+				</circle>
+				<circle cx="400" cy="300" r="60" fill="none" class="geo-flower" stroke-width="0.35" stroke-dasharray="3 5">
+					<animate attributeName="stroke-dashoffset" from="0" to="377" dur="40s" repeatCount="indefinite"/>
+				</circle>
+				<circle cx="348" cy="270" r="60" fill="none" class="geo-flower" stroke-width="0.35" stroke-dasharray="3 5">
+					<animate attributeName="stroke-dashoffset" from="0" to="377" dur="40s" repeatCount="indefinite"/>
+				</circle>
+				<circle cx="348" cy="210" r="60" fill="none" class="geo-flower" stroke-width="0.35" stroke-dasharray="3 5">
+					<animate attributeName="stroke-dashoffset" from="0" to="377" dur="40s" repeatCount="indefinite"/>
+				</circle>
+				<!-- Central binding circle -->
+				<circle cx="400" cy="240" r="60" fill="none" class="geo-flower-center" stroke-width="0.45"/>
+			</g>
+
+			<!-- ═══════════════════════════════════════════ -->
+			<!-- ── IV. INNER RINGS & PENTAGRAM ──────────── -->
+			<!-- ═══════════════════════════════════════════ -->
+
+			<!-- Mid orbital ring with pentagram — Pythagorean sacred form -->
+			<g id="geo-pentagram-ring">
+				<animateTransform attributeName="transform" type="rotate" from="0 400 240" to="-360 400 240" dur="200s" repeatCount="indefinite"/>
+				<circle cx="400" cy="240" r="140" fill="none" class="geo-circle-mid" stroke-width="0.55"/>
+				<!-- Pentagram — the golden ratio made visible -->
+				<polygon points="400,100 453,200 540,200 468,260 492,360 400,300 308,360 332,260 260,200 347,200" fill="none" class="geo-star" stroke-width="0.4" stroke-linejoin="round"/>
+				<!-- Inner pentagon -->
+				<polygon points="400,100 540,200 492,360 308,360 260,200" fill="none" class="geo-pentagon" stroke-width="0.35"/>
+			</g>
+
+			<!-- Dashed inner rings — breathing animation -->
+			<circle cx="400" cy="240" r="90" fill="none" class="geo-circle-inner" stroke-width="0.5" stroke-dasharray="4 6">
+				<animate attributeName="stroke-dashoffset" from="0" to="565" dur="45s" repeatCount="indefinite"/>
+			</circle>
+			<circle cx="400" cy="240" r="48" fill="none" class="geo-circle-inner" stroke-width="0.35" stroke-dasharray="2 4">
+				<animate attributeName="stroke-dashoffset" from="0" to="-301" dur="30s" repeatCount="indefinite"/>
+			</circle>
+
+			<!-- Vesica piscis — sacred intersection -->
+			<path d="M 362 240 A 76 76 0 0 1 438 240 A 76 76 0 0 1 362 240" fill="none" class="geo-vesica" stroke-width="0.45" stroke-dasharray="2.5 3.5">
+				<animate attributeName="stroke-dashoffset" from="0" to="24" dur="16s" repeatCount="indefinite"/>
 			</path>
-			<path d="M 362 240 A 76 76 0 0 0 438 240 A 76 76 0 0 0 362 240" fill="none" class="geo-vesica" stroke-width="0.6" stroke-dasharray="3 4">
-				<animate attributeName="stroke-dashoffset" from="0" to="-28" dur="14s" repeatCount="indefinite"/>
+			<path d="M 362 240 A 76 76 0 0 0 438 240 A 76 76 0 0 0 362 240" fill="none" class="geo-vesica" stroke-width="0.45" stroke-dasharray="2.5 3.5">
+				<animate attributeName="stroke-dashoffset" from="0" to="-24" dur="16s" repeatCount="indefinite"/>
 			</path>
 
-			<!-- ── Proportion ticks on horizontal axis ── -->
-			<!-- Golden ratio division: 400 ± 123.6 ≈ 276, 524 -->
-			<line x1="276" y1="236" x2="276" y2="244" class="geo-prop-tick" stroke-width="0.8"/>
-			<line x1="524" y1="236" x2="524" y2="244" class="geo-prop-tick" stroke-width="0.8"/>
-			<!-- Thirds -->
-			<line x1="333" y1="237" x2="333" y2="243" class="geo-prop-tick" stroke-width="0.6"/>
-			<line x1="467" y1="237" x2="467" y2="243" class="geo-prop-tick" stroke-width="0.6"/>
-			<!-- φ annotations -->
-			<text x="276" y="230" text-anchor="middle" class="geo-label" font-size="5.5">φ</text>
-			<text x="524" y="230" text-anchor="middle" class="geo-label" font-size="5.5">φ</text>
+			<!-- ═══════════════════════════════════════════ -->
+			<!-- ── V. EGYPTIAN SOLAR DISK — RA'S EYE ───── -->
+			<!-- ═══════════════════════════════════════════ -->
 
-			<!-- ── Proportion ticks on vertical axis ── -->
-			<line x1="396" y1="116" x2="404" y2="116" class="geo-prop-tick" stroke-width="0.8"/>
-			<line x1="396" y1="364" x2="404" y2="364" class="geo-prop-tick" stroke-width="0.8"/>
-			<line x1="397" y1="163" x2="403" y2="163" class="geo-prop-tick" stroke-width="0.6"/>
-			<line x1="397" y1="317" x2="403" y2="317" class="geo-prop-tick" stroke-width="0.6"/>
-			<text x="410" y="119" class="geo-label" font-size="5.5">φ</text>
-			<text x="410" y="367" class="geo-label" font-size="5.5">φ</text>
+			<!-- Solar corona rays — radiating from center, slow pulse -->
+			<g class="geo-solar-ray">
+				<animateTransform attributeName="transform" type="rotate" from="0 400 240" to="360 400 240" dur="360s" repeatCount="indefinite"/>
+				<!-- 12 rays at 30° intervals — hours of the Egyptian day -->
+				<line x1="400" y1="210" x2="400" y2="70"  stroke-width="0.3"/>
+				<line x1="400" y1="210" x2="400" y2="70"  stroke-width="0.3" transform="rotate(30,400,240)"/>
+				<line x1="400" y1="210" x2="400" y2="70"  stroke-width="0.3" transform="rotate(60,400,240)"/>
+				<line x1="400" y1="210" x2="400" y2="70"  stroke-width="0.3" transform="rotate(90,400,240)"/>
+				<line x1="400" y1="210" x2="400" y2="70"  stroke-width="0.3" transform="rotate(120,400,240)"/>
+				<line x1="400" y1="210" x2="400" y2="70"  stroke-width="0.3" transform="rotate(150,400,240)"/>
+				<line x1="400" y1="210" x2="400" y2="70"  stroke-width="0.3" transform="rotate(180,400,240)"/>
+				<line x1="400" y1="210" x2="400" y2="70"  stroke-width="0.3" transform="rotate(210,400,240)"/>
+				<line x1="400" y1="210" x2="400" y2="70"  stroke-width="0.3" transform="rotate(240,400,240)"/>
+				<line x1="400" y1="210" x2="400" y2="70"  stroke-width="0.3" transform="rotate(270,400,240)"/>
+				<line x1="400" y1="210" x2="400" y2="70"  stroke-width="0.3" transform="rotate(300,400,240)"/>
+				<line x1="400" y1="210" x2="400" y2="70"  stroke-width="0.3" transform="rotate(330,400,240)"/>
+				<!-- Alternating shorter rays at 15° for density -->
+				<line x1="400" y1="200" x2="400" y2="110" stroke-width="0.2" stroke-dasharray="2 4" transform="rotate(15,400,240)"/>
+				<line x1="400" y1="200" x2="400" y2="110" stroke-width="0.2" stroke-dasharray="2 4" transform="rotate(45,400,240)"/>
+				<line x1="400" y1="200" x2="400" y2="110" stroke-width="0.2" stroke-dasharray="2 4" transform="rotate(75,400,240)"/>
+				<line x1="400" y1="200" x2="400" y2="110" stroke-width="0.2" stroke-dasharray="2 4" transform="rotate(105,400,240)"/>
+				<line x1="400" y1="200" x2="400" y2="110" stroke-width="0.2" stroke-dasharray="2 4" transform="rotate(135,400,240)"/>
+				<line x1="400" y1="200" x2="400" y2="110" stroke-width="0.2" stroke-dasharray="2 4" transform="rotate(165,400,240)"/>
+				<line x1="400" y1="200" x2="400" y2="110" stroke-width="0.2" stroke-dasharray="2 4" transform="rotate(195,400,240)"/>
+				<line x1="400" y1="200" x2="400" y2="110" stroke-width="0.2" stroke-dasharray="2 4" transform="rotate(225,400,240)"/>
+				<line x1="400" y1="200" x2="400" y2="110" stroke-width="0.2" stroke-dasharray="2 4" transform="rotate(255,400,240)"/>
+				<line x1="400" y1="200" x2="400" y2="110" stroke-width="0.2" stroke-dasharray="2 4" transform="rotate(285,400,240)"/>
+				<line x1="400" y1="200" x2="400" y2="110" stroke-width="0.2" stroke-dasharray="2 4" transform="rotate(315,400,240)"/>
+				<line x1="400" y1="200" x2="400" y2="110" stroke-width="0.2" stroke-dasharray="2 4" transform="rotate(345,400,240)"/>
+			</g>
 
-			<!-- ── Compass arcs (quadrant construction) ── -->
-			<path d="M 200 240 A 200 200 0 0 1 400 40"  fill="none" class="geo-arc" stroke-width="0.6"/>
-			<path d="M 600 240 A 200 200 0 0 0 400 40"  fill="none" class="geo-arc" stroke-width="0.6"/>
-			<path d="M 200 240 A 200 200 0 0 0 400 440" fill="none" class="geo-arc" stroke-width="0.6"/>
-			<path d="M 600 240 A 200 200 0 0 1 400 440" fill="none" class="geo-arc" stroke-width="0.6"/>
-			<!-- Smaller arcs -->
-			<path d="M 276 240 A 124 124 0 0 1 400 116" fill="none" class="geo-arc-small" stroke-width="0.4" stroke-dasharray="3 5">
-				<animate attributeName="stroke-dashoffset" from="0" to="40" dur="20s" repeatCount="indefinite"/>
+			<!-- Inner solar disk — Eye of Ra / Helios reference -->
+			<circle cx="400" cy="240" r="24" fill="none" class="geo-solar-disk" stroke-width="0.7" filter="url(#geo-glow)">
+				<animate attributeName="r" values="24;26;24" dur="8s" repeatCount="indefinite"/>
+			</circle>
+			<circle cx="400" cy="240" r="12" fill="none" class="geo-solar-disk" stroke-width="0.4">
+				<animate attributeName="r" values="12;13;12" dur="8s" repeatCount="indefinite"/>
+			</circle>
+
+			<!-- ═══════════════════════════════════════════ -->
+			<!-- ── VI. COMPASS ROSE & QUADRANT ARCS ─────── -->
+			<!-- ═══════════════════════════════════════════ -->
+
+			<!-- Ornate compass arcs — quadrant construction -->
+			<path d="M 190 240 A 210 210 0 0 1 400 30"  fill="none" class="geo-arc" stroke-width="0.5"/>
+			<path d="M 610 240 A 210 210 0 0 0 400 30"  fill="none" class="geo-arc" stroke-width="0.5"/>
+			<path d="M 190 240 A 210 210 0 0 0 400 450" fill="none" class="geo-arc" stroke-width="0.5"/>
+			<path d="M 610 240 A 210 210 0 0 1 400 450" fill="none" class="geo-arc" stroke-width="0.5"/>
+
+			<!-- Smaller construction arcs — animated -->
+			<path d="M 260 240 A 140 140 0 0 1 400 100" fill="none" class="geo-arc-small" stroke-width="0.35" stroke-dasharray="2.5 4">
+				<animate attributeName="stroke-dashoffset" from="0" to="220" dur="25s" repeatCount="indefinite"/>
 			</path>
-			<path d="M 524 240 A 124 124 0 0 0 400 116" fill="none" class="geo-arc-small" stroke-width="0.4" stroke-dasharray="3 5">
-				<animate attributeName="stroke-dashoffset" from="0" to="-40" dur="20s" repeatCount="indefinite"/>
+			<path d="M 540 240 A 140 140 0 0 0 400 100" fill="none" class="geo-arc-small" stroke-width="0.35" stroke-dasharray="2.5 4">
+				<animate attributeName="stroke-dashoffset" from="0" to="-220" dur="25s" repeatCount="indefinite"/>
+			</path>
+			<path d="M 260 240 A 140 140 0 0 0 400 380" fill="none" class="geo-arc-small" stroke-width="0.35" stroke-dasharray="2.5 4">
+				<animate attributeName="stroke-dashoffset" from="0" to="-220" dur="25s" repeatCount="indefinite"/>
+			</path>
+			<path d="M 540 240 A 140 140 0 0 1 400 380" fill="none" class="geo-arc-small" stroke-width="0.35" stroke-dasharray="2.5 4">
+				<animate attributeName="stroke-dashoffset" from="0" to="220" dur="25s" repeatCount="indefinite"/>
 			</path>
 
-			<!-- ── Annotation marks at key intersections ── -->
-			<circle cx="400" cy="116" r="3"   fill="none" class="geo-mark" stroke-width="0.8"/>
-			<circle cx="400" cy="364" r="3"   fill="none" class="geo-mark" stroke-width="0.8"/>
-			<circle cx="276" cy="240" r="3"   fill="none" class="geo-mark" stroke-width="0.8"/>
-			<circle cx="524" cy="240" r="3"   fill="none" class="geo-mark" stroke-width="0.8"/>
-			<circle cx="518" cy="202" r="2.5" fill="none" class="geo-mark" stroke-width="0.7"/>
-			<circle cx="282" cy="202" r="2.5" fill="none" class="geo-mark" stroke-width="0.7"/>
-			<circle cx="473" cy="340" r="2.5" fill="none" class="geo-mark" stroke-width="0.7"/>
-			<circle cx="327" cy="340" r="2.5" fill="none" class="geo-mark" stroke-width="0.7"/>
-			<!-- Axis endpoints -->
-			<circle cx="400" cy="40"  r="2" fill="none" class="geo-mark" stroke-width="0.6"/>
-			<circle cx="400" cy="440" r="2" fill="none" class="geo-mark" stroke-width="0.6"/>
-			<circle cx="200" cy="240" r="2" fill="none" class="geo-mark" stroke-width="0.6"/>
-			<circle cx="600" cy="240" r="2" fill="none" class="geo-mark" stroke-width="0.6"/>
+			<!-- Compass rose fleur-de-lis points (simplified) -->
+			<g class="geo-compass-rose">
+				<!-- N arrow -->
+				<path d="M 400 200 L 394 216 L 400 210 L 406 216 Z" fill="none" stroke-width="0.5"/>
+				<!-- S arrow -->
+				<path d="M 400 280 L 394 264 L 400 270 L 406 264 Z" fill="none" stroke-width="0.5"/>
+				<!-- E arrow -->
+				<path d="M 440 240 L 424 234 L 430 240 L 424 246 Z" fill="none" stroke-width="0.5"/>
+				<!-- W arrow -->
+				<path d="M 360 240 L 376 234 L 370 240 L 376 246 Z" fill="none" stroke-width="0.5"/>
+			</g>
 
-			<!-- ── Fibonacci dots ── -->
-			<circle cx="524" cy="240" r="2" class="geo-fib-dot"/>
-			<circle cx="524" cy="316" r="2" class="geo-fib-dot"/>
-			<circle cx="477" cy="316" r="2" class="geo-fib-dot"/>
-			<circle cx="276" cy="240" r="2" class="geo-fib-dot"/>
-			<circle cx="276" cy="164" r="2" class="geo-fib-dot"/>
-			<circle cx="323" cy="164" r="2" class="geo-fib-dot"/>
+			<!-- ═══════════════════════════════════════════ -->
+			<!-- ── VII. GREEK MEANDER BORDER ────────────── -->
+			<!-- ═══════════════════════════════════════════ -->
 
-			<!-- ── Corner registration marks ── -->
-			<path d="M 30 24 L 80 24 M 30 24 L 30 74"   fill="none" class="geo-corner" stroke-width="0.8"/>
-			<path d="M 770 24 L 720 24 M 770 24 L 770 74"  fill="none" class="geo-corner" stroke-width="0.8"/>
-			<path d="M 30 456 L 80 456 M 30 456 L 30 406"  fill="none" class="geo-corner" stroke-width="0.8"/>
-			<path d="M 770 456 L 720 456 M 770 456 L 770 406" fill="none" class="geo-corner" stroke-width="0.8"/>
-			<!-- Corner degree annotations -->
-			<text x="90"  y="30"  class="geo-label" font-size="5.5">0,0</text>
-			<text x="710" y="30"  text-anchor="end" class="geo-label" font-size="5.5">800,0</text>
-			<text x="90"  y="464" class="geo-label" font-size="5.5">0,480</text>
-			<text x="710" y="464" text-anchor="end" class="geo-label" font-size="5.5">800,480</text>
+			<!-- Top border — Greek key / meander pattern -->
+			<g class="geo-meander">
+				<path d="M 50 14 L 50 8 L 62 8 L 62 20 L 56 20 L 56 14 Z" fill="none" stroke-width="0.5"/>
+				<path d="M 74 14 L 74 8 L 86 8 L 86 20 L 80 20 L 80 14 Z" fill="none" stroke-width="0.5"/>
+				<path d="M 98 14 L 98 8 L 110 8 L 110 20 L 104 20 L 104 14 Z" fill="none" stroke-width="0.5"/>
+				<path d="M 122 14 L 122 8 L 134 8 L 134 20 L 128 20 L 128 14 Z" fill="none" stroke-width="0.5"/>
+				<path d="M 146 14 L 146 8 L 158 8 L 158 20 L 152 20 L 152 14 Z" fill="none" stroke-width="0.5"/>
+				<!-- connecting line -->
+				<line x1="50" y1="14" x2="158" y2="14" stroke-width="0.35"/>
+			</g>
+			<!-- Bottom border — mirrored -->
+			<g class="geo-meander">
+				<path d="M 642 466 L 642 472 L 654 472 L 654 460 L 648 460 L 648 466 Z" fill="none" stroke-width="0.5"/>
+				<path d="M 666 466 L 666 472 L 678 472 L 678 460 L 672 460 L 672 466 Z" fill="none" stroke-width="0.5"/>
+				<path d="M 690 466 L 690 472 L 702 472 L 702 460 L 696 460 L 696 466 Z" fill="none" stroke-width="0.5"/>
+				<path d="M 714 466 L 714 472 L 726 472 L 726 460 L 720 460 L 720 466 Z" fill="none" stroke-width="0.5"/>
+				<path d="M 738 466 L 738 472 L 750 472 L 750 460 L 744 460 L 744 466 Z" fill="none" stroke-width="0.5"/>
+				<line x1="642" y1="466" x2="750" y2="466" stroke-width="0.35"/>
+			</g>
 
-			<!-- ── Angle arc indicators at center ── -->
-			<path d="M 430 240 A 30 30 0 0 0 421 211" fill="none" class="geo-angle-arc" stroke-width="0.6"/>
-			<text x="438" y="223" class="geo-label" font-size="5">45°</text>
-			<path d="M 430 240 A 30 30 0 0 1 421 269" fill="none" class="geo-angle-arc" stroke-width="0.6"/>
-			<text x="438" y="257" class="geo-label" font-size="5">45°</text>
+			<!-- ═══════════════════════════════════════════ -->
+			<!-- ── VIII. OCEAN WAVES — POSEIDON'S SEA ───── -->
+			<!-- ═══════════════════════════════════════════ -->
 
-			<!-- ── φ = 1.618 label ── -->
-			<text x="405" y="237" class="geo-phi-label" font-size="7" text-anchor="middle">φ</text>
+			<!-- Layered sine waves at bottom — gentle perpetual motion -->
+			<g class="geo-wave" clip-path="url(#wave-clip)">
+				<!-- Wave layer 1 — slow, deep -->
+				<path class="geo-wave-path" stroke-width="0.5" fill="none">
+					<animate attributeName="d"
+						values="M 0 410 Q 50 400 100 410 T 200 410 T 300 410 T 400 410 T 500 410 T 600 410 T 700 410 T 800 410;
+								M 0 410 Q 50 420 100 410 T 200 410 T 300 410 T 400 410 T 500 410 T 600 410 T 700 410 T 800 410;
+								M 0 410 Q 50 400 100 410 T 200 410 T 300 410 T 400 410 T 500 410 T 600 410 T 700 410 T 800 410"
+						dur="12s" repeatCount="indefinite"/>
+				</path>
+				<!-- Wave layer 2 — medium -->
+				<path class="geo-wave-path" stroke-width="0.4" fill="none">
+					<animate attributeName="d"
+						values="M 0 425 Q 40 418 80 425 T 160 425 T 240 425 T 320 425 T 400 425 T 480 425 T 560 425 T 640 425 T 720 425 T 800 425;
+								M 0 425 Q 40 432 80 425 T 160 425 T 240 425 T 320 425 T 400 425 T 480 425 T 560 425 T 640 425 T 720 425 T 800 425;
+								M 0 425 Q 40 418 80 425 T 160 425 T 240 425 T 320 425 T 400 425 T 480 425 T 560 425 T 640 425 T 720 425 T 800 425"
+						dur="9s" repeatCount="indefinite"/>
+				</path>
+				<!-- Wave layer 3 — fast, shallow ripple -->
+				<path class="geo-wave-path" stroke-width="0.3" fill="none" stroke-dasharray="3 6">
+					<animate attributeName="d"
+						values="M 0 440 Q 30 436 60 440 T 120 440 T 180 440 T 240 440 T 300 440 T 360 440 T 420 440 T 480 440 T 540 440 T 600 440 T 660 440 T 720 440 T 780 440;
+								M 0 440 Q 30 444 60 440 T 120 440 T 180 440 T 240 440 T 300 440 T 360 440 T 420 440 T 480 440 T 540 440 T 600 440 T 660 440 T 720 440 T 780 440;
+								M 0 440 Q 30 436 60 440 T 120 440 T 180 440 T 240 440 T 300 440 T 360 440 T 420 440 T 480 440 T 540 440 T 600 440 T 660 440 T 720 440 T 780 440"
+						dur="6s" repeatCount="indefinite"/>
+				</path>
+			</g>
+
+			<!-- ═══════════════════════════════════════════ -->
+			<!-- ── IX. CONSTELLATION MARKERS ────────────── -->
+			<!-- ═══════════════════════════════════════════ -->
+
+			<!-- Scattered star points — Orion / Ursa Major reference -->
+			<g class="geo-constellation">
+				<!-- Orion's belt (top-right area) -->
+				<circle cx="640" cy="68" r="1.2"/><circle cx="660" cy="72" r="1.2"/><circle cx="680" cy="66" r="1.2"/>
+				<line x1="640" y1="68" x2="660" y2="72" stroke-width="0.25"/>
+				<line x1="660" y1="72" x2="680" y2="66" stroke-width="0.25"/>
+				<!-- Betelgeuse & Rigel -->
+				<circle cx="620" cy="46" r="1.6"/><circle cx="700" cy="92" r="1.6"/>
+
+				<!-- Ursa Major (top-left area) -->
+				<circle cx="90" cy="56" r="1.2"/><circle cx="110" cy="50" r="1.2"/>
+				<circle cx="128" cy="58" r="1.2"/><circle cx="140" cy="70" r="1.2"/>
+				<line x1="90" y1="56" x2="110" y2="50" stroke-width="0.25"/>
+				<line x1="110" y1="50" x2="128" y2="58" stroke-width="0.25"/>
+				<line x1="128" y1="58" x2="140" y2="70" stroke-width="0.25"/>
+				<!-- Handle -->
+				<circle cx="156" cy="62" r="1.0"/><circle cx="172" cy="52" r="1.0"/><circle cx="186" cy="56" r="1.0"/>
+				<line x1="140" y1="70" x2="156" y2="62" stroke-width="0.2"/>
+				<line x1="156" y1="62" x2="172" y2="52" stroke-width="0.2"/>
+				<line x1="172" y1="52" x2="186" y2="56" stroke-width="0.2"/>
+
+				<!-- Polaris (near top center) -->
+				<circle cx="400" cy="36" r="2" filter="url(#geo-glow)"/>
+			</g>
+
+			<!-- ═══════════════════════════════════════════ -->
+			<!-- ── X. GOLDEN RATIO & PROPORTION MARKS ───── -->
+			<!-- ═══════════════════════════════════════════ -->
+
+			<!-- Golden ratio division ticks -->
+			<line x1="276" y1="235" x2="276" y2="245" class="geo-prop-tick" stroke-width="0.6"/>
+			<line x1="524" y1="235" x2="524" y2="245" class="geo-prop-tick" stroke-width="0.6"/>
+			<text x="276" y="229" text-anchor="middle" class="geo-label" font-size="4.5">φ</text>
+			<text x="524" y="229" text-anchor="middle" class="geo-label" font-size="4.5">φ</text>
+
+			<!-- Vertical φ marks -->
+			<line x1="396" y1="116" x2="404" y2="116" class="geo-prop-tick" stroke-width="0.6"/>
+			<line x1="396" y1="364" x2="404" y2="364" class="geo-prop-tick" stroke-width="0.6"/>
+			<text x="411" y="119" class="geo-label" font-size="4.5">φ</text>
+			<text x="411" y="367" class="geo-label" font-size="4.5">φ</text>
+
+			<!-- Intersection marks — key geometric nodes -->
+			<g class="geo-mark">
+				<circle cx="400" cy="100" r="2.5" fill="none" stroke-width="0.6"/>
+				<circle cx="400" cy="380" r="2.5" fill="none" stroke-width="0.6"/>
+				<circle cx="190" cy="240" r="2.5" fill="none" stroke-width="0.6"/>
+				<circle cx="610" cy="240" r="2.5" fill="none" stroke-width="0.6"/>
+				<!-- Pentagram vertices -->
+				<circle cx="540" cy="200" r="1.8" fill="none" stroke-width="0.5"/>
+				<circle cx="260" cy="200" r="1.8" fill="none" stroke-width="0.5"/>
+				<circle cx="492" cy="360" r="1.8" fill="none" stroke-width="0.5"/>
+				<circle cx="308" cy="360" r="1.8" fill="none" stroke-width="0.5"/>
+			</g>
+
+			<!-- ═══════════════════════════════════════════ -->
+			<!-- ── XI. FIBONACCI SPIRAL ─────────────────── -->
+			<!-- ═══════════════════════════════════════════ -->
+
+			<!-- Golden spiral arc — elegant logarithmic curve -->
+			<path d="M 400 240 A 8 8 0 0 1 408 240 A 13 13 0 0 1 395 253 A 21 21 0 0 1 374 232 A 34 34 0 0 1 408 206 A 55 55 0 0 1 463 261 A 89 89 0 0 1 374 350" fill="none" class="geo-spiral" stroke-width="0.4" stroke-dasharray="3 5">
+				<animate attributeName="stroke-dashoffset" from="0" to="400" dur="35s" repeatCount="indefinite"/>
+			</path>
+
+			<!-- Fibonacci dots along the spiral -->
+			<circle cx="408" cy="240" r="1.3" class="geo-fib-dot"/>
+			<circle cx="395" cy="253" r="1.3" class="geo-fib-dot"/>
+			<circle cx="374" cy="232" r="1.3" class="geo-fib-dot"/>
+			<circle cx="408" cy="206" r="1.3" class="geo-fib-dot"/>
+			<circle cx="463" cy="261" r="1.3" class="geo-fib-dot"/>
+			<circle cx="374" cy="350" r="1.3" class="geo-fib-dot"/>
+
+			<!-- ═══════════════════════════════════════════ -->
+			<!-- ── XII. CORNER CARTOUCHES ───────────────── -->
+			<!-- ═══════════════════════════════════════════ -->
+
+			<!-- Egyptian cartouche-style corner marks -->
+			<g class="geo-corner">
+				<!-- Top-left -->
+				<path d="M 24 18 L 24 10 Q 24 6 28 6 L 72 6 M 24 18 L 18 18 Q 14 18 14 22 L 14 66" fill="none" stroke-width="0.6"/>
+				<circle cx="24" cy="18" r="2" fill="none" stroke-width="0.5"/>
+				<!-- Top-right -->
+				<path d="M 776 18 L 776 10 Q 776 6 772 6 L 728 6 M 776 18 L 782 18 Q 786 18 786 22 L 786 66" fill="none" stroke-width="0.6"/>
+				<circle cx="776" cy="18" r="2" fill="none" stroke-width="0.5"/>
+				<!-- Bottom-left -->
+				<path d="M 24 462 L 24 470 Q 24 474 28 474 L 72 474 M 24 462 L 18 462 Q 14 462 14 458 L 14 414" fill="none" stroke-width="0.6"/>
+				<circle cx="24" cy="462" r="2" fill="none" stroke-width="0.5"/>
+				<!-- Bottom-right -->
+				<path d="M 776 462 L 776 470 Q 776 474 772 474 L 728 474 M 776 462 L 782 462 Q 786 462 786 458 L 786 414" fill="none" stroke-width="0.6"/>
+				<circle cx="776" cy="462" r="2" fill="none" stroke-width="0.5"/>
+			</g>
+
+			<!-- ═══════════════════════════════════════════ -->
+			<!-- ── XIII. CENTRAL GLYPH ─────────────────── -->
+			<!-- ═══════════════════════════════════════════ -->
+
+			<!-- Angle indicators -->
+			<path d="M 428 240 A 28 28 0 0 0 420 213" fill="none" class="geo-angle-arc" stroke-width="0.5"/>
+			<text x="434" y="224" class="geo-label" font-size="4.5">23.4°</text>
+			<path d="M 428 240 A 28 28 0 0 1 420 267" fill="none" class="geo-angle-arc" stroke-width="0.5"/>
+
+			<!-- Central phi -->
+			<text x="400" y="244" class="geo-phi-label" font-size="8" text-anchor="middle" font-style="italic">φ</text>
 		</svg>
 
 		<!-- Sonar background -->
@@ -320,10 +600,10 @@ function meterToKm(m) {
 				<div class="flex items-baseline justify-between">
 					<div>
 						<div class="text-xl font-semibold dash-primary">{city ? city : currentWeather.name}</div>
-						<div class="font-mono text-[11px] dash-faint">{currentDate}</div>
+						<div class="font-mono text-[11px] dash-muted">{currentDate}</div>
 					</div>
 					<div class="font-mono text-md dash-secondary">
-						{Math.round(weeklyWeather.daily[0].temp.min)}° <span class="dash-faintest">/</span> {Math.round(weeklyWeather.daily[0].temp.max)}°
+						{Math.round(weeklyWeather.daily[0].temp.min)}° <span class="dash-muted">/</span> {Math.round(weeklyWeather.daily[0].temp.max)}°
 					</div>
 				</div>
 				<!-- Center: icon + temp -->
@@ -430,7 +710,7 @@ function meterToKm(m) {
 		</div>
 
 		<!-- Weekly forecast -->
-		<div class="hud-card flex justify-between items-center px-3 py-3 shrink-0 gap-2">
+		<div class="hud-card flex justify-between items-center shrink-0 pr-3 gap-2">
 			{
 				weeklyWeather.daily
 					.slice(1)
@@ -450,12 +730,15 @@ function meterToKm(m) {
 
 		<script>
 			// Theme detection (day 06:00–21:59, night 22:00–05:59)
+			// Append ?hc to the URL for high-contrast day mode (e.g. on Raspberry Pi)
 			const dashMain = document.getElementById("dashboard-main");
 			const hour = new Date().getHours();
 			const isDay = hour >= 6 && hour <= 21;
-			dashMain.setAttribute("data-theme", isDay ? "day" : "night");
+			const hc = new URLSearchParams(window.location.search).has("hc");
+			const dayTheme = hc ? "day-hc" : "day";
+			dashMain.setAttribute("data-theme", isDay ? dayTheme : "night");
 
-			const sonarColor = isDay ? "rgb(180,95,30)" : "rgb(56,189,168)";
+			const sonarColor = isDay ? (hc ? "rgb(150,75,15)" : "rgb(180,95,30)") : "rgb(56,189,168)";
 
 			// Update sonar gradient
 			document.getElementById("sweep-fade-start").setAttribute("stop-color", sonarColor);
@@ -603,7 +886,7 @@ function meterToKm(m) {
 		transition: background 0.6s ease;
 	}
 
-	#dashboard-main[data-theme="day"] {
+	#dashboard-main[data-theme^="day"] {
 		--accent: 110, 78, 30;
 		--accent-warm: 200, 140, 30;
 		--accent-copper: 180, 95, 30;
@@ -621,57 +904,130 @@ function meterToKm(m) {
 		background: linear-gradient(145deg, #e8e1d5, #e5dccf);
 	}
 
-	/* ── Da Vinci geometric construction lines ── */
-	.davinci-geo { transition: opacity 0.6s ease; }
-	/* Night mode — gentle hierarchy, nothing stands out */
-	.geo-spiral       { stroke: rgba(var(--accent), 0.12); }
-	.geo-circle-outer { stroke: rgba(var(--accent), 0.1);  }
-	.geo-circle-mid   { stroke: rgba(var(--accent), 0.1);  }
-	.geo-circle-inner { stroke: rgba(var(--accent), 0.08); }
-	.geo-diagonal     { stroke: rgba(var(--accent), 0.07); }
-	.geo-axis         { stroke: rgba(var(--accent), 0.06); }
-	.geo-arc          { stroke: rgba(var(--accent), 0.09); }
-	.geo-arc-small    { stroke: rgba(var(--accent), 0.07); }
-	.geo-rect         { stroke: rgba(var(--accent), 0.08); }
-	.geo-rect-inner   { stroke: rgba(var(--accent), 0.06); }
-	.geo-radial       { stroke: rgba(var(--accent), 0.06); }
-	.geo-mark         { stroke: rgba(var(--accent), 0.1);  }
-	.geo-fib-dot      { fill:   rgba(var(--accent), 0.09); }
-	.geo-corner       { stroke: rgba(var(--accent), 0.09); }
-	.geo-degree-major { stroke: rgba(var(--accent), 0.12); }
-	.geo-degree-minor { stroke: rgba(var(--accent), 0.07); }
-	.geo-label        { fill:   rgba(var(--accent), 0.08); }
-	.geo-pentagon     { stroke: rgba(var(--accent), 0.09); }
-	.geo-star         { stroke: rgba(var(--accent), 0.07); }
-	.geo-vesica       { stroke: rgba(var(--accent), 0.08); }
-	.geo-prop-tick    { stroke: rgba(var(--accent), 0.1);  }
-	.geo-angle-arc    { stroke: rgba(var(--accent), 0.08); }
-	.geo-phi-label    { fill:   rgba(var(--accent), 0.05); }
+	/* High-contrast day — same warm palette, stronger readability for small/low-quality screens */
+	#dashboard-main[data-theme="day-hc"] {
+		--accent: 90, 60, 18;
+		--accent-warm: 170, 110, 15;
+		--accent-copper: 150, 75, 15;
+		--bg-main: #ddd4c4;
+		--card-bg: rgba(240, 234, 222, 0.7);
+		--card-border: rgba(150, 75, 15, 0.18);
+		--text-primary: rgba(35, 22, 5, 0.96);
+		--text-secondary: rgba(35, 22, 5, 0.72);
+		--text-muted: rgba(90, 60, 18, 0.6);
+		--text-faint: rgba(90, 60, 18, 0.4);
+		--text-faintest: rgba(90, 60, 18, 0.3);
+		--icon-color: rgba(170, 110, 15, 0.5);
+		--icon-shadow: drop-shadow(0 0 6px rgba(170, 110, 15, 0.18));
+		--temp-shadow: 0 0 16px rgba(170, 110, 15, 0.1);
+		background: linear-gradient(145deg, #ddd5c6, #d9d0c0);
+	}
 
-	/* Day mode — same relative hierarchy, slightly warmer & more visible */
-	#dashboard-main[data-theme="day"] .geo-spiral       { stroke: rgba(var(--accent-copper), 0.18); }
-	#dashboard-main[data-theme="day"] .geo-circle-outer { stroke: rgba(var(--accent-copper), 0.15); }
-	#dashboard-main[data-theme="day"] .geo-circle-mid   { stroke: rgba(var(--accent-copper), 0.15); }
-	#dashboard-main[data-theme="day"] .geo-circle-inner { stroke: rgba(var(--accent-copper), 0.12); }
-	#dashboard-main[data-theme="day"] .geo-diagonal     { stroke: rgba(var(--accent), 0.1);  }
-	#dashboard-main[data-theme="day"] .geo-axis         { stroke: rgba(var(--accent), 0.09); }
-	#dashboard-main[data-theme="day"] .geo-arc          { stroke: rgba(var(--accent-copper), 0.14); }
-	#dashboard-main[data-theme="day"] .geo-arc-small    { stroke: rgba(var(--accent-copper), 0.1);  }
-	#dashboard-main[data-theme="day"] .geo-rect         { stroke: rgba(var(--accent-copper), 0.12); }
-	#dashboard-main[data-theme="day"] .geo-rect-inner   { stroke: rgba(var(--accent), 0.09); }
-	#dashboard-main[data-theme="day"] .geo-radial       { stroke: rgba(var(--accent), 0.09); }
-	#dashboard-main[data-theme="day"] .geo-mark         { stroke: rgba(var(--accent-copper), 0.16); }
-	#dashboard-main[data-theme="day"] .geo-fib-dot      { fill:   rgba(var(--accent-warm), 0.14); }
-	#dashboard-main[data-theme="day"] .geo-corner       { stroke: rgba(var(--accent-copper), 0.14); }
-	#dashboard-main[data-theme="day"] .geo-degree-major { stroke: rgba(var(--accent-copper), 0.18); }
-	#dashboard-main[data-theme="day"] .geo-degree-minor { stroke: rgba(var(--accent-copper), 0.1);  }
-	#dashboard-main[data-theme="day"] .geo-label        { fill:   rgba(var(--accent-copper), 0.14); }
-	#dashboard-main[data-theme="day"] .geo-pentagon     { stroke: rgba(var(--accent-copper), 0.14); }
-	#dashboard-main[data-theme="day"] .geo-star         { stroke: rgba(var(--accent-copper), 0.1);  }
-	#dashboard-main[data-theme="day"] .geo-vesica       { stroke: rgba(var(--accent-copper), 0.12); }
-	#dashboard-main[data-theme="day"] .geo-prop-tick    { stroke: rgba(var(--accent-warm), 0.16); }
-	#dashboard-main[data-theme="day"] .geo-angle-arc    { stroke: rgba(var(--accent-copper), 0.12); }
-	#dashboard-main[data-theme="day"] .geo-phi-label    { fill:   rgba(var(--accent-warm), 0.1);  }
+	/* ── Da Vinci geometric construction — Night mode ── */
+	.davinci-geo { transition: opacity 0.6s ease; }
+
+	/* Grid & construction lines */
+	.geo-axis          { stroke: rgba(var(--accent), 0.06); }
+	.geo-diagonal      { stroke: rgba(var(--accent), 0.05); }
+	.geo-radial        { stroke: rgba(var(--accent), 0.04); }
+
+	/* Celestial rings & orbits */
+	.geo-circle-outer  { stroke: rgba(var(--accent), 0.09); }
+	.geo-circle-mid    { stroke: rgba(var(--accent), 0.08); }
+	.geo-circle-inner  { stroke: rgba(var(--accent), 0.06); }
+	.geo-ecliptic ellipse  { stroke: rgba(var(--accent), 0.07); }
+	.geo-ecliptic circle   { stroke: rgba(var(--accent), 0.1);  }
+
+	/* Degree ticks — layered density */
+	.geo-degree-major  { stroke: rgba(var(--accent), 0.11); }
+	.geo-degree-minor  { stroke: rgba(var(--accent), 0.06); }
+	.geo-degree-micro  { stroke: rgba(var(--accent), 0.035); }
+
+	/* Sacred geometry */
+	.geo-hexagon       { stroke: rgba(var(--accent), 0.07); }
+	.geo-flower        { stroke: rgba(var(--accent), 0.05); }
+	.geo-flower-center { stroke: rgba(var(--accent), 0.07); }
+	.geo-pentagon      { stroke: rgba(var(--accent), 0.06); }
+	.geo-star          { stroke: rgba(var(--accent), 0.06); }
+	.geo-vesica        { stroke: rgba(var(--accent), 0.07); }
+	.geo-spiral        { stroke: rgba(var(--accent), 0.08); }
+
+	/* Solar / Ra elements */
+	.geo-solar-ray line  { stroke: rgba(var(--accent), 0.04); }
+	.geo-solar-disk    { stroke: rgba(var(--accent), 0.1);  }
+
+	/* Compass & arcs */
+	.geo-arc           { stroke: rgba(var(--accent), 0.07); }
+	.geo-arc-small     { stroke: rgba(var(--accent), 0.05); }
+	.geo-compass-rose path { stroke: rgba(var(--accent), 0.08); }
+	.geo-angle-arc     { stroke: rgba(var(--accent), 0.07); }
+
+	/* Ocean waves */
+	.geo-wave-path     { stroke: rgba(var(--accent), 0.06); }
+
+	/* Constellations */
+	.geo-constellation circle { fill: rgba(var(--accent), 0.1); stroke: none; }
+	.geo-constellation line   { stroke: rgba(var(--accent), 0.06); }
+
+	/* Greek meander */
+	.geo-meander path  { stroke: rgba(var(--accent), 0.07); }
+	.geo-meander line  { stroke: rgba(var(--accent), 0.05); }
+
+	/* Annotation & labels */
+	.geo-mark circle   { stroke: rgba(var(--accent), 0.09); }
+	.geo-fib-dot       { fill:   rgba(var(--accent), 0.08); }
+	.geo-corner        { stroke: rgba(var(--accent), 0.08); }
+	.geo-prop-tick     { stroke: rgba(var(--accent), 0.09); }
+	.geo-label         { fill:   rgba(var(--accent), 0.07); }
+	.geo-cardinal      { fill:   rgba(var(--accent), 0.1);  }
+	.geo-phi-label     { fill:   rgba(var(--accent), 0.05); }
+
+	/* ── Da Vinci geometric construction — Day mode ── */
+	#dashboard-main[data-theme^="day"] .geo-axis          { stroke: rgba(var(--accent), 0.08); }
+	#dashboard-main[data-theme^="day"] .geo-diagonal      { stroke: rgba(var(--accent), 0.07); }
+	#dashboard-main[data-theme^="day"] .geo-radial        { stroke: rgba(var(--accent), 0.06); }
+
+	#dashboard-main[data-theme^="day"] .geo-circle-outer  { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme^="day"] .geo-circle-mid    { stroke: rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme^="day"] .geo-circle-inner  { stroke: rgba(var(--accent-copper), 0.09); }
+	#dashboard-main[data-theme^="day"] .geo-ecliptic ellipse  { stroke: rgba(var(--accent-copper), 0.1); }
+	#dashboard-main[data-theme^="day"] .geo-ecliptic circle   { stroke: rgba(var(--accent-copper), 0.14); }
+
+	#dashboard-main[data-theme^="day"] .geo-degree-major  { stroke: rgba(var(--accent-copper), 0.16); }
+	#dashboard-main[data-theme^="day"] .geo-degree-minor  { stroke: rgba(var(--accent-copper), 0.09); }
+	#dashboard-main[data-theme^="day"] .geo-degree-micro  { stroke: rgba(var(--accent-copper), 0.05); }
+
+	#dashboard-main[data-theme^="day"] .geo-hexagon       { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme^="day"] .geo-flower        { stroke: rgba(var(--accent-copper), 0.07); }
+	#dashboard-main[data-theme^="day"] .geo-flower-center { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme^="day"] .geo-pentagon      { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme^="day"] .geo-star          { stroke: rgba(var(--accent-copper), 0.08); }
+	#dashboard-main[data-theme^="day"] .geo-vesica        { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme^="day"] .geo-spiral        { stroke: rgba(var(--accent-copper), 0.12); }
+
+	#dashboard-main[data-theme^="day"] .geo-solar-ray line  { stroke: rgba(var(--accent-warm), 0.07); }
+	#dashboard-main[data-theme^="day"] .geo-solar-disk    { stroke: rgba(var(--accent-warm), 0.16); }
+
+	#dashboard-main[data-theme^="day"] .geo-arc           { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme^="day"] .geo-arc-small     { stroke: rgba(var(--accent-copper), 0.07); }
+	#dashboard-main[data-theme^="day"] .geo-compass-rose path { stroke: rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme^="day"] .geo-angle-arc     { stroke: rgba(var(--accent-copper), 0.1);  }
+
+	#dashboard-main[data-theme^="day"] .geo-wave-path     { stroke: rgba(var(--accent-copper), 0.08); }
+
+	#dashboard-main[data-theme^="day"] .geo-constellation circle { fill: rgba(var(--accent-warm), 0.14); }
+	#dashboard-main[data-theme^="day"] .geo-constellation line   { stroke: rgba(var(--accent-warm), 0.08); }
+
+	#dashboard-main[data-theme^="day"] .geo-meander path  { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme^="day"] .geo-meander line  { stroke: rgba(var(--accent-copper), 0.07); }
+
+	#dashboard-main[data-theme^="day"] .geo-mark circle   { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme^="day"] .geo-fib-dot       { fill:   rgba(var(--accent-warm), 0.12); }
+	#dashboard-main[data-theme^="day"] .geo-corner        { stroke: rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme^="day"] .geo-prop-tick     { stroke: rgba(var(--accent-warm), 0.14); }
+	#dashboard-main[data-theme^="day"] .geo-label         { fill:   rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme^="day"] .geo-cardinal      { fill:   rgba(var(--accent-copper), 0.16); }
+	#dashboard-main[data-theme^="day"] .geo-phi-label     { fill:   rgba(var(--accent-warm), 0.08); }
 
 	/* ── Text utilities ── */
 	.dash-primary { color: var(--text-primary); transition: color 0.6s ease; }
@@ -692,7 +1048,7 @@ function meterToKm(m) {
 		z-index: 1;
 		transition: background 0.6s ease, border-color 0.6s ease;
 	}
-	#dashboard-main[data-theme="day"] .hud-card {
+	#dashboard-main[data-theme^="day"] .hud-card {
 		box-shadow: 0 1px 6px rgba(110, 78, 30, 0.05);
 	}
 
@@ -721,7 +1077,7 @@ function meterToKm(m) {
 		line-height: 1;
 		transition: color 0.6s ease;
 	}
-	#dashboard-main[data-theme="day"] .detail-label {
+	#dashboard-main[data-theme^="day"] .detail-label {
 		color: rgba(var(--accent-copper), 0.45);
 	}
 	.detail-value {
@@ -739,7 +1095,7 @@ function meterToKm(m) {
 		margin-left: 1px;
 		transition: color 0.6s ease;
 	}
-	#dashboard-main[data-theme="day"] .detail-unit {
+	#dashboard-main[data-theme^="day"] .detail-unit {
 		color: rgba(var(--accent-copper), 0.4);
 	}
 
@@ -748,7 +1104,7 @@ function meterToKm(m) {
 		color: rgba(var(--accent), 0.3);
 		transition: color 0.6s ease;
 	}
-	#dashboard-main[data-theme="day"] .weekly-label {
+	#dashboard-main[data-theme^="day"] .weekly-label {
 		color: rgba(var(--accent-copper), 0.45);
 	}
 	.weekly-temp {
@@ -759,7 +1115,62 @@ function meterToKm(m) {
 		filter: drop-shadow(0 0 5px rgba(var(--accent), 0.06));
 		transition: filter 0.6s ease;
 	}
-	#dashboard-main[data-theme="day"] .weekly-icon-shadow {
+	#dashboard-main[data-theme^="day"] .weekly-icon-shadow {
 		filter: drop-shadow(0 0 5px rgba(var(--accent-warm), 0.08));
+	}
+
+	/* ── High-contrast day — geometric elements ── */
+	#dashboard-main[data-theme="day-hc"] .geo-axis          { stroke: rgba(var(--accent), 0.12); }
+	#dashboard-main[data-theme="day-hc"] .geo-diagonal      { stroke: rgba(var(--accent), 0.1);  }
+	#dashboard-main[data-theme="day-hc"] .geo-radial        { stroke: rgba(var(--accent), 0.09); }
+	#dashboard-main[data-theme="day-hc"] .geo-circle-outer  { stroke: rgba(var(--accent-copper), 0.2);  }
+	#dashboard-main[data-theme="day-hc"] .geo-circle-mid    { stroke: rgba(var(--accent-copper), 0.17); }
+	#dashboard-main[data-theme="day-hc"] .geo-circle-inner  { stroke: rgba(var(--accent-copper), 0.13); }
+	#dashboard-main[data-theme="day-hc"] .geo-ecliptic ellipse  { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-ecliptic circle   { stroke: rgba(var(--accent-copper), 0.2);  }
+	#dashboard-main[data-theme="day-hc"] .geo-degree-major  { stroke: rgba(var(--accent-copper), 0.22); }
+	#dashboard-main[data-theme="day-hc"] .geo-degree-minor  { stroke: rgba(var(--accent-copper), 0.13); }
+	#dashboard-main[data-theme="day-hc"] .geo-degree-micro  { stroke: rgba(var(--accent-copper), 0.07); }
+	#dashboard-main[data-theme="day-hc"] .geo-hexagon       { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-flower        { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme="day-hc"] .geo-flower-center { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-pentagon      { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-star          { stroke: rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme="day-hc"] .geo-vesica        { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-spiral        { stroke: rgba(var(--accent-copper), 0.17); }
+	#dashboard-main[data-theme="day-hc"] .geo-solar-ray line  { stroke: rgba(var(--accent-warm), 0.1);  }
+	#dashboard-main[data-theme="day-hc"] .geo-solar-disk    { stroke: rgba(var(--accent-warm), 0.22); }
+	#dashboard-main[data-theme="day-hc"] .geo-arc           { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-arc-small     { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme="day-hc"] .geo-compass-rose path { stroke: rgba(var(--accent-copper), 0.17); }
+	#dashboard-main[data-theme="day-hc"] .geo-angle-arc     { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-wave-path     { stroke: rgba(var(--accent-copper), 0.12); }
+	#dashboard-main[data-theme="day-hc"] .geo-constellation circle { fill: rgba(var(--accent-warm), 0.2); }
+	#dashboard-main[data-theme="day-hc"] .geo-constellation line   { stroke: rgba(var(--accent-warm), 0.12); }
+	#dashboard-main[data-theme="day-hc"] .geo-meander path  { stroke: rgba(var(--accent-copper), 0.14); }
+	#dashboard-main[data-theme="day-hc"] .geo-meander line  { stroke: rgba(var(--accent-copper), 0.1);  }
+	#dashboard-main[data-theme="day-hc"] .geo-mark circle   { stroke: rgba(var(--accent-copper), 0.2);  }
+	#dashboard-main[data-theme="day-hc"] .geo-fib-dot       { fill:   rgba(var(--accent-warm), 0.17); }
+	#dashboard-main[data-theme="day-hc"] .geo-corner        { stroke: rgba(var(--accent-copper), 0.17); }
+	#dashboard-main[data-theme="day-hc"] .geo-prop-tick     { stroke: rgba(var(--accent-warm), 0.2);  }
+	#dashboard-main[data-theme="day-hc"] .geo-label         { fill:   rgba(var(--accent-copper), 0.17); }
+	#dashboard-main[data-theme="day-hc"] .geo-cardinal      { fill:   rgba(var(--accent-copper), 0.22); }
+	#dashboard-main[data-theme="day-hc"] .geo-phi-label     { fill:   rgba(var(--accent-warm), 0.12); }
+
+	/* ── High-contrast day overrides — stronger labels, borders, shadows ── */
+	#dashboard-main[data-theme="day-hc"] .hud-card {
+		box-shadow: 0 1px 8px rgba(90, 60, 18, 0.1);
+	}
+	#dashboard-main[data-theme="day-hc"] .detail-label {
+		color: rgba(var(--accent-copper), 0.7);
+	}
+	#dashboard-main[data-theme="day-hc"] .detail-unit {
+		color: rgba(var(--accent-copper), 0.6);
+	}
+	#dashboard-main[data-theme="day-hc"] .weekly-label {
+		color: rgba(var(--accent-copper), 0.7);
+	}
+	#dashboard-main[data-theme="day-hc"] .weekly-icon-shadow {
+		filter: drop-shadow(0 0 4px rgba(var(--accent-warm), 0.14));
 	}
 </style>

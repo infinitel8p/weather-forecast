@@ -13,7 +13,8 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
 
   useEffect(() => {
     const ctx = canvasRef.current.getContext("2d");
-    const isDay = document.getElementById("dashboard-main")?.getAttribute("data-theme") === "day";
+    const theme = document.getElementById("dashboard-main")?.getAttribute("data-theme") || "";
+    const isDay = theme.startsWith("day");
 
     // Theme-aware colors
     const colors = isDay ? {
