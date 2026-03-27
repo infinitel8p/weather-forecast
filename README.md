@@ -3,7 +3,16 @@
 weather-forecast is a simple weather dashboard that retrieves data from OpenWeatherMap.
 The project is built for a Raspberry Pi 5" screen. It includes a custom 3d-printed case with stand.
 
-![screely-1748158650273](https://github.com/user-attachments/assets/32b171c0-3220-4248-b71f-e0fbc3c39fda)
+<table>
+  <tr>
+    <td><img width="475" alt="setup_light" src="https://github.com/user-attachments/assets/1fe2862a-85eb-4417-91a3-1b02120567cf" /></td>
+    <td><img width="475" alt="setup_dark" src="https://github.com/user-attachments/assets/1a4b3baf-39ef-4886-b1cf-1b8da930e47e" /></td>
+  </tr>
+  <tr>
+    <td><img width="475" alt="index_light" src="https://github.com/user-attachments/assets/08da876a-8af8-47a4-b4b0-412e157b6ac3" /></td>
+    <td><img width="475" alt="index_dark" src="https://github.com/user-attachments/assets/77fa143b-2bed-4fd9-88ea-e587f65d7dde" /></td>
+  </tr>
+</table>
 
 #### Contents:
 - [weather-forecast](#weather-forecast)

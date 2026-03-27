@@ -348,7 +348,7 @@ function meterToKm(m) {
 			</div>
 
 			<!-- Right: Details grid -->
-			<div class="hud-card flex-1 grid grid-cols-2 grid-rows-4 gap-x-2 gap-y-0 px-3 py-2 items-center justify-items-center">
+			<div class="hud-card flex-1 grid grid-cols-2 grid-rows-4 px-3 py-2 items-center justify-items-start">
 				<div class="detail-item">
 					<IconSunrise size={32} className="detail-icon" />
 					<div class="detail-text">
@@ -701,6 +701,7 @@ function meterToKm(m) {
 		display: flex;
 		align-items: center;
 		gap: 10px;
+		margin-left: 40px;
 	}
 	.detail-icon {
 		color: var(--icon-color);
