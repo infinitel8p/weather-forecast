@@ -10,10 +10,10 @@ const {
 	<img
 		src=`https://openweathermap.org/img/wn/${icon}@4x.png`
 		alt=""
-		class="w-14 h-14 drop-shadow-[0_0_5px_rgba(56,189,168,0.06)]"
+		class="w-14 h-14 weekly-icon-shadow"
 	/>
 	<div class="flex flex-col items-start">
-		<span class="font-mono text-xs text-teal-400/30 uppercase tracking-wider leading-none">{title}</span>
-		<span class="font-mono text-2xl font-bold text-teal-50/85 leading-tight">{temperature}°</span>
+		<span class="font-mono text-xs weekly-label uppercase tracking-wider leading-none">{title}</span>
+		<span class="font-mono text-2xl font-bold weekly-temp leading-tight">{temperature}°</span>
 	</div>
 </div>

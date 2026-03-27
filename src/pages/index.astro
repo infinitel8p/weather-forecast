@@ -108,13 +108,13 @@ function meterToKm(m) {
 ---
 
 <Layout>
-	<main class="flex flex-col h-screen w-screen overflow-hidden bg-[#050d12] p-2 gap-1.5 relative">
+	<main id="dashboard-main" class="flex flex-col h-screen w-screen overflow-hidden p-2 gap-1.5 relative">
 		<!-- Sonar background -->
 		<svg id="sonar-bg" class="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" style="z-index: 0; opacity: 0.04;">
 			<defs>
 				<radialGradient id="sweep-fade" cx="0" cy="1" r="1">
-					<stop offset="0%" stop-color="rgb(56,189,168)" stop-opacity="0.3" />
-					<stop offset="100%" stop-color="rgb(56,189,168)" stop-opacity="0" />
+					<stop id="sweep-fade-start" offset="0%" stop-color="rgb(56,189,168)" stop-opacity="0.3" />
+					<stop id="sweep-fade-end" offset="100%" stop-color="rgb(56,189,168)" stop-opacity="0" />
 				</radialGradient>
 			</defs>
 			<!-- Concentric rings from bottom-left -->
@@ -136,30 +136,30 @@ function meterToKm(m) {
 				<!-- Header -->
 				<div class="flex items-baseline justify-between">
 					<div>
-						<div class="text-xl font-semibold text-teal-50/90">{city ? city : currentWeather.name}</div>
-						<div class="font-mono text-[11px] text-teal-400/20">{currentDate}</div>
+						<div class="text-xl font-semibold dash-primary">{city ? city : currentWeather.name}</div>
+						<div class="font-mono text-[11px] dash-faint">{currentDate}</div>
 					</div>
-					<div class="font-mono text-md text-teal-50/50">
-						{Math.round(weeklyWeather.daily[0].temp.min)}° <span class="text-teal-400/20">/</span> {Math.round(weeklyWeather.daily[0].temp.max)}°
+					<div class="font-mono text-md dash-secondary">
+						{Math.round(weeklyWeather.daily[0].temp.min)}° <span class="dash-faintest">/</span> {Math.round(weeklyWeather.daily[0].temp.max)}°
 					</div>
 				</div>
 				<!-- Center: icon + temp -->
-				<div class="flex items-center justify-center flex-1">
+				<div class="flex items-center justify-center flex-1 -mt-6">
 					<img
-						class="w-32 h-32 object-contain drop-shadow-[0_0_12px_rgba(56,189,168,0.08)] -mr-2"
+						class="w-32 h-32 object-contain weather-icon-shadow -mr-2 mt-2"
 						src=`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@4x.png`
 					/>
 					<div class="flex flex-col items-start">
-						<p class="text-8xl font-bold font-mono text-teal-50/90 leading-none" style="text-shadow: 0 0 25px rgba(56,189,168,0.06);">
+						<p class="text-8xl font-bold font-mono dash-primary leading-none temp-glow">
 							{Math.round(currentWeather.main.temp)}°
 						</p>
-						<p class="font-mono text-sm text-teal-400/25 mt-1">
+						<p class="font-mono text-sm dash-muted -mt-2">
 							Gefühlt {Math.round(currentWeather.main.feels_like)}°
 						</p>
 					</div>
 				</div>
 				<!-- Footer: description -->
-				<p class="text-base font-medium text-teal-50/50 text-center -mt-1">
+				<p class="text-base font-medium dash-secondary text-center -mt-3">
 					{currentWeather.weather[0].description}
 				</p>
 			</div>
@@ -261,11 +261,24 @@ function meterToKm(m) {
 			}
 		</div>
 
-		<span id="countdown" class="absolute left-2.5 bottom-1.5 font-mono text-[9px] text-teal-400/12">
+		<span id="countdown" class="absolute left-2.5 bottom-1.5 font-mono text-[9px] dash-muted">
 			20:00
 		</span>
 
 		<script>
+			// Theme detection (day 06:00–21:59, night 22:00–05:59)
+			const dashMain = document.getElementById("dashboard-main");
+			const hour = new Date().getHours();
+			const isDay = hour >= 6 && hour <= 21;
+			dashMain.setAttribute("data-theme", isDay ? "day" : "night");
+
+			const sonarColor = isDay ? "rgb(180,95,30)" : "rgb(56,189,168)";
+
+			// Update sonar gradient
+			document.getElementById("sweep-fade-start").setAttribute("stop-color", sonarColor);
+			document.getElementById("sweep-fade-end").setAttribute("stop-color", sonarColor);
+			document.getElementById("sweep-arm").setAttribute("stroke", sonarColor);
+
 			// Countdown
 			let seconds = 1200;
 			const countdownEl = document.getElementById("countdown");
@@ -311,7 +324,7 @@ function meterToKm(m) {
 					c.setAttribute("cy", h);
 					c.setAttribute("r", r);
 					c.setAttribute("fill", "none");
-					c.setAttribute("stroke", "rgb(56,189,168)");
+					c.setAttribute("stroke", sonarColor);
 					c.setAttribute("stroke-width", "0.5");
 					ringsG.appendChild(c);
 				}
@@ -324,7 +337,7 @@ function meterToKm(m) {
 					l.setAttribute("y1", h);
 					l.setAttribute("x2", Math.cos(rad) * maxR);
 					l.setAttribute("y2", h - Math.sin(rad) * maxR);
-					l.setAttribute("stroke", "rgb(56,189,168)");
+					l.setAttribute("stroke", sonarColor);
 					l.setAttribute("stroke-width", "0.3");
 					l.setAttribute("stroke-dasharray", "2 6");
 					radialsG.appendChild(l);
@@ -337,7 +350,7 @@ function meterToKm(m) {
 					l.setAttribute("y1", h * y);
 					l.setAttribute("x2", w);
 					l.setAttribute("y2", h * y);
-					l.setAttribute("stroke", "rgb(56,189,168)");
+					l.setAttribute("stroke", sonarColor);
 					l.setAttribute("stroke-width", "0.3");
 					l.setAttribute("stroke-dasharray", "3 10");
 					scanlinesG.appendChild(l);
@@ -387,21 +400,77 @@ function meterToKm(m) {
 </Layout>
 
 <style is:global>
+	/* ── Theme custom properties ── */
+	#dashboard-main {
+		--accent: 56, 189, 168;
+		--accent-warm: 56, 189, 168;
+		--accent-copper: 45, 160, 200;
+		--bg-main: #050d12;
+		--card-bg: rgba(10, 18, 25, 0.7);
+		--card-border: rgba(56, 189, 168, 0.06);
+		--text-primary: rgba(204, 251, 241, 0.9);
+		--text-secondary: rgba(204, 251, 241, 0.5);
+		--text-muted: rgba(56, 189, 168, 0.25);
+		--text-faint: rgba(56, 189, 168, 0.2);
+		--text-faintest: rgba(56, 189, 168, 0.12);
+		--icon-color: rgba(56, 189, 168, 0.2);
+		--icon-shadow: drop-shadow(0 0 12px rgba(56, 189, 168, 0.08));
+		--temp-shadow: 0 0 25px rgba(56, 189, 168, 0.06);
+		background: var(--bg-main);
+		transition: background 0.6s ease;
+	}
+
+	#dashboard-main[data-theme="day"] {
+		--accent: 110, 78, 30;
+		--accent-warm: 200, 140, 30;
+		--accent-copper: 180, 95, 30;
+		--bg-main: #e8e0d4;
+		--card-bg: rgba(243, 238, 228, 0.8);
+		--card-border: rgba(180, 95, 30, 0.1);
+		--text-primary: rgba(50, 35, 15, 0.92);
+		--text-secondary: rgba(50, 35, 15, 0.55);
+		--text-muted: rgba(110, 78, 30, 0.4);
+		--text-faint: rgba(110, 78, 30, 0.25);
+		--text-faintest: rgba(110, 78, 30, 0.2);
+		--icon-color: rgba(200, 140, 30, 0.3);
+		--icon-shadow: drop-shadow(0 0 8px rgba(200, 140, 30, 0.1));
+		--temp-shadow: 0 0 20px rgba(200, 140, 30, 0.06);
+		background: linear-gradient(145deg, #e8e1d5, #e5dccf);
+	}
+
+	/* ── Text utilities ── */
+	.dash-primary { color: var(--text-primary); transition: color 0.6s ease; }
+	.dash-secondary { color: var(--text-secondary); transition: color 0.6s ease; }
+	.dash-muted { color: var(--text-muted); transition: color 0.6s ease; }
+	.dash-faint { color: var(--text-faint); transition: color 0.6s ease; }
+	.dash-faintest { color: var(--text-faintest); transition: color 0.6s ease; }
+
+	.temp-glow { text-shadow: var(--temp-shadow); }
+	.weather-icon-shadow { filter: var(--icon-shadow); }
+
+	/* ── Cards ── */
 	.hud-card {
-		background: rgba(10, 18, 25, 0.7);
-		border: 1px solid rgba(56, 189, 168, 0.06);
+		background: var(--card-bg);
+		border: 1px solid var(--card-border);
 		border-radius: 6px;
 		position: relative;
 		z-index: 1;
+		transition: background 0.6s ease, border-color 0.6s ease;
 	}
+	#dashboard-main[data-theme="day"] .hud-card {
+		box-shadow: 0 1px 6px rgba(110, 78, 30, 0.05);
+	}
+
+	/* ── Detail items ── */
 	.detail-item {
 		display: flex;
 		align-items: center;
 		gap: 10px;
 	}
 	.detail-icon {
-		color: rgba(56, 189, 168, 0.2);
+		color: var(--icon-color);
 		flex-shrink: 0;
+		transition: color 0.6s ease;
 	}
 	.detail-text {
 		display: flex;
@@ -410,22 +479,51 @@ function meterToKm(m) {
 	.detail-label {
 		font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 		font-size: 11px;
-		color: rgba(56, 189, 168, 0.22);
+		color: rgba(var(--accent), 0.22);
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
 		line-height: 1;
+		transition: color 0.6s ease;
+	}
+	#dashboard-main[data-theme="day"] .detail-label {
+		color: rgba(var(--accent-copper), 0.45);
 	}
 	.detail-value {
 		font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 		font-size: 22px;
 		font-weight: 700;
-		color: rgba(204, 251, 241, 0.85);
+		color: var(--text-primary);
 		line-height: 1.2;
+		transition: color 0.6s ease;
 	}
 	.detail-unit {
 		font-size: 11px;
 		font-weight: 500;
-		color: rgba(56, 189, 168, 0.25);
+		color: rgba(var(--accent), 0.25);
 		margin-left: 1px;
+		transition: color 0.6s ease;
+	}
+	#dashboard-main[data-theme="day"] .detail-unit {
+		color: rgba(var(--accent-copper), 0.4);
+	}
+
+	/* ── Weekly card (SingleWeatherCard) ── */
+	.weekly-label {
+		color: rgba(var(--accent), 0.3);
+		transition: color 0.6s ease;
+	}
+	#dashboard-main[data-theme="day"] .weekly-label {
+		color: rgba(var(--accent-copper), 0.45);
+	}
+	.weekly-temp {
+		color: var(--text-primary);
+		transition: color 0.6s ease;
+	}
+	.weekly-icon-shadow {
+		filter: drop-shadow(0 0 5px rgba(var(--accent), 0.06));
+		transition: filter 0.6s ease;
+	}
+	#dashboard-main[data-theme="day"] .weekly-icon-shadow {
+		filter: drop-shadow(0 0 5px rgba(var(--accent-warm), 0.08));
 	}
 </style>

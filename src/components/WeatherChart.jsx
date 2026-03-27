@@ -13,6 +13,50 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
 
   useEffect(() => {
     const ctx = canvasRef.current.getContext("2d");
+    const isDay = document.getElementById("dashboard-main")?.getAttribute("data-theme") === "day";
+
+    // Theme-aware colors
+    const colors = isDay ? {
+      legendText: "rgba(110, 78, 30, 0.4)",
+      tooltipBg: "rgba(243, 238, 228, 0.95)",
+      tooltipTitle: "rgba(50, 35, 15, 0.8)",
+      tooltipBody: "rgba(50, 35, 15, 0.65)",
+      tooltipBorder: "rgba(180, 95, 30, 0.15)",
+      dataLabel: "rgba(50, 35, 15, 0.55)",
+      xTick: "rgba(110, 78, 30, 0.3)",
+      xGrid: "rgba(110, 78, 30, 0.05)",
+      tempTick: "rgba(200, 80, 80, 0.5)",
+      tempGrid: "rgba(110, 78, 30, 0.05)",
+      precipTick: "rgba(50, 140, 120, 0.4)",
+      tempLine: "rgba(200, 90, 90, 0.75)",
+      tempFill: "rgba(200, 90, 90, 0.08)",
+      precipLine: "rgba(50, 140, 120, 0.65)",
+      precipFill: "rgba(50, 140, 120, 0.07)",
+      uviLine: "rgba(200, 160, 30, 0.6)",
+      uviFill: "rgba(200, 160, 30, 0.06)",
+      sunriseLine: "rgba(200, 90, 90, 0.25)",
+      sunsetLine: "rgba(50, 140, 120, 0.25)",
+    } : {
+      legendText: "rgba(204, 251, 241, 0.3)",
+      tooltipBg: "rgba(5, 13, 18, 0.95)",
+      tooltipTitle: "rgba(204, 251, 241, 0.7)",
+      tooltipBody: "rgba(204, 251, 241, 0.6)",
+      tooltipBorder: "rgba(56, 189, 168, 0.1)",
+      dataLabel: "rgba(204, 251, 241, 0.5)",
+      xTick: "rgba(204, 251, 241, 0.2)",
+      xGrid: "rgba(56, 189, 168, 0.03)",
+      tempTick: "rgba(248, 113, 113, 0.35)",
+      tempGrid: "rgba(56, 189, 168, 0.03)",
+      precipTick: "rgba(56, 189, 168, 0.25)",
+      tempLine: "rgba(248, 113, 113, 0.7)",
+      tempFill: "rgba(248, 113, 113, 0.06)",
+      precipLine: "rgba(56, 189, 168, 0.6)",
+      precipFill: "rgba(56, 189, 168, 0.06)",
+      uviLine: "rgba(250, 204, 21, 0.5)",
+      uviFill: "rgba(250, 204, 21, 0.04)",
+      sunriseLine: "rgba(248, 113, 113, 0.2)",
+      sunsetLine: "rgba(56, 189, 168, 0.2)",
+    };
 
     function roundToNearestHour(timeStr) {
       const [h, m] = timeStr.split(":").map(Number);
@@ -28,8 +72,8 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
           {
             label: "Temp °C",
             data: temperatureData,
-            borderColor: "rgba(248, 113, 113, 0.7)",
-            backgroundColor: "rgba(248, 113, 113, 0.06)",
+            borderColor: colors.tempLine,
+            backgroundColor: colors.tempFill,
             yAxisID: "y-temp",
             tension: 0.4,
             fill: true,
@@ -39,8 +83,8 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
           {
             label: "Regen mm",
             data: precipitationData,
-            borderColor: "rgba(56, 189, 168, 0.6)",
-            backgroundColor: "rgba(56, 189, 168, 0.06)",
+            borderColor: colors.precipLine,
+            backgroundColor: colors.precipFill,
             yAxisID: "y-precip",
             tension: 0.4,
             fill: true,
@@ -50,8 +94,8 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
           {
             label: "UV",
             data: uviData,
-            borderColor: "rgba(250, 204, 21, 0.5)",
-            backgroundColor: "rgba(250, 204, 21, 0.04)",
+            borderColor: colors.uviLine,
+            backgroundColor: colors.uviFill,
             yAxisID: "y-uvi",
             tension: 0.4,
             fill: true,
@@ -73,7 +117,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             position: "top",
             align: "end",
             labels: {
-              color: "rgba(204, 251, 241, 0.3)",
+              color: colors.legendText,
               font: { size: 8, family: "ui-monospace, SFMono-Regular, monospace" },
               boxWidth: 6,
               boxHeight: 6,
@@ -83,10 +127,10 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             },
           },
           tooltip: {
-            backgroundColor: "rgba(5, 13, 18, 0.95)",
-            titleColor: "rgba(204, 251, 241, 0.7)",
-            bodyColor: "rgba(204, 251, 241, 0.6)",
-            borderColor: "rgba(56, 189, 168, 0.1)",
+            backgroundColor: colors.tooltipBg,
+            titleColor: colors.tooltipTitle,
+            bodyColor: colors.tooltipBody,
+            borderColor: colors.tooltipBorder,
             borderWidth: 1,
             titleFont: { size: 9, family: "ui-monospace, monospace" },
             bodyFont: { size: 9, family: "ui-monospace, monospace" },
@@ -95,7 +139,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
           },
           datalabels: {
             display: "auto",
-            color: "rgba(204, 251, 241, 0.5)",
+            color: colors.dataLabel,
             font: { size: 7, weight: "bold", family: "ui-monospace, monospace" },
             align: "top",
             offset: 2,
@@ -108,7 +152,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
                 type: "line",
                 scaleID: "x",
                 value: roundToNearestHour(sunrise),
-                borderColor: "rgba(248, 113, 113, 0.2)",
+                borderColor: colors.sunriseLine,
                 borderWidth: 1,
                 borderDash: [2, 3],
                 label: {
@@ -123,7 +167,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
                 type: "line",
                 scaleID: "x",
                 value: roundToNearestHour(sunset),
-                borderColor: "rgba(56, 189, 168, 0.2)",
+                borderColor: colors.sunsetLine,
                 borderWidth: 1,
                 borderDash: [2, 3],
                 label: {
@@ -140,7 +184,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
         scales: {
           x: {
             ticks: {
-              color: "rgba(204, 251, 241, 0.2)",
+              color: colors.xTick,
               font: { size: 8, family: "ui-monospace, monospace" },
               maxRotation: 0,
               callback: function (val, index) {
@@ -148,20 +192,20 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
               },
             },
             grid: {
-              color: "rgba(56, 189, 168, 0.03)",
+              color: colors.xGrid,
             },
           },
           "y-temp": {
             type: "linear",
             position: "left",
             ticks: {
-              color: "rgba(248, 113, 113, 0.35)",
+              color: colors.tempTick,
               font: { size: 8, family: "ui-monospace, monospace" },
               callback: (v) => v + "°",
               maxTicksLimit: 5,
             },
             grid: {
-              color: "rgba(56, 189, 168, 0.03)",
+              color: colors.tempGrid,
             },
           },
           "y-uvi": {
@@ -188,7 +232,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
               drawOnChartArea: false,
             },
             ticks: {
-              color: "rgba(56, 189, 168, 0.25)",
+              color: colors.precipTick,
               font: { size: 8, family: "ui-monospace, monospace" },
               callback: (v) => v + "mm",
               maxTicksLimit: 4,

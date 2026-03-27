@@ -33,9 +33,11 @@ const smallTicks = [...Array(36)]
 ---
 
 <Layout>
-	<main class="h-screen w-full overflow-hidden bg-[#050d12] flex" id="setup-main">
+	<main class="h-screen w-full overflow-hidden flex" id="setup-main">
 		<!-- Left: Doppler radar display -->
 		<div class="relative flex-1 overflow-hidden flex items-center justify-center">
+			<!-- Day mode: warm ambient glow behind radar -->
+			<div id="radar-glow" class="absolute rounded-full pointer-events-none" style="width:420px;height:420px;"></div>
 			<!-- Doppler Radar SVG -->
 			<svg viewBox="-15 -5 430 415" class="w-95 h-95">
 				<defs>
@@ -47,16 +49,16 @@ const smallTicks = [...Array(36)]
 						</feMerge>
 					</filter>
 					<linearGradient id="sweepGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-						<stop offset="0%" stop-color="rgba(56,189,168,0.45)"/>
-						<stop offset="100%" stop-color="rgba(56,189,168,0.03)"/>
+						<stop id="sweep-stop-0" offset="0%" stop-color="rgba(56,189,168,0.45)"/>
+						<stop id="sweep-stop-1" offset="100%" stop-color="rgba(56,189,168,0.03)"/>
 					</linearGradient>
 					<!-- Doppler echo gradient -->
 					<radialGradient id="echoGrad" cx="50%" cy="50%" r="50%">
-						<stop offset="0%" stop-color="rgba(56,189,168,0)"/>
-						<stop offset="40%" stop-color="rgba(56,189,168,0)"/>
-						<stop offset="60%" stop-color="rgba(56,189,168,0.06)"/>
-						<stop offset="80%" stop-color="rgba(45,160,200,0.04)"/>
-						<stop offset="100%" stop-color="rgba(56,189,168,0)"/>
+						<stop id="echo-stop-0" offset="0%" stop-color="rgba(56,189,168,0)"/>
+						<stop id="echo-stop-40" offset="40%" stop-color="rgba(56,189,168,0)"/>
+						<stop id="echo-stop-60" offset="60%" stop-color="rgba(56,189,168,0.06)"/>
+						<stop id="echo-stop-80" offset="80%" stop-color="rgba(45,160,200,0.04)"/>
+						<stop id="echo-stop-100" offset="100%" stop-color="rgba(56,189,168,0)"/>
 					</radialGradient>
 				</defs>
 
@@ -65,77 +67,77 @@ const smallTicks = [...Array(36)]
 
 				<!-- Outer tick marks every 30° -->
 				{ticks.map((t) => (
-					<line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke="rgba(56,189,168,0.12)" stroke-width="0.8"/>
+					<line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} class="svg-tick-major" stroke-width="0.8"/>
 				))}
 				<!-- Small ticks every 10° -->
 				{smallTicks.map((t) => (
-					<line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke="rgba(56,189,168,0.06)" stroke-width="0.5"/>
+					<line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} class="svg-tick-minor" stroke-width="0.5"/>
 				))}
 
 				<!-- Range rings -->
-				<circle cx="200" cy="200" r="40" fill="none" stroke="rgba(56,189,168,0.09)" stroke-width="0.5"/>
-				<circle cx="200" cy="200" r="85" fill="none" stroke="rgba(56,189,168,0.07)" stroke-width="0.5"/>
-				<circle cx="200" cy="200" r="130" fill="none" stroke="rgba(56,189,168,0.05)" stroke-width="0.5"/>
-				<circle cx="200" cy="200" r="180" fill="none" stroke="rgba(56,189,168,0.04)" stroke-width="0.5" stroke-dasharray="2 4"/>
+				<circle cx="200" cy="200" r="40" fill="none" class="svg-ring" stroke-width="0.5"/>
+				<circle cx="200" cy="200" r="85" fill="none" class="svg-ring-mid" stroke-width="0.5"/>
+				<circle cx="200" cy="200" r="130" fill="none" class="svg-ring-far" stroke-width="0.5"/>
+				<circle cx="200" cy="200" r="180" fill="none" class="svg-ring-outer" stroke-width="0.5" stroke-dasharray="2 4"/>
 
 				<!-- Crosshairs -->
-				<line x1="15" y1="200" x2="385" y2="200" stroke="rgba(56,189,168,0.035)" stroke-width="0.5"/>
-				<line x1="200" y1="15" x2="200" y2="385" stroke="rgba(56,189,168,0.035)" stroke-width="0.5"/>
+				<line x1="15" y1="200" x2="385" y2="200" class="svg-crosshair" stroke-width="0.5"/>
+				<line x1="200" y1="15" x2="200" y2="385" class="svg-crosshair" stroke-width="0.5"/>
 				<!-- Range intersection ticks -->
-				<line x1="113" y1="198" x2="113" y2="202" stroke="rgba(56,189,168,0.1)" stroke-width="0.5"/>
-				<line x1="287" y1="198" x2="287" y2="202" stroke="rgba(56,189,168,0.1)" stroke-width="0.5"/>
-				<line x1="198" y1="113" x2="202" y2="113" stroke="rgba(56,189,168,0.1)" stroke-width="0.5"/>
-				<line x1="198" y1="287" x2="202" y2="287" stroke="rgba(56,189,168,0.1)" stroke-width="0.5"/>
+				<line x1="113" y1="198" x2="113" y2="202" class="svg-intersection" stroke-width="0.5"/>
+				<line x1="287" y1="198" x2="287" y2="202" class="svg-intersection" stroke-width="0.5"/>
+				<line x1="198" y1="113" x2="202" y2="113" class="svg-intersection" stroke-width="0.5"/>
+				<line x1="198" y1="287" x2="202" y2="287" class="svg-intersection" stroke-width="0.5"/>
 
 				<!-- Doppler echoes (revealed by sweep, animated via JS) -->
 				<g id="echo-group" opacity="0"></g>
 
 				<!-- Sweep arm + trail -->
 				<g id="sweep-group">
-					<path id="sweep-trail" d="" fill="rgba(56,189,168,0.035)"/>
+					<path id="sweep-trail" d="" class="svg-sweep-trail"/>
 					<line id="sweep-line" x1="200" y1="200" x2="380" y2="200" stroke="url(#sweepGrad)" stroke-width="1"/>
 				</g>
 
 				<!-- Ping rings -->
-				<circle id="ping-1" cx="200" cy="200" r="3" fill="none" stroke="rgba(56,189,168,0.4)" stroke-width="0.5"/>
-				<circle id="ping-2" cx="200" cy="200" r="3" fill="none" stroke="rgba(56,189,168,0.4)" stroke-width="0.5"/>
+				<circle id="ping-1" cx="200" cy="200" r="3" fill="none" class="svg-ping" stroke-width="0.5"/>
+				<circle id="ping-2" cx="200" cy="200" r="3" fill="none" class="svg-ping" stroke-width="0.5"/>
 
 				<!-- Station dot with glow -->
-				<circle cx="200" cy="200" r="2.5" fill="rgb(56,189,168)" filter="url(#glow)"/>
+				<circle id="station-dot" cx="200" cy="200" r="2.5" filter="url(#glow)"/>
 
 				<!-- Cardinal labels -->
-				<text x="200" y="8" text-anchor="middle" fill="rgba(56,189,168,0.14)" font-size="7" font-family="ui-monospace, monospace">N</text>
-				<text x="396" y="203" text-anchor="end" fill="rgba(56,189,168,0.14)" font-size="7" font-family="ui-monospace, monospace">E</text>
-				<text x="200" y="398" text-anchor="middle" fill="rgba(56,189,168,0.14)" font-size="7" font-family="ui-monospace, monospace">S</text>
-				<text x="2" y="203" text-anchor="start" fill="rgba(56,189,168,0.14)" font-size="7" font-family="ui-monospace, monospace">W</text>
+				<text x="200" y="8" text-anchor="middle" class="svg-cardinal" font-size="7" font-family="ui-monospace, monospace">N</text>
+				<text x="396" y="203" text-anchor="end" class="svg-cardinal" font-size="7" font-family="ui-monospace, monospace">E</text>
+				<text x="200" y="398" text-anchor="middle" class="svg-cardinal" font-size="7" font-family="ui-monospace, monospace">S</text>
+				<text x="2" y="203" text-anchor="start" class="svg-cardinal" font-size="7" font-family="ui-monospace, monospace">W</text>
 
 				<!-- Range labels -->
-				<text x="200" y="157" text-anchor="middle" fill="rgba(56,189,168,0.08)" font-size="5" font-family="ui-monospace, monospace">50km</text>
-				<text x="200" y="112" text-anchor="middle" fill="rgba(56,189,168,0.08)" font-size="5" font-family="ui-monospace, monospace">100km</text>
+				<text x="200" y="157" text-anchor="middle" class="svg-range-label" font-size="5" font-family="ui-monospace, monospace">50km</text>
+				<text x="200" y="112" text-anchor="middle" class="svg-range-label" font-size="5" font-family="ui-monospace, monospace">100km</text>
 			</svg>
 
 			<!-- Corner labels -->
 			<div class="absolute top-4 right-5 font-mono text-[10px] tracking-[0.15em] neon-sign">
 				WEATHER//<span id="neon-flicker" class="neon-sign">FORECAST</span>
 			</div>
-			<div class="absolute top-4 left-5 font-mono text-[9px] text-teal-400/12 tracking-[0.1em]">
+			<div class="absolute top-4 left-5 font-mono text-[9px] setup-text-faint tracking-[0.1em]">
 				DOPPLER RADAR
 			</div>
-			<div class="absolute bottom-4 left-5 font-mono text-[10px] text-teal-400/13 leading-relaxed">
+			<div class="absolute bottom-4 left-5 font-mono text-[10px] setup-text-faint leading-relaxed">
 				<div id="coord-lat">51.0504° N</div>
 				<div id="coord-lon">7.1491° E</div>
 			</div>
 		</div>
 
 		<!-- Right: Form panel -->
-		<div class="w-85 h-full bg-[#0a1219] border-l border-teal-400/6 flex flex-col justify-center px-8">
+		<div class="w-85 h-full setup-panel border-l flex flex-col justify-center px-8">
 			<div class="space-y-6">
 				<div class="space-y-1.5">
 					<div class="flex items-center gap-2">
-						<IconRadar2 size={14} className="text-teal-400/30" />
-						<p class="font-mono text-[10px] text-teal-400/35 uppercase tracking-[0.2em]">Konfiguration</p>
+						<IconRadar2 size={14} className="setup-icon-accent" />
+						<p class="font-mono text-[10px] setup-text-accent uppercase tracking-[0.2em]">Konfiguration</p>
 					</div>
-					<h1 class="text-xl font-semibold text-teal-50/90 tracking-tight">Standort</h1>
+					<h1 class="text-xl font-semibold setup-heading tracking-tight">Standort</h1>
 				</div>
 
 				<div class="space-y-3">
@@ -153,9 +155,9 @@ const smallTicks = [...Array(36)]
 					</div>
 
 					<div class="flex items-center gap-3 py-1">
-						<div class="flex-1 h-px bg-teal-400/6"></div>
-						<span class="font-mono text-[9px] text-teal-400/12 uppercase tracking-[0.2em]">oder</span>
-						<div class="flex-1 h-px bg-teal-400/6"></div>
+						<div class="flex-1 h-px setup-divider"></div>
+						<span class="font-mono text-[9px] setup-text-faint uppercase tracking-[0.2em]">oder</span>
+						<div class="flex-1 h-px setup-divider"></div>
 					</div>
 
 					<div class="setup-field">
@@ -168,7 +170,7 @@ const smallTicks = [...Array(36)]
 				<button
 					type="button"
 					id="submit-btn"
-					class="group w-full py-2.5 bg-teal-400/5 border border-teal-400/10 rounded-lg font-mono text-xs text-teal-400/50 uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 hover:bg-teal-400/10 hover:text-teal-400/70 hover:border-teal-400/20">
+					class="group w-full py-2.5 setup-btn rounded-lg font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all duration-300">
 					Starten
 					<IconArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-0.5" />
 				</button>
@@ -178,36 +180,104 @@ const smallTicks = [...Array(36)]
 				href="https://github.com/infinitel8p"
 				target="_blank"
 				rel="noopener noreferrer"
-				class="absolute bottom-4 font-mono text-[9px] text-teal-400/15 no-underline transition-all duration-500 hover:text-teal-400/40"
-				style="text-shadow: 0 0 8px rgba(56,189,168,0.08);"
-				onmouseenter="this.style.textShadow='0 0 6px rgba(56,189,168,0.2), 0 0 15px rgba(56,189,168,0.1)'"
-				onmouseleave="this.style.textShadow='0 0 8px rgba(56,189,168,0.08)'"
+				id="footer-link"
+				class="absolute bottom-4 font-mono text-[9px] setup-text-faint no-underline transition-all duration-500"
 			>@InfiniteL8p</a>
 		</div>
 	</main>
 
 	<style is:global>
+		/* ── Theme custom properties ── */
+		#setup-main {
+			--accent: 56, 189, 168;
+			--accent-alt: 45, 160, 200;
+			--bg-main: #050d12;
+			--bg-panel: #0a1219;
+			--border-panel: rgba(56, 189, 168, 0.06);
+			--text-heading: rgba(204, 251, 241, 0.9);
+			--text-input: rgba(204, 251, 241, 0.9);
+			--text-placeholder: rgba(56, 189, 168, 0.07);
+			--neon-full: rgba(56, 189, 168, 0.85);
+			--neon-glow-1: rgba(56, 189, 168, 0.4);
+			--neon-glow-2: rgba(56, 189, 168, 0.2);
+			--neon-glow-3: rgba(56, 189, 168, 0.1);
+			--neon-off: rgba(56, 189, 168, 0.12);
+			--neon-dim: rgba(56, 189, 168, 0.35);
+			--neon-dim-glow: rgba(56, 189, 168, 0.15);
+			background: var(--bg-main);
+			transition: background 0.6s ease;
+		}
+
+		#setup-main[data-theme="day"] {
+			--accent: 110, 78, 30;
+			--accent-alt: 140, 95, 35;
+			--accent-warm: 200, 140, 30;
+			--accent-copper: 180, 95, 30;
+			--bg-main: #e8e0d4;
+			--bg-panel: #f0ebe2;
+			--border-panel: rgba(180, 95, 30, 0.1);
+			--text-heading: rgba(50, 35, 15, 0.94);
+			--text-input: rgba(50, 35, 15, 0.82);
+			--text-placeholder: rgba(140, 95, 35, 0.3);
+			--neon-full: rgba(190, 110, 20, 0.88);
+			--neon-glow-1: rgba(200, 140, 30, 0.35);
+			--neon-glow-2: rgba(200, 140, 30, 0.18);
+			--neon-glow-3: rgba(200, 140, 30, 0.08);
+			--neon-off: rgba(180, 95, 30, 0.22);
+			--neon-dim: rgba(190, 110, 20, 0.45);
+			--neon-dim-glow: rgba(200, 140, 30, 0.15);
+			background: linear-gradient(145deg, #e8e1d5, #e5dccf);
+		}
+
+		/* ── Panel & text ── */
+		.setup-panel {
+			background: var(--bg-panel);
+			border-color: var(--border-panel);
+			transition: background 0.6s ease, border-color 0.6s ease;
+		}
+		.setup-heading {
+			color: var(--text-heading);
+			transition: color 0.6s ease;
+		}
+		.setup-icon-accent {
+			color: rgba(var(--accent), 0.3);
+			transition: color 0.6s ease;
+		}
+		.setup-text-accent {
+			color: rgba(var(--accent), 0.35);
+			transition: color 0.6s ease;
+		}
+		.setup-text-faint {
+			color: rgba(var(--accent), 0.13);
+			transition: color 0.6s ease;
+		}
+		.setup-divider {
+			background: rgba(var(--accent), 0.06);
+			transition: background 0.6s ease;
+		}
+
+		/* ── Form fields ── */
 		.setup-field {
 			position: relative;
 			padding-left: 10px;
-			border-left: 1px solid rgba(56, 189, 168, 0);
+			border-left: 1px solid rgba(var(--accent), 0);
 			transition: border-color 0.3s;
 		}
 		.setup-field:focus-within {
-			border-left-color: rgba(56, 189, 168, 0.2);
+			border-left-color: rgba(var(--accent), 0.2);
 		}
 		.setup-label {
 			display: block;
 			font-size: 10px;
 			font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-			color: rgba(56, 189, 168, 0.22);
+			color: rgba(var(--accent), 0.22);
 			text-transform: uppercase;
 			letter-spacing: 0.12em;
 			margin-bottom: 2px;
 			transition: color 0.3s;
 		}
 		.setup-field:focus-within .setup-label {
-			color: rgba(56, 189, 168, 0.45);
+			color: rgba(var(--accent), 0.45);
 		}
 		.setup-input {
 			width: 100%;
@@ -217,21 +287,20 @@ const smallTicks = [...Array(36)]
 			border-bottom: 1px solid transparent;
 			font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 			font-size: 16px;
-			color: rgba(204, 251, 241, 0.9);
+			color: var(--text-input);
 			outline: none;
-			transition: border-color 0.4s;
+			transition: border-color 0.4s, color 0.6s ease;
 			letter-spacing: 0.03em;
 		}
 		.setup-input::placeholder {
-			color: rgba(56, 189, 168, 0.07);
+			color: var(--text-placeholder);
 			letter-spacing: 0.05em;
 		}
 		.setup-input:focus {
 			border-bottom-color: transparent;
 		}
-		/* Show a faint line only when the field has content */
 		.setup-input:not(:placeholder-shown):not(:focus) {
-			border-bottom-color: rgba(56, 189, 168, 0.06);
+			border-bottom-color: rgba(var(--accent), 0.06);
 		}
 		.setup-underline {
 			position: absolute;
@@ -239,11 +308,11 @@ const smallTicks = [...Array(36)]
 			left: 10px;
 			right: 0;
 			height: 1px;
-			background: linear-gradient(90deg, rgb(56, 189, 168), rgba(45, 160, 200, 0.6));
+			background: linear-gradient(90deg, rgb(var(--accent)), rgba(var(--accent-alt), 0.6));
 			transform: scaleX(0);
 			transform-origin: left;
 			transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-			box-shadow: 0 0 12px rgba(56, 189, 168, 0.2), 0 0 4px rgba(56, 189, 168, 0.1);
+			box-shadow: 0 0 12px rgba(var(--accent), 0.2), 0 0 4px rgba(var(--accent), 0.1);
 		}
 		.setup-input:focus ~ .setup-underline {
 			transform: scaleX(1);
@@ -257,27 +326,168 @@ const smallTicks = [...Array(36)]
 			-moz-appearance: textfield;
 		}
 
-		/* Neon sign */
+		/* ── Button ── */
+		.setup-btn {
+			background: rgba(var(--accent), 0.05);
+			border: 1px solid rgba(var(--accent), 0.1);
+			color: rgba(var(--accent), 0.5);
+			transition: all 0.3s;
+		}
+		.setup-btn:hover {
+			background: rgba(var(--accent), 0.1);
+			color: rgba(var(--accent), 0.7);
+			border-color: rgba(var(--accent), 0.2);
+		}
+
+		/* ── Neon sign ── */
 		.neon-sign {
-			color: rgba(56, 189, 168, 0.85);
+			color: var(--neon-full);
 			text-shadow:
-				0 0 4px rgba(56, 189, 168, 0.4),
-				0 0 12px rgba(56, 189, 168, 0.2),
-				0 0 30px rgba(56, 189, 168, 0.1);
-			transition: opacity 0.05s, text-shadow 0.05s;
+				0 0 4px var(--neon-glow-1),
+				0 0 12px var(--neon-glow-2),
+				0 0 30px var(--neon-glow-3);
+			transition: color 0.6s ease, text-shadow 0.6s ease;
 		}
 		.neon-sign.flicker-off {
-			color: rgba(56, 189, 168, 0.12);
+			color: var(--neon-off);
 			text-shadow: none;
 		}
 		.neon-sign.flicker-dim {
-			color: rgba(56, 189, 168, 0.35);
+			color: var(--neon-dim);
+			text-shadow: 0 0 2px var(--neon-dim-glow);
+		}
+
+		/* ── SVG theming via CSS ── */
+		.svg-tick-major { stroke: rgba(var(--accent), 0.12); transition: stroke 0.6s ease; }
+		.svg-tick-minor { stroke: rgba(var(--accent), 0.06); transition: stroke 0.6s ease; }
+		.svg-ring { stroke: rgba(var(--accent), 0.09); transition: stroke 0.6s ease; }
+		.svg-ring-mid { stroke: rgba(var(--accent), 0.07); transition: stroke 0.6s ease; }
+		.svg-ring-far { stroke: rgba(var(--accent), 0.05); transition: stroke 0.6s ease; }
+		.svg-ring-outer { stroke: rgba(var(--accent), 0.04); transition: stroke 0.6s ease; }
+		.svg-crosshair { stroke: rgba(var(--accent), 0.035); transition: stroke 0.6s ease; }
+		.svg-intersection { stroke: rgba(var(--accent), 0.1); transition: stroke 0.6s ease; }
+		.svg-sweep-trail { fill: rgba(var(--accent), 0.035); transition: fill 0.6s ease; }
+		.svg-ping { stroke: rgba(var(--accent), 0.4); transition: stroke 0.6s ease; }
+		.svg-cardinal { fill: rgba(var(--accent), 0.14); transition: fill 0.6s ease; }
+		.svg-range-label { fill: rgba(var(--accent), 0.08); transition: fill 0.6s ease; }
+		#station-dot { fill: rgb(var(--accent)); transition: fill 0.6s ease; }
+
+		/* ── Day mode: richer colors + depth ── */
+		#setup-main[data-theme="day"] .svg-tick-major { stroke: rgba(var(--accent-copper), 0.35); }
+		#setup-main[data-theme="day"] .svg-tick-minor { stroke: rgba(var(--accent), 0.2); }
+		#setup-main[data-theme="day"] .svg-ring { stroke: rgba(var(--accent-copper), 0.22); }
+		#setup-main[data-theme="day"] .svg-ring-mid { stroke: rgba(var(--accent-copper), 0.18); }
+		#setup-main[data-theme="day"] .svg-ring-far { stroke: rgba(var(--accent), 0.14); }
+		#setup-main[data-theme="day"] .svg-ring-outer { stroke: rgba(var(--accent-copper), 0.12); }
+		#setup-main[data-theme="day"] .svg-crosshair { stroke: rgba(var(--accent-copper), 0.1); }
+		#setup-main[data-theme="day"] .svg-intersection { stroke: rgba(var(--accent-copper), 0.3); }
+		#setup-main[data-theme="day"] .svg-sweep-trail { fill: rgba(var(--accent-warm), 0.07); }
+		#setup-main[data-theme="day"] .svg-ping { stroke: rgba(var(--accent-warm), 0.22); }
+		#setup-main[data-theme="day"] .svg-cardinal { fill: rgba(var(--accent-copper), 0.45); }
+		#setup-main[data-theme="day"] .svg-range-label { fill: rgba(var(--accent-copper), 0.32); }
+		#setup-main[data-theme="day"] #station-dot {
+			fill: rgb(var(--accent-warm));
+			filter: url(#glow) drop-shadow(0 0 3px rgba(var(--accent-warm), 0.5));
+		}
+		#setup-main[data-theme="day"] .setup-text-faint { color: rgba(var(--accent-copper), 0.4); }
+		#setup-main[data-theme="day"] .setup-icon-accent { color: rgba(var(--accent-warm), 0.65); }
+		#setup-main[data-theme="day"] .setup-text-accent { color: rgba(var(--accent-copper), 0.6); }
+		#setup-main[data-theme="day"] .setup-label { color: rgba(var(--accent-copper), 0.5); }
+		#setup-main[data-theme="day"] .setup-field:focus-within .setup-label { color: rgba(var(--accent-copper), 0.8); }
+		#setup-main[data-theme="day"] .setup-field:focus-within {
+			border-left-color: rgba(var(--accent-warm), 0.35);
+		}
+		#setup-main[data-theme="day"] .setup-divider {
+			background: linear-gradient(90deg, transparent, rgba(var(--accent-copper), 0.18), transparent);
+		}
+		#setup-main[data-theme="day"] .setup-underline {
+			background: linear-gradient(90deg, rgb(var(--accent-warm)), rgba(var(--accent-copper), 0.8));
+			box-shadow: 0 0 12px rgba(var(--accent-warm), 0.3), 0 0 4px rgba(var(--accent-warm), 0.15);
+		}
+		#setup-main[data-theme="day"] .setup-btn {
+			background: linear-gradient(145deg, rgba(var(--accent-warm), 0.08), rgba(var(--accent-copper), 0.1));
+			border-color: rgba(var(--accent-copper), 0.18);
+			color: rgba(var(--accent-copper), 0.7);
+			box-shadow: 0 1px 4px rgba(var(--accent), 0.06);
+		}
+		#setup-main[data-theme="day"] .setup-btn:hover {
+			background: linear-gradient(145deg, rgba(var(--accent-warm), 0.14), rgba(var(--accent-copper), 0.18));
+			color: rgba(var(--accent-copper), 0.9);
+			border-color: rgba(var(--accent-warm), 0.3);
+			box-shadow: 0 2px 8px rgba(var(--accent-warm), 0.12);
+		}
+		#setup-main[data-theme="day"] .setup-input:not(:placeholder-shown):not(:focus) {
+			border-bottom-color: rgba(var(--accent-copper), 0.15);
+		}
+		#setup-main[data-theme="day"] #radar-glow {
+			background: radial-gradient(circle,
+				rgba(var(--accent-warm), 0.08) 0%,
+				rgba(var(--accent-warm), 0.04) 35%,
+				transparent 65%
+			);
+		}
+		#setup-main[data-theme="day"] .setup-panel {
+			background: linear-gradient(180deg, #f2ece3, #ede6db);
+			border-color: rgba(var(--accent-copper), 0.1);
+			box-shadow: -1px 0 12px rgba(var(--accent), 0.04);
+		}
+		#setup-main[data-theme="day"] .neon-sign {
 			text-shadow:
-				0 0 2px rgba(56, 189, 168, 0.15);
+				0 0 5px var(--neon-glow-1),
+				0 0 15px var(--neon-glow-2),
+				0 0 35px var(--neon-glow-3);
+		}
+
+		/* Footer link */
+		#footer-link {
+			text-shadow: 0 0 8px rgba(var(--accent), 0.08);
+		}
+		#footer-link:hover {
+			color: rgba(var(--accent), 0.4);
+			text-shadow: 0 0 6px rgba(var(--accent), 0.2), 0 0 15px rgba(var(--accent), 0.1);
+		}
+		#setup-main[data-theme="day"] #footer-link {
+			color: rgba(var(--accent-copper), 0.2);
+		}
+		#setup-main[data-theme="day"] #footer-link:hover {
+			color: rgba(var(--accent-warm), 0.55);
+			text-shadow: 0 0 8px rgba(var(--accent-warm), 0.15);
 		}
 	</style>
 
 	<script>
+		// ── Theme detection (day 06:00–21:59, night 22:00–05:59) ──
+		const main = document.getElementById("setup-main");
+		const hour = new Date().getHours();
+		const isDay = hour >= 6 && hour <= 21;
+		main.setAttribute("data-theme", isDay ? "day" : "night");
+
+		// Accent RGB for JS-driven SVG attributes
+		const accent = isDay ? [110, 78, 30] : [56, 189, 168];
+		const accentAlt = isDay ? [180, 95, 30] : [45, 160, 200];
+		// Warm highlight color for animated SVG elements in day mode
+		const echoColor = isDay ? [180, 120, 35] : [56, 189, 168];
+
+		// Update SVG gradient stops for current theme
+		function applyGradientTheme() {
+			const [er, eg, eb] = echoColor;
+			const [ar, ag, ab] = accentAlt;
+			const sweepA = isDay ? 0.28 : 0.45;
+			const sweepB = isDay ? 0.04 : 0.03;
+			const echoA = isDay ? 0.07 : 0.06;
+			const echoB = isDay ? 0.05 : 0.04;
+
+			document.getElementById("sweep-stop-0").setAttribute("stop-color", `rgba(${er},${eg},${eb},${sweepA})`);
+			document.getElementById("sweep-stop-1").setAttribute("stop-color", `rgba(${er},${eg},${eb},${sweepB})`);
+
+			document.getElementById("echo-stop-0").setAttribute("stop-color", `rgba(${er},${eg},${eb},0)`);
+			document.getElementById("echo-stop-40").setAttribute("stop-color", `rgba(${er},${eg},${eb},0)`);
+			document.getElementById("echo-stop-60").setAttribute("stop-color", `rgba(${er},${eg},${eb},${echoA})`);
+			document.getElementById("echo-stop-80").setAttribute("stop-color", `rgba(${ar},${ag},${ab},${echoB})`);
+			document.getElementById("echo-stop-100").setAttribute("stop-color", `rgba(${er},${eg},${eb},0)`);
+		}
+		applyGradientTheme();
+
 		const sweepGroup = document.getElementById("sweep-group");
 		const sweepTrail = document.getElementById("sweep-trail");
 		const ping1 = document.getElementById("ping-1");
@@ -393,6 +603,7 @@ const smallTicks = [...Array(36)]
 		}
 
 		// Generate random doppler echo blobs (weather cells)
+		const [er, eg, eb] = echoColor;
 		const echoes = [];
 		for (let i = 0; i < 5; i++) {
 			const echoAngle = Math.random() * 360;
@@ -405,10 +616,11 @@ const smallTicks = [...Array(36)]
 			circle.setAttribute("cx", String(ex));
 			circle.setAttribute("cy", String(ey));
 			circle.setAttribute("r", String(echoR));
-			circle.setAttribute("fill", `rgba(56,189,168,${0.02 + Math.random() * 0.04})`);
+			const baseOp = isDay ? (0.04 + Math.random() * 0.05) : (0.02 + Math.random() * 0.04);
+			circle.setAttribute("fill", `rgba(${er},${eg},${eb},${baseOp})`);
 			circle.setAttribute("filter", "url(#glow)");
 			echoGroup.appendChild(circle);
-			echoes.push({ angle: echoAngle, el: circle, baseOpacity: 0.02 + Math.random() * 0.04 });
+			echoes.push({ angle: echoAngle, el: circle, baseOpacity: baseOp });
 		}
 		echoGroup.setAttribute("opacity", "1");
 
@@ -443,12 +655,12 @@ const smallTicks = [...Array(36)]
 				let diff = ((angle - echo.angle) % 360 + 360) % 360;
 				let brightness;
 				if (diff < 30) {
-					brightness = echo.baseOpacity + 0.08 * (1 - diff / 30);
+					brightness = echo.baseOpacity + (isDay ? 0.14 : 0.08) * (1 - diff / 30);
 				} else {
 					const fade = Math.min((diff - 30) / 300, 1);
 					brightness = echo.baseOpacity * (1 - fade * 0.6);
 				}
-				echo.el.setAttribute("fill", `rgba(56,189,168,${brightness})`);
+				echo.el.setAttribute("fill", `rgba(${er},${eg},${eb},${brightness})`);
 			}
 
 			// Ping pulses with cubic ease-out
