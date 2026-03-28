@@ -433,12 +433,29 @@ const smallTicks = [...Array(36)]
 						<div class="flex-1 h-px setup-divider"></div>
 					</div>
 
-					<div class="setup-field">
-						<label class="setup-label" for="city">Stadt / PLZ</label>
-						<input id="city" name="city" type="text" placeholder="Berlin" class="setup-input"/>
-						<div class="setup-underline"></div>
+					<div class="grid grid-cols-[1fr_auto] gap-3 items-end">
+						<div class="setup-field">
+							<label class="setup-label" for="city">Stadt / PLZ</label>
+							<input id="city" name="city" type="text" placeholder="Berlin" class="setup-input"/>
+							<div class="setup-underline"></div>
+						</div>
+						<div class="setup-field relative">
+							<label class="setup-label">Land</label>
+							<input type="hidden" id="country" value="DE" />
+							<button type="button" id="country-btn" class="country-btn">
+								<img src="https://flagcdn.com/w40/de.png" width="20" height="15" alt="" class="country-flag" id="country-flag" />
+								<span id="country-code">DE</span>
+								<svg class="w-3 h-3 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+							</button>
+							<div id="country-dropdown" class="country-dropdown hidden">
+								<input type="text" id="country-search" class="country-search" placeholder="Suchen..." />
+								<div id="country-list"></div>
+							</div>
+						</div>
 					</div>
 				</div>
+
+				<p id="setup-error" class="text-center text-xs font-mono text-red-400 hidden"></p>
 
 				<button
 					type="button"
@@ -612,6 +629,91 @@ const smallTicks = [...Array(36)]
 		.setup-input:focus ~ .setup-underline {
 			transform: scaleX(1);
 		}
+		.country-btn {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			padding: 5px 8px;
+			background: transparent;
+			border: none;
+			border-bottom: 1px solid rgba(var(--accent), 0.06);
+			font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+			font-size: 14px;
+			color: var(--text-input);
+			cursor: pointer;
+			transition: border-color 0.3s, color 0.6s ease;
+			white-space: nowrap;
+		}
+		.country-btn:hover {
+			border-bottom-color: rgba(var(--accent), 0.2);
+		}
+		.country-flag {
+			border-radius: 2px;
+			object-fit: cover;
+		}
+		.country-dropdown {
+			position: absolute;
+			bottom: 100%;
+			right: 0;
+			z-index: 50;
+			margin-bottom: 4px;
+			width: 200px;
+			max-height: 240px;
+			overflow-y: auto;
+			background: var(--bg-panel);
+			border: 1px solid rgba(var(--accent), 0.1);
+			border-radius: 6px;
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+			padding: 4px;
+		}
+		.country-dropdown::-webkit-scrollbar {
+			width: 4px;
+		}
+		.country-dropdown::-webkit-scrollbar-track {
+			background: transparent;
+		}
+		.country-dropdown::-webkit-scrollbar-thumb {
+			background: rgba(var(--accent), 0.15);
+			border-radius: 2px;
+		}
+		.country-option {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 6px 8px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+			font-size: 12px;
+			color: var(--text-input);
+			transition: background 0.15s;
+		}
+		.country-option:hover {
+			background: rgba(var(--accent), 0.08);
+		}
+		.country-option .name {
+			opacity: 0.5;
+			font-size: 11px;
+		}
+		.country-search {
+			width: 100%;
+			padding: 6px 8px;
+			margin-bottom: 4px;
+			background: rgba(var(--accent), 0.04);
+			border: 1px solid rgba(var(--accent), 0.08);
+			border-radius: 4px;
+			font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+			font-size: 11px;
+			color: var(--text-input);
+			outline: none;
+		}
+		.country-search::placeholder {
+			color: rgba(var(--accent), 0.2);
+		}
+		.country-search:focus {
+			border-color: rgba(var(--accent), 0.2);
+		}
+
 		.setup-input[type="number"]::-webkit-inner-spin-button,
 		.setup-input[type="number"]::-webkit-outer-spin-button {
 			-webkit-appearance: none;
@@ -1097,22 +1199,151 @@ const smallTicks = [...Array(36)]
 
 		requestAnimationFrame(animateRadar);
 
+		// Country dropdown
+		const countries = [
+			["DE", "Deutschland"], ["AT", "\u00D6sterreich"], ["CH", "Schweiz"],
+			["AD", "Andorra"], ["AE", "VAE"], ["AF", "Afghanistan"],
+			["AG", "Antigua und Barbuda"], ["AL", "Albanien"], ["AM", "Armenien"],
+			["AO", "Angola"], ["AR", "Argentinien"], ["AU", "Australien"],
+			["AZ", "Aserbaidschan"], ["BA", "Bosnien und Herzegowina"],
+			["BB", "Barbados"], ["BD", "Bangladesch"], ["BE", "Belgien"],
+			["BF", "Burkina Faso"], ["BG", "Bulgarien"], ["BH", "Bahrain"],
+			["BI", "Burundi"], ["BJ", "Benin"], ["BN", "Brunei"],
+			["BO", "Bolivien"], ["BR", "Brasilien"], ["BS", "Bahamas"],
+			["BT", "Bhutan"], ["BW", "Botswana"], ["BY", "Belarus"],
+			["BZ", "Belize"], ["CA", "Kanada"], ["CD", "Kongo (Dem. Rep.)"],
+			["CF", "Zentralafrikanische Rep."], ["CG", "Kongo"],
+			["CI", "Elfenbeink\u00FCste"], ["CL", "Chile"], ["CM", "Kamerun"],
+			["CN", "China"], ["CO", "Kolumbien"], ["CR", "Costa Rica"],
+			["CU", "Kuba"], ["CV", "Kap Verde"], ["CY", "Zypern"],
+			["CZ", "Tschechien"], ["DJ", "Dschibuti"], ["DK", "D\u00E4nemark"],
+			["DM", "Dominica"], ["DO", "Dominikanische Rep."],
+			["DZ", "Algerien"], ["EC", "Ecuador"], ["EE", "Estland"],
+			["EG", "\u00C4gypten"], ["ER", "Eritrea"], ["ES", "Spanien"],
+			["ET", "\u00C4thiopien"], ["FI", "Finnland"], ["FJ", "Fidschi"],
+			["FR", "Frankreich"], ["GA", "Gabun"], ["GB", "UK"],
+			["GD", "Grenada"], ["GE", "Georgien"], ["GH", "Ghana"],
+			["GM", "Gambia"], ["GN", "Guinea"], ["GQ", "\u00C4quatorialguinea"],
+			["GR", "Griechenland"], ["GT", "Guatemala"], ["GW", "Guinea-Bissau"],
+			["GY", "Guyana"], ["HN", "Honduras"], ["HR", "Kroatien"],
+			["HT", "Haiti"], ["HU", "Ungarn"], ["ID", "Indonesien"],
+			["IE", "Irland"], ["IL", "Israel"], ["IN", "Indien"],
+			["IQ", "Irak"], ["IR", "Iran"], ["IS", "Island"],
+			["IT", "Italien"], ["JM", "Jamaika"], ["JO", "Jordanien"],
+			["JP", "Japan"], ["KE", "Kenia"], ["KG", "Kirgisistan"],
+			["KH", "Kambodscha"], ["KM", "Komoren"], ["KN", "St. Kitts und Nevis"],
+			["KP", "Nordkorea"], ["KR", "S\u00FCdkorea"], ["KW", "Kuwait"],
+			["KZ", "Kasachstan"], ["LA", "Laos"], ["LB", "Libanon"],
+			["LC", "St. Lucia"], ["LI", "Liechtenstein"], ["LK", "Sri Lanka"],
+			["LR", "Liberia"], ["LS", "Lesotho"], ["LT", "Litauen"],
+			["LU", "Luxemburg"], ["LV", "Lettland"], ["LY", "Libyen"],
+			["MA", "Marokko"], ["MC", "Monaco"], ["MD", "Moldau"],
+			["ME", "Montenegro"], ["MG", "Madagaskar"], ["MK", "Nordmazedonien"],
+			["ML", "Mali"], ["MM", "Myanmar"], ["MN", "Mongolei"],
+			["MR", "Mauretanien"], ["MT", "Malta"], ["MU", "Mauritius"],
+			["MV", "Malediven"], ["MW", "Malawi"], ["MX", "Mexiko"],
+			["MY", "Malaysia"], ["MZ", "Mosambik"], ["NA", "Namibia"],
+			["NE", "Niger"], ["NG", "Nigeria"], ["NI", "Nicaragua"],
+			["NL", "Niederlande"], ["NO", "Norwegen"], ["NP", "Nepal"],
+			["NZ", "Neuseeland"], ["OM", "Oman"], ["PA", "Panama"],
+			["PE", "Peru"], ["PG", "Papua-Neuguinea"], ["PH", "Philippinen"],
+			["PK", "Pakistan"], ["PL", "Polen"], ["PT", "Portugal"],
+			["PY", "Paraguay"], ["QA", "Katar"], ["RO", "Rum\u00E4nien"],
+			["RS", "Serbien"], ["RU", "Russland"], ["RW", "Ruanda"],
+			["SA", "Saudi-Arabien"], ["SB", "Salomonen"], ["SC", "Seychellen"],
+			["SD", "Sudan"], ["SE", "Schweden"], ["SG", "Singapur"],
+			["SI", "Slowenien"], ["SK", "Slowakei"], ["SL", "Sierra Leone"],
+			["SM", "San Marino"], ["SN", "Senegal"], ["SO", "Somalia"],
+			["SR", "Suriname"], ["SS", "S\u00FCdsudan"], ["SV", "El Salvador"],
+			["SY", "Syrien"], ["SZ", "Eswatini"], ["TD", "Tschad"],
+			["TG", "Togo"], ["TH", "Thailand"], ["TJ", "Tadschikistan"],
+			["TL", "Timor-Leste"], ["TM", "Turkmenistan"], ["TN", "Tunesien"],
+			["TO", "Tonga"], ["TR", "T\u00FCrkei"], ["TT", "Trinidad und Tobago"],
+			["TV", "Tuvalu"], ["TW", "Taiwan"], ["TZ", "Tansania"],
+			["UA", "Ukraine"], ["UG", "Uganda"], ["US", "USA"],
+			["UY", "Uruguay"], ["UZ", "Usbekistan"], ["VA", "Vatikanstadt"],
+			["VC", "St. Vincent"], ["VE", "Venezuela"], ["VN", "Vietnam"],
+			["VU", "Vanuatu"], ["WS", "Samoa"], ["XK", "Kosovo"],
+			["YE", "Jemen"], ["ZA", "S\u00FCdafrika"], ["ZM", "Sambia"],
+			["ZW", "Simbabwe"],
+		];
+
+		const countryInput = document.getElementById("country");
+		const countryBtn = document.getElementById("country-btn");
+		const countryFlag = document.getElementById("country-flag");
+		const countryCodeEl = document.getElementById("country-code");
+		const countryDropdown = document.getElementById("country-dropdown");
+		const countryList = document.getElementById("country-list");
+
+		countries.forEach(([code, name]) => {
+			const el = document.createElement("div");
+			el.className = "country-option";
+			el.innerHTML = `<img src="https://flagcdn.com/w40/${code.toLowerCase()}.png" width="20" height="15" alt="" class="country-flag" /><span>${code}</span><span class="name">${name}</span>`;
+			el.addEventListener("click", () => {
+				countryInput.value = code;
+				countryFlag.src = `https://flagcdn.com/w40/${code.toLowerCase()}.png`;
+				countryCodeEl.textContent = code;
+				countryDropdown.classList.add("hidden");
+			});
+			countryList.appendChild(el);
+		});
+
+		const countrySearch = document.getElementById("country-search");
+
+		countryBtn.addEventListener("click", () => {
+			const wasHidden = countryDropdown.classList.contains("hidden");
+			countryDropdown.classList.toggle("hidden");
+			if (wasHidden) {
+				countrySearch.value = "";
+				countrySearch.dispatchEvent(new Event("input"));
+				countrySearch.focus();
+			}
+		});
+
+		countrySearch.addEventListener("input", () => {
+			const q = countrySearch.value.toLowerCase();
+			for (const el of countryList.children) {
+				const text = el.textContent.toLowerCase();
+				el.style.display = text.includes(q) ? "" : "none";
+			}
+		});
+
+		countrySearch.addEventListener("keydown", (e) => {
+			if (e.key === "Enter") {
+				e.preventDefault();
+				const visible = [...countryList.children].find(el => el.style.display !== "none");
+				if (visible) visible.click();
+			}
+		});
+
+		document.addEventListener("click", (e) => {
+			if (!countryBtn.contains(e.target) && !countryDropdown.contains(e.target)) {
+				countryDropdown.classList.add("hidden");
+			}
+		});
+
 		// Form submit
 		document.getElementById("submit-btn").addEventListener("click", async () => {
 			const lat = document.getElementById("lat").value;
 			const lon = document.getElementById("lon").value;
 			const other = document.getElementById("city").value;
+			const country = document.getElementById("country").value;
 
 			const res = await fetch("/api/set-location", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ lat, lon, other }),
+				body: JSON.stringify({ lat, lon, other, country }),
 			});
 
+			const errorEl = document.getElementById("setup-error");
 			if (!res.ok) {
-				alert("Fehler beim Speichern der Position");
+				errorEl.textContent = res.status === 404
+					? "Standort nicht gefunden"
+					: "Fehler beim Speichern der Position";
+				errorEl.classList.remove("hidden");
 				return;
 			}
+			errorEl.classList.add("hidden");
 
 			if (document.documentElement.requestFullscreen) {
 				await document.documentElement.requestFullscreen();

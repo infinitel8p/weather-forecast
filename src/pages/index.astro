@@ -28,11 +28,11 @@ if (!lat || !lon) {
 
 let apiError = null;
 
-let res = await fetch(
-	`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
+const res = await fetch(
+	`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&lang=DE&units=metric&exclude=minutely,alerts&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
 );
-const currentWeather = await res.json();
-if (!res.ok) apiError = currentWeather.message || `API error ${res.status}`;
+const oneCall = await res.json();
+if (!res.ok) apiError = oneCall.message || `API error ${res.status}`;
 
 const time = new Date();
 const currentDate = time.toLocaleDateString("de-DE", {
@@ -45,49 +45,10 @@ const currentDate = time.toLocaleDateString("de-DE", {
 	hour12: false,
 });
 
-res = await fetch(
-	`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&cnt=8&lang=DE&units=metric&exclude=current,minutely,hourly,alerts&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
-);
-const weeklyWeather = await res.json();
-if (!res.ok) apiError = apiError || weeklyWeather.message || `API error ${res.status}`;
-
-res = await fetch(
-	`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&cnt=8&lang=DE&units=metric&exclude=current,minutely,daily,alerts&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
-);
-const hourlyWeather = await res.json();
-if (!res.ok) apiError = apiError || hourlyWeather.message || `API error ${res.status}`;
-
-const hourlyChartLabels = hourlyWeather.hourly?.map((h) =>
-	formatToBerlinTime(h.dt)
-) ?? [];
-const hourlyTemperatures = hourlyWeather.hourly?.map((h) => Math.round(h.temp)) ?? [];
-const hourlyPrecipitation = hourlyWeather.hourly?.map((h) => {
-	if (h.rain) {
-		return h.rain["1h"];
-	} else {
-		return 0;
-	}
-}) ?? [];
-
-let oneCall;
-try {
-	res = await fetch(
-		`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=metric&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
-	);
-	oneCall = await res.json();
-} catch (error) {
-	const fs = await import("fs/promises");
-	const data = await fs.readFile("src/assets/output.json", "utf-8");
-	oneCall = JSON.parse(data);
-}
-
-const hourlyUVIndex = oneCall.hourly?.slice(1, 25).map((h) => {
-	if (h.uvi) {
-		return Math.round(h.uvi);
-	} else {
-		return 0;
-	}
-}) ?? [];
+const hourlyChartLabels = oneCall.hourly?.map((h) => formatToBerlinTime(h.dt)) ?? [];
+const hourlyTemperatures = oneCall.hourly?.map((h) => Math.round(h.temp)) ?? [];
+const hourlyPrecipitation = oneCall.hourly?.map((h) => h.rain?.["1h"] ?? 0) ?? [];
+const hourlyUVIndex = oneCall.hourly?.map((h) => Math.round(h.uvi ?? 0)) ?? [];
 
 function formatToBerlinTime(unixTimestamp) {
 	const date = new Date(unixTimestamp * 1000);
@@ -107,9 +68,6 @@ function formatToBerlinDate(unixTimestamp) {
 	});
 }
 
-function meterToKm(m) {
-	return m / 1000;
-}
 ---
 
 <Layout>
@@ -613,31 +571,31 @@ function meterToKm(m) {
 				<!-- Header -->
 				<div class="flex items-baseline justify-between">
 					<div>
-						<div class="text-xl font-semibold dash-primary">{city ? city : currentWeather.name}</div>
+						<div class="text-xl font-semibold dash-primary">{city ?? ""}</div>
 						<div class="font-mono text-[11px] dash-muted">{currentDate}</div>
 					</div>
 					<div class="font-mono text-md dash-secondary">
-						{Math.round(weeklyWeather.daily[0].temp.min)}° <span class="dash-muted">/</span> {Math.round(weeklyWeather.daily[0].temp.max)}°
+						{Math.round(oneCall.daily[0].temp.min)}° <span class="dash-muted">/</span> {Math.round(oneCall.daily[0].temp.max)}°
 					</div>
 				</div>
 				<!-- Center: icon + temp -->
 				<div class="flex items-center justify-center flex-1 -mt-6">
 					<img
 						class="w-32 h-32 object-contain weather-icon-shadow -mr-2 mt-2"
-						src=`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@4x.png`
+						src=`https://openweathermap.org/img/wn/${oneCall.current.weather[0].icon}@4x.png`
 					/>
 					<div class="flex flex-col items-start">
 						<p class="text-8xl font-bold font-mono dash-primary leading-none temp-glow">
-							{Math.round(currentWeather.main.temp)}°
+							{Math.round(oneCall.current.temp)}°
 						</p>
 						<p class="font-mono text-sm dash-muted -mt-2">
-							Gefühlt {Math.round(currentWeather.main.feels_like)}°
+							Gefühlt {Math.round(oneCall.current.feels_like)}°
 						</p>
 					</div>
 				</div>
 				<!-- Footer: description -->
 				<p class="text-base font-medium dash-secondary text-center -mt-3">
-					{currentWeather.weather[0].description}
+					{oneCall.current.weather[0].description}
 				</p>
 			</div>
 
@@ -647,35 +605,35 @@ function meterToKm(m) {
 					<IconSunrise size={32} className="detail-icon" />
 					<div class="detail-text">
 						<span class="detail-label">Aufgang</span>
-						<span class="detail-value">{formatToBerlinTime(currentWeather.sys.sunrise)}</span>
+						<span class="detail-value">{formatToBerlinTime(oneCall.current.sunrise)}</span>
 					</div>
 				</div>
 				<div class="detail-item">
 					<IconSunset size={32} className="detail-icon" />
 					<div class="detail-text">
 						<span class="detail-label">Untergang</span>
-						<span class="detail-value">{formatToBerlinTime(currentWeather.sys.sunset)}</span>
+						<span class="detail-value">{formatToBerlinTime(oneCall.current.sunset)}</span>
 					</div>
 				</div>
 				<div class="detail-item">
 					<IconWind size={32} className="detail-icon" />
 					<div class="detail-text">
 						<span class="detail-label">Wind</span>
-						<span class="detail-value">{currentWeather.wind.speed}<span class="detail-unit">m/s</span></span>
+						<span class="detail-value">{oneCall.current.wind_speed}<span class="detail-unit">m/s</span></span>
 					</div>
 				</div>
 				<div class="detail-item">
 					<IconDroplet size={32} className="detail-icon" />
 					<div class="detail-text">
 						<span class="detail-label">Feuchte</span>
-						<span class="detail-value">{currentWeather.main.humidity}<span class="detail-unit">%</span></span>
+						<span class="detail-value">{oneCall.current.humidity}<span class="detail-unit">%</span></span>
 					</div>
 				</div>
 				<div class="detail-item">
 					<IconGauge size={32} className="detail-icon" />
 					<div class="detail-text">
 						<span class="detail-label">Druck</span>
-						<span class="detail-value">{currentWeather.main.pressure}<span class="detail-unit">hPa</span></span>
+						<span class="detail-value">{oneCall.current.pressure}<span class="detail-unit">hPa</span></span>
 					</div>
 				</div>
 				<div class="detail-item">
@@ -697,14 +655,14 @@ function meterToKm(m) {
 					<IconEye size={32} className="detail-icon" />
 					<div class="detail-text">
 						<span class="detail-label">Sicht</span>
-						<span class="detail-value">{meterToKm(currentWeather.visibility)}<span class="detail-unit">km</span></span>
+						<span class="detail-value">{oneCall.current.visibility / 1000}<span class="detail-unit">km</span></span>
 					</div>
 				</div>
 				<div class="detail-item">
 					<IconCloud size={32} className="detail-icon" />
 					<div class="detail-text">
 						<span class="detail-label">Wolken</span>
-						<span class="detail-value">{currentWeather.clouds.all}<span class="detail-unit">%</span></span>
+						<span class="detail-value">{oneCall.current.clouds}<span class="detail-unit">%</span></span>
 					</div>
 				</div>
 			</div>
@@ -718,16 +676,16 @@ function meterToKm(m) {
 				temperatureData={hourlyTemperatures}
 				precipitationData={hourlyPrecipitation}
 				uviData={hourlyUVIndex}
-				sunrise={formatToBerlinTime(currentWeather.sys.sunrise)}
-				sunset={formatToBerlinTime(currentWeather.sys.sunset)}
+				sunrise={formatToBerlinTime(oneCall.current.sunrise)}
+				sunset={formatToBerlinTime(oneCall.current.sunset)}
 			/>
 		</div>
 
 		<!-- Weekly forecast -->
-		<div class="hud-card flex justify-between items-center shrink-0 pr-3 gap-2">
+		<div class="hud-card flex justify-between items-center shrink-0 pr-3 py-1 gap-2">
 			{
-				weeklyWeather.daily
-					?.slice(1)
+				oneCall.daily
+					?.slice(1, 7)
 					.map((item) => (
 						<SingleWeatherCard
 							title={formatToBerlinDate(item.dt)}
@@ -892,8 +850,6 @@ function meterToKm(m) {
 		--text-primary: rgba(210, 215, 240, 0.9);
 		--text-secondary: rgba(190, 195, 225, 0.5);
 		--text-muted: rgba(120, 160, 230, 0.25);
-		--text-faint: rgba(120, 160, 230, 0.2);
-		--text-faintest: rgba(120, 160, 230, 0.12);
 		--icon-color: rgba(140, 160, 220, 0.2);
 		--icon-shadow: drop-shadow(0 0 12px rgba(120, 160, 230, 0.08));
 		--temp-shadow: 0 0 25px rgba(140, 130, 220, 0.08);
@@ -911,8 +867,6 @@ function meterToKm(m) {
 		--text-primary: rgba(50, 35, 15, 0.92);
 		--text-secondary: rgba(50, 35, 15, 0.55);
 		--text-muted: rgba(110, 78, 30, 0.4);
-		--text-faint: rgba(110, 78, 30, 0.25);
-		--text-faintest: rgba(110, 78, 30, 0.2);
 		--icon-color: rgba(200, 140, 30, 0.3);
 		--icon-shadow: drop-shadow(0 0 8px rgba(200, 140, 30, 0.1));
 		--temp-shadow: 0 0 20px rgba(200, 140, 30, 0.06);
@@ -930,8 +884,6 @@ function meterToKm(m) {
 		--text-primary: rgba(35, 22, 5, 0.96);
 		--text-secondary: rgba(35, 22, 5, 0.72);
 		--text-muted: rgba(90, 60, 18, 0.6);
-		--text-faint: rgba(90, 60, 18, 0.4);
-		--text-faintest: rgba(90, 60, 18, 0.3);
 		--icon-color: rgba(170, 110, 15, 0.5);
 		--icon-shadow: drop-shadow(0 0 6px rgba(170, 110, 15, 0.18));
 		--temp-shadow: 0 0 16px rgba(170, 110, 15, 0.1);
@@ -1048,8 +1000,6 @@ function meterToKm(m) {
 	.dash-primary { color: var(--text-primary); transition: color 0.6s ease; }
 	.dash-secondary { color: var(--text-secondary); transition: color 0.6s ease; }
 	.dash-muted { color: var(--text-muted); transition: color 0.6s ease; }
-	.dash-faint { color: var(--text-faint); transition: color 0.6s ease; }
-	.dash-faintest { color: var(--text-faintest); transition: color 0.6s ease; }
 
 	.temp-glow { text-shadow: var(--temp-shadow); }
 	.weather-icon-shadow { filter: var(--icon-shadow); }

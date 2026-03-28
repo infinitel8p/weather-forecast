@@ -3,6 +3,8 @@
 weather-forecast is a simple weather dashboard that retrieves data from OpenWeatherMap.
 The project is built for a Raspberry Pi 5" screen. It includes a custom 3d-printed case with stand.
 
+- Optimized for 800x480 resolution.
+
 <table>
   <tr>
     <td><img width="475" alt="setup_light" src="https://github.com/user-attachments/assets/1fe2862a-85eb-4417-91a3-1b02120567cf" /></td>
@@ -30,6 +32,7 @@ The project is built for a Raspberry Pi 5" screen. It includes a custom 3d-print
 git clone https://github.com/infinitel8p/weather-forecast.git
 ```
 2. Setup the environment variables in `.env` file
+   - `OPENWEATHERMAPONECALL_API_KEY` — [One Call API 3.0](https://openweathermap.org/api/one-call-3) key (used for all weather data and geocoding)
 3. Install the dependencies
 
 ```shell
