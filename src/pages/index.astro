@@ -26,10 +26,13 @@ if (!lat || !lon) {
 	return Astro.redirect("/setup");
 }
 
+let apiError = null;
+
 let res = await fetch(
 	`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&lang=DE&units=metric&appid=${env.OPENWEATHERMAP_API_KEY}`
 );
 const currentWeather = await res.json();
+if (!res.ok) apiError = currentWeather.message || `API error ${res.status}`;
 
 const time = new Date();
 const currentDate = time.toLocaleDateString("de-DE", {
@@ -46,23 +49,25 @@ res = await fetch(
 	`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&cnt=8&lang=DE&units=metric&exclude=current,minutely,hourly,alerts&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
 );
 const weeklyWeather = await res.json();
+if (!res.ok) apiError = apiError || weeklyWeather.message || `API error ${res.status}`;
 
 res = await fetch(
 	`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&cnt=8&lang=DE&units=metric&exclude=current,minutely,daily,alerts&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
 );
 const hourlyWeather = await res.json();
+if (!res.ok) apiError = apiError || hourlyWeather.message || `API error ${res.status}`;
 
-const hourlyChartLabels = hourlyWeather.hourly.map((h) =>
+const hourlyChartLabels = hourlyWeather.hourly?.map((h) =>
 	formatToBerlinTime(h.dt)
-);
-const hourlyTemperatures = hourlyWeather.hourly.map((h) => Math.round(h.temp));
-const hourlyPrecipitation = hourlyWeather.hourly.map((h) => {
+) ?? [];
+const hourlyTemperatures = hourlyWeather.hourly?.map((h) => Math.round(h.temp)) ?? [];
+const hourlyPrecipitation = hourlyWeather.hourly?.map((h) => {
 	if (h.rain) {
 		return h.rain["1h"];
 	} else {
 		return 0;
 	}
-});
+}) ?? [];
 
 let oneCall;
 try {
@@ -76,13 +81,13 @@ try {
 	oneCall = JSON.parse(data);
 }
 
-const hourlyUVIndex = oneCall.hourly.slice(1, 25).map((h) => {
+const hourlyUVIndex = oneCall.hourly?.slice(1, 25).map((h) => {
 	if (h.uvi) {
 		return Math.round(h.uvi);
 	} else {
 		return 0;
 	}
-});
+}) ?? [];
 
 function formatToBerlinTime(unixTimestamp) {
 	const date = new Date(unixTimestamp * 1000);
@@ -592,6 +597,15 @@ function meterToKm(m) {
 			<path id="sweep-trail" fill="url(#sweep-fade)" opacity="0.3" />
 		</svg>
 
+		{apiError ? (
+		<div class="flex-1 flex items-center justify-center">
+			<div class="hud-card p-6 text-center max-w-md">
+				<p class="text-2xl font-semibold dash-primary mb-2">Wetterdaten nicht verfügbar</p>
+				<p class="text-sm dash-muted font-mono">{apiError}</p>
+				<p class="text-xs dash-muted mt-3">Die Seite wird automatisch neu geladen.</p>
+			</div>
+		</div>
+		) : (<Fragment>
 		<!-- Top row -->
 		<div class="flex gap-1.5 shrink-0" style="height: 40%;">
 			<!-- Left: Current weather -->
@@ -713,7 +727,7 @@ function meterToKm(m) {
 		<div class="hud-card flex justify-between items-center shrink-0 pr-3 gap-2">
 			{
 				weeklyWeather.daily
-					.slice(1)
+					?.slice(1)
 					.map((item) => (
 						<SingleWeatherCard
 							title={formatToBerlinDate(item.dt)}
@@ -723,6 +737,7 @@ function meterToKm(m) {
 					))
 			}
 		</div>
+		</Fragment>)}
 
 		<span id="countdown" class="absolute left-2.5 bottom-1.5 font-mono text-[9px] dash-muted">
 			20:00
