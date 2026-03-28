@@ -462,21 +462,21 @@ const smallTicks = [...Array(36)]
 	<style is:global>
 		/* ── Theme custom properties ── */
 		#setup-main {
-			--accent: 56, 189, 168;
-			--accent-alt: 45, 160, 200;
-			--bg-main: #050d12;
-			--bg-panel: #0a1219;
-			--border-panel: rgba(56, 189, 168, 0.06);
-			--text-heading: rgba(204, 251, 241, 0.9);
-			--text-input: rgba(204, 251, 241, 0.9);
-			--text-placeholder: rgba(56, 189, 168, 0.07);
-			--neon-full: rgba(56, 189, 168, 0.85);
-			--neon-glow-1: rgba(56, 189, 168, 0.4);
-			--neon-glow-2: rgba(56, 189, 168, 0.2);
-			--neon-glow-3: rgba(56, 189, 168, 0.1);
-			--neon-off: rgba(56, 189, 168, 0.12);
-			--neon-dim: rgba(56, 189, 168, 0.35);
-			--neon-dim-glow: rgba(56, 189, 168, 0.15);
+			--accent: 120, 160, 230;
+			--accent-alt: 90, 130, 200;
+			--bg-main: #080b16;
+			--bg-panel: #0d1020;
+			--border-panel: rgba(120, 160, 230, 0.06);
+			--text-heading: rgba(210, 215, 240, 0.9);
+			--text-input: rgba(210, 215, 240, 0.9);
+			--text-placeholder: rgba(120, 160, 230, 0.07);
+			--neon-full: rgba(120, 160, 230, 0.85);
+			--neon-glow-1: rgba(120, 160, 230, 0.4);
+			--neon-glow-2: rgba(120, 160, 230, 0.2);
+			--neon-glow-3: rgba(120, 160, 230, 0.1);
+			--neon-off: rgba(120, 160, 230, 0.12);
+			--neon-dim: rgba(120, 160, 230, 0.35);
+			--neon-dim-glow: rgba(120, 160, 230, 0.15);
 			background: var(--bg-main);
 			transition: background 0.6s ease;
 		}
@@ -881,10 +881,10 @@ const smallTicks = [...Array(36)]
 		main.setAttribute("data-theme", isDay ? dayTheme : "night");
 
 		// Accent RGB for JS-driven SVG attributes
-		const accent = isDay ? (hc ? [90, 60, 18] : [110, 78, 30]) : [56, 189, 168];
-		const accentAlt = isDay ? (hc ? [150, 75, 15] : [180, 95, 30]) : [45, 160, 200];
+		const accent = isDay ? (hc ? [90, 60, 18] : [110, 78, 30]) : [120, 160, 230];
+		const accentAlt = isDay ? (hc ? [150, 75, 15] : [180, 95, 30]) : [90, 130, 200];
 		// Warm highlight color for animated SVG elements in day mode
-		const echoColor = isDay ? (hc ? [150, 90, 20] : [180, 120, 35]) : [56, 189, 168];
+		const echoColor = isDay ? (hc ? [150, 90, 20] : [180, 120, 35]) : [120, 160, 230];
 
 		// Update SVG gradient stops for current theme
 		function applyGradientTheme() {
