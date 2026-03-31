@@ -59,10 +59,31 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
       sunsetLine: "rgba(120, 160, 230, 0.2)",
     };
 
-    function roundToNearestHour(timeStr) {
+    function findAllClosestIndices(timeStr) {
       const [h, m] = timeStr.split(":").map(Number);
-      const roundedHour = m >= 30 ? h + 1 : h;
-      return String(roundedHour).padStart(2, "0") + ":00";
+      const targetMinutes = h * 60 + m;
+      // Determine max gap between labels to set threshold
+      const interval = labels.length >= 2
+        ? (() => {
+            const [ah, am] = labels[0].split(":").map(Number);
+            const [bh, bm] = labels[1].split(":").map(Number);
+            let diff = (bh * 60 + bm) - (ah * 60 + am);
+            if (diff <= 0) diff += 1440;
+            return diff;
+          })()
+        : 60;
+      const threshold = interval / 2;
+      const indices = [];
+      for (let i = 0; i < labels.length; i++) {
+        const [lh, lm] = labels[i].split(":").map(Number);
+        const labelMinutes = lh * 60 + lm;
+        const diff = Math.min(
+          Math.abs(labelMinutes - targetMinutes),
+          1440 - Math.abs(labelMinutes - targetMinutes)
+        );
+        if (diff <= threshold) indices.push(i);
+      }
+      return indices;
     }
 
     new Chart(ctx, {
@@ -92,7 +113,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             pointRadius: 0.75,
             borderWidth: 1.5,
           },
-          {
+          ...(uviData.length > 0 ? [{
             label: "UV",
             data: uviData,
             borderColor: colors.uviLine,
@@ -102,7 +123,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             fill: true,
             pointRadius: 0.75,
             borderWidth: 1,
-          },
+          }] : []),
         ],
       },
       options: {
@@ -148,38 +169,42 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             formatter: (value) => value,
           },
           annotation: {
-            annotations: {
-              sunrise: {
-                type: "line",
-                scaleID: "x",
-                value: roundToNearestHour(sunrise),
-                borderColor: colors.sunriseLine,
-                borderWidth: 1,
-                borderDash: [2, 3],
-                label: {
-                  display: true,
-                  content: "☀",
-                  position: "start",
-                  font: { size: 8 },
-                  backgroundColor: "transparent",
-                },
-              },
-              sunset: {
-                type: "line",
-                scaleID: "x",
-                value: roundToNearestHour(sunset),
-                borderColor: colors.sunsetLine,
-                borderWidth: 1,
-                borderDash: [2, 3],
-                label: {
-                  display: true,
-                  content: "☾",
-                  position: "start",
-                  font: { size: 8 },
-                  backgroundColor: "transparent",
-                },
-              },
-            },
+            annotations: Object.fromEntries([
+              ...findAllClosestIndices(sunrise).map((idx, i) => [
+                `sunrise${i}`, {
+                  type: "line",
+                  scaleID: "x",
+                  value: idx,
+                  borderColor: colors.sunriseLine,
+                  borderWidth: 1,
+                  borderDash: [2, 3],
+                  label: {
+                    display: true,
+                    content: "☀",
+                    position: "start",
+                    font: { size: 8 },
+                    backgroundColor: "transparent",
+                  },
+                }
+              ]),
+              ...findAllClosestIndices(sunset).map((idx, i) => [
+                `sunset${i}`, {
+                  type: "line",
+                  scaleID: "x",
+                  value: idx,
+                  borderColor: colors.sunsetLine,
+                  borderWidth: 1,
+                  borderDash: [2, 3],
+                  label: {
+                    display: true,
+                    content: "☾",
+                    position: "start",
+                    font: { size: 8 },
+                    backgroundColor: "transparent",
+                  },
+                }
+              ]),
+            ]),
           },
         },
         scales: {

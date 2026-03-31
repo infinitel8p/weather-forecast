@@ -7,7 +7,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const countryCode = country || "DE";
 
     if (other) {
-        const key = env.OPENWEATHERMAPONECALL_API_KEY;
+        const key = env.OPENWEATHERMAP_API_KEY;
 
         // Try city name lookup first
         let geoRes = await fetch(

@@ -12,6 +12,7 @@ import {
 	IconEye,
 	IconCloud,
 } from "@tabler/icons-react";
+import { fetchWeather } from "@/lib/weather-api";
 
 const env = import.meta.env;
 const latCookie = Astro.cookies.get("lat");
@@ -26,13 +27,10 @@ if (!lat || !lon) {
 	return Astro.redirect("/setup");
 }
 
-let apiError = null;
-
-const res = await fetch(
-	`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&lang=DE&units=metric&exclude=minutely,alerts&appid=${env.OPENWEATHERMAPONECALL_API_KEY}`
+const apiVersion = env.OPENWEATHERMAP_API_VERSION || "3.0";
+const { data: oneCall, error: apiError } = await fetchWeather(
+	lat, lon, env.OPENWEATHERMAP_API_KEY, apiVersion
 );
-const oneCall = await res.json();
-if (!res.ok) apiError = oneCall.message || `API error ${res.status}`;
 
 const time = new Date();
 const currentDate = time.toLocaleDateString("de-DE", {
@@ -45,10 +43,12 @@ const currentDate = time.toLocaleDateString("de-DE", {
 	hour12: false,
 });
 
-const hourlyChartLabels = oneCall.hourly?.map((h) => formatToBerlinTime(h.dt)) ?? [];
-const hourlyTemperatures = oneCall.hourly?.map((h) => Math.round(h.temp)) ?? [];
-const hourlyPrecipitation = oneCall.hourly?.map((h) => h.rain?.["1h"] ?? 0) ?? [];
-const hourlyUVIndex = oneCall.hourly?.map((h) => Math.round(h.uvi ?? 0)) ?? [];
+const hourly24 = oneCall?.hourly?.slice(0, 24) ?? [];
+const hourlyChartLabels = hourly24.map((h) => formatToBerlinTime(h.dt));
+const hourlyTemperatures = hourly24.map((h) => Math.round(h.temp));
+const hourlyPrecipitation = hourly24.map((h) => h.rain?.["1h"] ?? 0);
+const rawUVI = hourly24.map((h) => Math.round(h.uvi ?? 0));
+const hourlyUVIndex = rawUVI.some((v) => v > 0) ? rawUVI : [];
 
 function formatToBerlinTime(unixTimestamp) {
 	const date = new Date(unixTimestamp * 1000);

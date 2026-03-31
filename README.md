@@ -4,6 +4,7 @@ weather-forecast is a simple weather dashboard that retrieves data from OpenWeat
 The project is built for a Raspberry Pi 5" screen. It includes a custom 3d-printed case with stand.
 
 - Optimized for 800x480 resolution.
+- If you're viewing on a 1920x1080 monitor, zoom the browser to **200%** to approximate the intended element sizes on the Pi display.
 
 <table>
   <tr>
@@ -31,12 +32,31 @@ The project is built for a Raspberry Pi 5" screen. It includes a custom 3d-print
 ```shell
 git clone https://github.com/infinitel8p/weather-forecast.git
 ```
-2. Setup the environment variables in `.env` file
-   - `OPENWEATHERMAPONECALL_API_KEY` — [One Call API 3.0](https://openweathermap.org/api/one-call-3) key (used for all weather data and geocoding)
-3. Install the dependencies
+2. Navigate into the project directory
+
+```shell
+cd weather-forecast
+```
+
+3. Setup the environment variables in `.env` file
+   - `OPENWEATHERMAP_API_KEY` — Your OpenWeatherMap API key (used for all weather data and geocoding)
+   - `OPENWEATHERMAP_API_VERSION` — The API tier to use:
+     - `3.0` (default) — [One Call API 3.0](https://openweathermap.org/api/one-call-3) (paid subscription)
+     - `2.5` — [One Call API 2.5](https://openweathermap.org/api/one-call-api) (legacy paid subscription)
+     - `free` — Free tier using the standard [Weather](https://openweathermap.org/current) + [Forecast](https://openweathermap.org/forecast5) endpoints (no UV index, 3-hour forecast intervals instead of hourly)  
+> [!Note]
+> Choose the API version based on your OpenWeatherMap subscription. The `free` option allows you to run the dashboard without a paid subscription, but with limited features and less granular forecast data.
+
+1. Install the dependencies
 
 ```shell
 npm install
+```
+
+5. Start the development server
+
+```shell
+npm run dev
 ```
 
 ## High-contrast mode
