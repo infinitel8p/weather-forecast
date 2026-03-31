@@ -8,7 +8,7 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 
 Chart.register(...registerables, ChartDataLabels, annotationPlugin);
 
-export default function WeatherChart({ labels, temperatureData, precipitationData, uviData, sunrise, sunset }) {
+export default function WeatherChart({ labels, temperatureData, precipitationData, uviData, sunrise, sunset, tempLabel = "Temp °C", rainLabel = "Regen mm", uvLabel = "UV" }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -92,7 +92,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
         labels,
         datasets: [
           {
-            label: "Temp °C",
+            label: tempLabel,
             data: temperatureData,
             borderColor: colors.tempLine,
             backgroundColor: colors.tempFill,
@@ -103,7 +103,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             borderWidth: 1.5,
           },
           {
-            label: "Regen mm",
+            label: rainLabel,
             data: precipitationData,
             borderColor: colors.precipLine,
             backgroundColor: colors.precipFill,
@@ -114,7 +114,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
             borderWidth: 1.5,
           },
           ...(uviData.length > 0 ? [{
-            label: "UV",
+            label: uvLabel,
             data: uviData,
             borderColor: colors.uviLine,
             backgroundColor: colors.uviFill,

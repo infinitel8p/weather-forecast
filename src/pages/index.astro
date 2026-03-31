@@ -13,8 +13,10 @@ import {
 	IconCloud,
 } from "@tabler/icons-react";
 import { fetchWeather } from "@/lib/weather-api";
+import { getTranslations } from "@/lib/i18n";
 
 const env = import.meta.env;
+const t = getTranslations(env.LANGUAGE);
 const latCookie = Astro.cookies.get("lat");
 const lonCookie = Astro.cookies.get("lon");
 const cityCookie = Astro.cookies.get("city");
@@ -29,11 +31,11 @@ if (!lat || !lon) {
 
 const apiVersion = env.OPENWEATHERMAP_API_VERSION || "3.0";
 const { data: oneCall, error: apiError } = await fetchWeather(
-	lat, lon, env.OPENWEATHERMAP_API_KEY, apiVersion
+	lat, lon, env.OPENWEATHERMAP_API_KEY, apiVersion, t.owmLang
 );
 
 const time = new Date();
-const currentDate = time.toLocaleDateString("de-DE", {
+const currentDate = time.toLocaleDateString(t.locale, {
 	timeZone: "Europe/Berlin",
 	weekday: "long",
 	month: "long",
@@ -52,7 +54,7 @@ const hourlyUVIndex = rawUVI.some((v) => v > 0) ? rawUVI : [];
 
 function formatToBerlinTime(unixTimestamp) {
 	const date = new Date(unixTimestamp * 1000);
-	return date.toLocaleTimeString("de-DE", {
+	return date.toLocaleTimeString(t.locale, {
 		timeZone: "Europe/Berlin",
 		hour: "2-digit",
 		minute: "2-digit",
@@ -62,7 +64,7 @@ function formatToBerlinTime(unixTimestamp) {
 
 function formatToBerlinDate(unixTimestamp) {
 	const date = new Date(unixTimestamp * 1000);
-	return date.toLocaleDateString("de-DE", {
+	return date.toLocaleDateString(t.locale, {
 		timeZone: "Europe/Berlin",
 		weekday: "short",
 	});
@@ -558,9 +560,9 @@ function formatToBerlinDate(unixTimestamp) {
 		{apiError ? (
 		<div class="flex-1 flex items-center justify-center">
 			<div class="hud-card p-6 text-center max-w-md">
-				<p class="text-2xl font-semibold dash-primary mb-2">Wetterdaten nicht verfügbar</p>
+				<p class="text-2xl font-semibold dash-primary mb-2">{t.weatherUnavailable}</p>
 				<p class="text-sm dash-muted font-mono">{apiError}</p>
-				<p class="text-xs dash-muted mt-3">Die Seite wird automatisch neu geladen.</p>
+				<p class="text-xs dash-muted mt-3">{t.autoReload}</p>
 			</div>
 		</div>
 		) : (<Fragment>
@@ -589,7 +591,7 @@ function formatToBerlinDate(unixTimestamp) {
 							{Math.round(oneCall.current.temp)}°
 						</p>
 						<p class="font-mono text-sm dash-muted -mt-2">
-							Gefühlt {Math.round(oneCall.current.feels_like)}°
+							{t.feelsLike} {Math.round(oneCall.current.feels_like)}°
 						</p>
 					</div>
 				</div>
@@ -604,42 +606,42 @@ function formatToBerlinDate(unixTimestamp) {
 				<div class="detail-item">
 					<IconSunrise size={32} className="detail-icon" />
 					<div class="detail-text">
-						<span class="detail-label">Aufgang</span>
+						<span class="detail-label">{t.sunrise}</span>
 						<span class="detail-value">{formatToBerlinTime(oneCall.current.sunrise)}</span>
 					</div>
 				</div>
 				<div class="detail-item">
 					<IconSunset size={32} className="detail-icon" />
 					<div class="detail-text">
-						<span class="detail-label">Untergang</span>
+						<span class="detail-label">{t.sunset}</span>
 						<span class="detail-value">{formatToBerlinTime(oneCall.current.sunset)}</span>
 					</div>
 				</div>
 				<div class="detail-item">
 					<IconWind size={32} className="detail-icon" />
 					<div class="detail-text">
-						<span class="detail-label">Wind</span>
+						<span class="detail-label">{t.wind}</span>
 						<span class="detail-value">{oneCall.current.wind_speed}<span class="detail-unit">m/s</span></span>
 					</div>
 				</div>
 				<div class="detail-item">
 					<IconDroplet size={32} className="detail-icon" />
 					<div class="detail-text">
-						<span class="detail-label">Feuchte</span>
+						<span class="detail-label">{t.humidity}</span>
 						<span class="detail-value">{oneCall.current.humidity}<span class="detail-unit">%</span></span>
 					</div>
 				</div>
 				<div class="detail-item">
 					<IconGauge size={32} className="detail-icon" />
 					<div class="detail-text">
-						<span class="detail-label">Druck</span>
+						<span class="detail-label">{t.pressure}</span>
 						<span class="detail-value">{oneCall.current.pressure}<span class="detail-unit">hPa</span></span>
 					</div>
 				</div>
 				<div class="detail-item">
 					<IconUvIndex size={32} className="detail-icon" />
 					<div class="detail-text">
-						<span class="detail-label">UV</span>
+						<span class="detail-label">{t.uv}</span>
 						<span class:list={[
 							"detail-value",
 							{
@@ -654,14 +656,14 @@ function formatToBerlinDate(unixTimestamp) {
 				<div class="detail-item">
 					<IconEye size={32} className="detail-icon" />
 					<div class="detail-text">
-						<span class="detail-label">Sicht</span>
+						<span class="detail-label">{t.visibility}</span>
 						<span class="detail-value">{oneCall.current.visibility / 1000}<span class="detail-unit">km</span></span>
 					</div>
 				</div>
 				<div class="detail-item">
 					<IconCloud size={32} className="detail-icon" />
 					<div class="detail-text">
-						<span class="detail-label">Wolken</span>
+						<span class="detail-label">{t.clouds}</span>
 						<span class="detail-value">{oneCall.current.clouds}<span class="detail-unit">%</span></span>
 					</div>
 				</div>
@@ -678,6 +680,9 @@ function formatToBerlinDate(unixTimestamp) {
 				uviData={hourlyUVIndex}
 				sunrise={formatToBerlinTime(oneCall.current.sunrise)}
 				sunset={formatToBerlinTime(oneCall.current.sunset)}
+				tempLabel={t.tempLabel}
+				rainLabel={t.rainLabel}
+				uvLabel={t.uvLabel}
 			/>
 		</div>
 

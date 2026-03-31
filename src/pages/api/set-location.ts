@@ -4,7 +4,7 @@ import type { APIRoute } from "astro";
 export const POST: APIRoute = async ({ request, cookies }) => {
     const { lat, lon, other, country } = await request.json();
     const env = import.meta.env;
-    const countryCode = country || "DE";
+    const countryCode = country || "US";
 
     if (other) {
         const key = env.OPENWEATHERMAP_API_KEY;

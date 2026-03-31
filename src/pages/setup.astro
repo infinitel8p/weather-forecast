@@ -1,6 +1,9 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import { IconArrowRight, IconRadar2 } from "@tabler/icons-react";
+import { getTranslations } from "@/lib/i18n";
+
+const t = getTranslations(import.meta.env.LANGUAGE);
 
 // Precompute outer tick marks (every 30°)
 const ticks = [...Array(12)].map((_, i) => {
@@ -33,7 +36,7 @@ const smallTicks = [...Array(36)]
 ---
 
 <Layout>
-	<main class="h-screen w-full overflow-hidden flex" id="setup-main">
+	<main class="h-screen w-full overflow-hidden flex" id="setup-main" data-err-not-found={t.locationNotFound} data-err-save={t.saveError}>
 		<!-- Left: Doppler radar display -->
 		<div class="relative flex-1 overflow-hidden flex items-center justify-center">
 			<!-- Day mode: warm ambient glow behind radar -->
@@ -394,7 +397,7 @@ const smallTicks = [...Array(36)]
 				WEATHER//<span id="neon-flicker" class="neon-sign">FORECAST</span>
 			</div>
 			<div class="absolute top-4 left-5 font-mono text-[9px] setup-text-faint tracking-[0.1em]">
-				DOPPLER RADAR
+				{t.dopplerRadar}
 			</div>
 			<div class="absolute bottom-4 left-5 font-mono text-[10px] setup-text-faint leading-relaxed">
 				<div id="coord-lat">51.0504° N</div>
@@ -408,9 +411,9 @@ const smallTicks = [...Array(36)]
 				<div class="space-y-1.5">
 					<div class="flex items-center gap-2">
 						<IconRadar2 size={14} className="setup-icon-accent" />
-						<p class="font-mono text-[10px] setup-text-accent uppercase tracking-[0.2em]">Konfiguration</p>
+						<p class="font-mono text-[10px] setup-text-accent uppercase tracking-[0.2em]">{t.configuration}</p>
 					</div>
-					<h1 class="text-xl font-semibold setup-heading tracking-tight">Standort</h1>
+					<h1 class="text-xl font-semibold setup-heading tracking-tight">{t.location}</h1>
 				</div>
 
 				<div class="space-y-3">
@@ -429,26 +432,26 @@ const smallTicks = [...Array(36)]
 
 					<div class="flex items-center gap-3 py-1">
 						<div class="flex-1 h-px setup-divider"></div>
-						<span class="font-mono text-[9px] setup-text-faint uppercase tracking-[0.2em]">oder</span>
+						<span class="font-mono text-[9px] setup-text-faint uppercase tracking-[0.2em]">{t.or}</span>
 						<div class="flex-1 h-px setup-divider"></div>
 					</div>
 
 					<div class="grid grid-cols-[1fr_auto] gap-3 items-end">
 						<div class="setup-field">
-							<label class="setup-label" for="city">Stadt / PLZ</label>
-							<input id="city" name="city" type="text" placeholder="Berlin" class="setup-input"/>
+							<label class="setup-label" for="city">{t.cityZip}</label>
+							<input id="city" name="city" type="text" placeholder="New York" class="setup-input"/>
 							<div class="setup-underline"></div>
 						</div>
 						<div class="setup-field relative">
-							<label class="setup-label">Land</label>
-							<input type="hidden" id="country" value="DE" />
+							<label class="setup-label">{t.country}</label>
+							<input type="hidden" id="country" value="US" />
 							<button type="button" id="country-btn" class="country-btn">
-								<img src="https://flagcdn.com/w40/de.png" width="20" height="15" alt="" class="country-flag" id="country-flag" />
-								<span id="country-code">DE</span>
+								<img src="https://flagcdn.com/w40/us.png" width="20" height="15" alt="" class="country-flag" id="country-flag" />
+								<span id="country-code">US</span>
 								<svg class="w-3 h-3 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
 							</button>
 							<div id="country-dropdown" class="country-dropdown hidden">
-								<input type="text" id="country-search" class="country-search" placeholder="Suchen..." />
+								<input type="text" id="country-search" class="country-search" placeholder={t.search} />
 								<div id="country-list"></div>
 							</div>
 						</div>
@@ -461,7 +464,7 @@ const smallTicks = [...Array(36)]
 					type="button"
 					id="submit-btn"
 					class="group w-full py-2.5 setup-btn rounded-lg font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all duration-300">
-					Starten
+					{t.start}
 					<IconArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-0.5" />
 				</button>
 			</div>
@@ -1338,8 +1341,8 @@ const smallTicks = [...Array(36)]
 			const errorEl = document.getElementById("setup-error");
 			if (!res.ok) {
 				errorEl.textContent = res.status === 404
-					? "Standort nicht gefunden"
-					: "Fehler beim Speichern der Position";
+					? document.getElementById("setup-main").dataset.errNotFound
+					: document.getElementById("setup-main").dataset.errSave;
 				errorEl.classList.remove("hidden");
 				return;
 			}

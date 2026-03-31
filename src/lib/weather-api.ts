@@ -34,23 +34,25 @@ export async function fetchWeather(
 	lat: string,
 	lon: string,
 	apiKey: string,
-	apiVersion: string
+	apiVersion: string,
+	owmLang: string = "EN"
 ): Promise<{ data: NormalizedWeather | null; error: string | null }> {
 	if (apiVersion === "free") {
-		return fetchFreeApi(lat, lon, apiKey);
+		return fetchFreeApi(lat, lon, apiKey, owmLang);
 	}
-	return fetchOneCall(lat, lon, apiKey, apiVersion);
+	return fetchOneCall(lat, lon, apiKey, apiVersion, owmLang);
 }
 
 async function fetchOneCall(
 	lat: string,
 	lon: string,
 	apiKey: string,
-	version: string
+	version: string,
+	owmLang: string
 ): Promise<{ data: NormalizedWeather | null; error: string | null }> {
 	const v = version === "2.5" ? "2.5" : "3.0";
 	const res = await fetch(
-		`https://api.openweathermap.org/data/${v}/onecall?lat=${lat}&lon=${lon}&lang=DE&units=metric&exclude=minutely,alerts&appid=${apiKey}`
+		`https://api.openweathermap.org/data/${v}/onecall?lat=${lat}&lon=${lon}&lang=${owmLang}&units=metric&exclude=minutely,alerts&appid=${apiKey}`
 	);
 	const json = await res.json();
 	if (!res.ok) {
@@ -62,14 +64,15 @@ async function fetchOneCall(
 async function fetchFreeApi(
 	lat: string,
 	lon: string,
-	apiKey: string
+	apiKey: string,
+	owmLang: string
 ): Promise<{ data: NormalizedWeather | null; error: string | null }> {
 	const [weatherRes, forecastRes] = await Promise.all([
 		fetch(
-			`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&lang=DE&units=metric&appid=${apiKey}`
+			`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&lang=${owmLang}&units=metric&appid=${apiKey}`
 		),
 		fetch(
-			`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&lang=DE&units=metric&appid=${apiKey}`
+			`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&lang=${owmLang}&units=metric&appid=${apiKey}`
 		),
 	]);
 

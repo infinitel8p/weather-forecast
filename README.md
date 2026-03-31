@@ -43,11 +43,13 @@ cd weather-forecast
    - `OPENWEATHERMAP_API_VERSION` — The API tier to use:
      - `3.0` (default) — [One Call API 3.0](https://openweathermap.org/api/one-call-3) (paid subscription)
      - `2.5` — [One Call API 2.5](https://openweathermap.org/api/one-call-api) (legacy paid subscription)
-     - `free` — Free tier using the standard [Weather](https://openweathermap.org/current) + [Forecast](https://openweathermap.org/forecast5) endpoints (no UV index, 3-hour forecast intervals instead of hourly)  
+     - `free` — Free tier using the standard [Weather](https://openweathermap.org/current) + [Forecast](https://openweathermap.org/forecast5) endpoints (no UV index, 3-hour forecast intervals instead of hourly)
+   - `LANGUAGE` — UI language: `en` (default) for English or `de` for German. Also affects weather descriptions from the API and date/time formatting.
+
 > [!Note]
 > Choose the API version based on your OpenWeatherMap subscription. The `free` option allows you to run the dashboard without a paid subscription, but with limited features and less granular forecast data.
 
-1. Install the dependencies
+4. Install the dependencies
 
 ```shell
 npm install
