@@ -37,6 +37,8 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
       uviFill: "rgba(200, 160, 30, 0.06)",
       sunriseLine: "rgba(200, 90, 90, 0.25)",
       sunsetLine: "rgba(50, 140, 120, 0.25)",
+      sunriseIcon: "rgba(200, 90, 90, 0.7)",
+      sunsetIcon: "rgba(50, 140, 120, 0.7)",
     } : {
       legendText: "rgba(210, 215, 240, 0.3)",
       tooltipBg: "rgba(8, 11, 22, 0.95)",
@@ -57,6 +59,8 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
       uviFill: "rgba(250, 204, 21, 0.04)",
       sunriseLine: "rgba(248, 113, 113, 0.2)",
       sunsetLine: "rgba(120, 160, 230, 0.2)",
+      sunriseIcon: "rgba(248, 113, 113, 0.8)",
+      sunsetIcon: "rgba(180, 200, 240, 0.8)",
     };
 
     function findAllClosestIndices(timeStr) {
@@ -182,6 +186,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
                     display: true,
                     content: "☀",
                     position: "start",
+                    color: colors.sunriseIcon,
                     font: { size: 8 },
                     backgroundColor: "transparent",
                   },
@@ -199,6 +204,7 @@ export default function WeatherChart({ labels, temperatureData, precipitationDat
                     display: true,
                     content: "☾",
                     position: "start",
+                    color: colors.sunsetIcon,
                     font: { size: 8 },
                     backgroundColor: "transparent",
                   },
