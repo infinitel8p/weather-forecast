@@ -4,7 +4,7 @@ import type { MiddlewareHandler } from "astro";
 const middleware: MiddlewareHandler = async (context, next) => {
     const { pathname } = context.url;
 
-    if (pathname.startsWith("/setup") || pathname.startsWith("/api")) {
+    if (pathname.startsWith("/setup") || pathname.startsWith("/config") || pathname.startsWith("/api")) {
         return next();
     }
 

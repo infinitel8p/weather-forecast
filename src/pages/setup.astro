@@ -2,8 +2,12 @@
 import Layout from "@/layouts/Layout.astro";
 import { IconArrowRight, IconRadar2 } from "@tabler/icons-react";
 import { getTranslations } from "@/lib/i18n";
+import { getConfig, getCachedSun, resolveServerTheme } from "@/lib/config";
 
-const t = getTranslations(import.meta.env.LANGUAGE);
+const cfg = getConfig(Astro.cookies);
+const sun = getCachedSun(Astro.cookies);
+const initialTheme = resolveServerTheme(cfg, sun);
+const t = getTranslations(cfg.lang ?? import.meta.env.LANGUAGE);
 
 // Precompute outer tick marks (every 30°)
 const ticks = [...Array(12)].map((_, i) => {
@@ -36,7 +40,20 @@ const smallTicks = [...Array(36)]
 ---
 
 <Layout>
-	<main class="h-screen w-full overflow-hidden flex" id="setup-main" data-err-not-found={t.locationNotFound} data-err-save={t.saveError}>
+	<main
+		class="h-screen w-full overflow-hidden flex"
+		id="setup-main"
+		data-err-not-found={t.locationNotFound}
+		data-err-save={t.saveError}
+		data-theme={initialTheme}
+		data-theme-mode={cfg.themeMode}
+		data-night-start={cfg.nightStart}
+		data-night-end={cfg.nightEnd}
+		data-hc={cfg.hc ? "1" : "0"}
+		data-tz={cfg.tz}
+		data-sunrise={sun.sunrise}
+		data-sunset={sun.sunset}
+	>
 		<!-- Left: Doppler radar display -->
 		<div class="relative flex-1 overflow-hidden flex items-center justify-center">
 			<!-- Day mode: warm ambient glow behind radar -->
@@ -976,14 +993,11 @@ const smallTicks = [...Array(36)]
 	</style>
 
 	<script>
-		// ── Theme detection (day 06:00–21:59, night 22:00–05:59) ──
-		// Append ?hc to the URL for high-contrast day mode (e.g. on Raspberry Pi)
-		const main = document.getElementById("setup-main");
-		const hour = new Date().getHours();
-		const isDay = hour >= 6 && hour <= 21;
-		const hc = new URLSearchParams(window.location.search).has("hc");
-		const dayTheme = hc ? "day-hc" : "day";
-		main.setAttribute("data-theme", isDay ? dayTheme : "night");
+		import { resolveTheme } from "@/lib/theme";
+
+		// ── Theme from user config (see /config) ──
+		const main = document.getElementById("setup-main")!;
+		const { isDay, hc } = resolveTheme(main);
 
 		// Accent RGB for JS-driven SVG attributes
 		const accent = isDay ? (hc ? [90, 60, 18] : [110, 78, 30]) : [120, 160, 230];

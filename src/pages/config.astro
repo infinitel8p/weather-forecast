@@ -1,0 +1,332 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { IconSettings, IconArrowLeft, IconMapPin, IconCheck } from "@tabler/icons-react";
+import { getTranslations } from "@/lib/i18n";
+import { getConfig, getCachedSun, resolveServerTheme } from "@/lib/config";
+
+const cfg = getConfig(Astro.cookies);
+const sun = getCachedSun(Astro.cookies);
+const initialTheme = resolveServerTheme(cfg, sun);
+const effectiveLang = cfg.lang ?? (import.meta.env.LANGUAGE === "de" ? "de" : "en");
+const t = getTranslations(effectiveLang);
+const city = Astro.cookies.get("city")?.value;
+const lat = Astro.cookies.get("lat")?.value;
+const lon = Astro.cookies.get("lon")?.value;
+const locationLabel = city ?? (lat && lon ? `${lat}, ${lon}` : null);
+
+const hours = [...Array(24).keys()];
+const pad = (h: number) => `${String(h).padStart(2, "0")}:00`;
+
+const focusCls = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--field-focus)";
+const labelCls = "block font-mono text-[10px] uppercase tracking-[0.12em] text-(--label) transition-colors duration-500";
+const hintCls = "text-[10px] mt-1 text-(--hint) transition-colors duration-500";
+const selectCls = `w-full mt-1.5 px-2 py-2.5 rounded-md font-mono text-[13px] outline-none bg-(--field-bg) border border-(--field-border) text-(--text) transition-colors duration-300 focus:border-(--field-focus)`;
+const optionCls = "bg-(--panel-bg) text-(--text)";
+const segBtnCls = `flex-1 px-2.5 py-2.5 rounded-md font-mono text-[11px] cursor-pointer bg-(--field-bg) border border-(--field-border) text-(--seg-text) transition-all duration-300 aria-pressed:bg-(--active-bg) aria-pressed:border-(--active-border) aria-pressed:text-(--heading) ${focusCls}`;
+---
+
+<Layout>
+	<main
+		id="config-main"
+		class="min-h-screen w-full overflow-y-auto flex items-center justify-center bg-(--bg) transition-colors duration-500"
+		data-theme={initialTheme}
+		data-theme-mode={cfg.themeMode}
+		data-night-start={cfg.nightStart}
+		data-night-end={cfg.nightEnd}
+		data-hc={cfg.hc ? "1" : "0"}
+		data-tz={cfg.tz}
+		data-sunrise={sun.sunrise}
+		data-sunset={sun.sunset}
+		data-err-save={t.saveSettingsError}
+	>
+		<div class="w-155 max-w-[94vw] my-3 rounded-xl px-8 py-5 bg-(--panel-bg) border border-(--panel-border) shadow-[0_8px_40px_var(--panel-shadow)] transition-all duration-500">
+			<!-- Header -->
+			<div class="flex items-center justify-between mb-4">
+				<div class="space-y-1">
+					<div class="flex items-center gap-2">
+						<IconSettings size={14} className="text-(--icon)" />
+						<p class="font-mono text-[10px] uppercase tracking-[0.2em] text-(--eyebrow) transition-colors duration-500">{t.configuration}</p>
+					</div>
+					<h1 class="text-xl font-semibold tracking-tight text-(--heading) transition-colors duration-500">{t.settings}</h1>
+				</div>
+				<a
+					href="/setup"
+					class={`font-mono text-[10px] flex items-center gap-1.5 rounded-md px-3 py-2.5 no-underline bg-(--field-bg) border border-(--field-border) text-(--muted) transition-colors duration-300 hover:text-(--muted-hover) active:text-(--muted-hover) ${focusCls}`}
+				>
+					<IconMapPin size={12} />
+					<span>{locationLabel ?? t.changeLocation}</span>
+				</a>
+			</div>
+
+			<div class="grid grid-cols-2 gap-x-8 gap-y-4">
+				<!-- Night mode: schedule vs sun -->
+				<div class="col-span-2">
+					<span class={labelCls}>{t.nightMode}</span>
+					<div class="flex gap-2 mt-1.5">
+						<button type="button" id="mode-schedule" aria-pressed={cfg.themeMode === "schedule" ? "true" : "false"} class={segBtnCls}>{t.bySchedule}</button>
+						<button type="button" id="mode-sun" aria-pressed={cfg.themeMode === "sun" ? "true" : "false"} class={segBtnCls}>{t.bySun}</button>
+					</div>
+					<p id="sun-hint" class:list={[hintCls, { invisible: cfg.themeMode !== "sun" }]}>{t.sunHint}</p>
+				</div>
+
+				<!-- Night hours (schedule mode) -->
+				<div class:list={["transition-opacity duration-300", { "opacity-35 pointer-events-none": cfg.themeMode === "sun" }]} id="night-start-field">
+					<label class={labelCls} for="night-start">{t.nightFrom}</label>
+					<select id="night-start" class={selectCls}>
+						{hours.map((h) => (
+							<option class={optionCls} value={h} selected={h === cfg.nightStart}>{pad(h)}</option>
+						))}
+					</select>
+				</div>
+				<div class:list={["transition-opacity duration-300", { "opacity-35 pointer-events-none": cfg.themeMode === "sun" }]} id="night-end-field">
+					<label class={labelCls} for="night-end">{t.nightUntil}</label>
+					<select id="night-end" class={selectCls}>
+						{hours.map((h) => (
+							<option class={optionCls} value={h} selected={h === cfg.nightEnd}>{pad(h)}</option>
+						))}
+					</select>
+				</div>
+
+				<!-- Timezone -->
+				<div>
+					<label class={labelCls} for="tz">{t.timezone}</label>
+					<select id="tz" class={selectCls} data-value={cfg.tz} data-option-class={optionCls}></select>
+				</div>
+
+				<!-- Language -->
+				<div>
+					<label class={labelCls} for="lang">{t.language}</label>
+					<select id="lang" class={selectCls}>
+						<option class={optionCls} value="de" selected={effectiveLang === "de"}>Deutsch</option>
+						<option class={optionCls} value="en" selected={effectiveLang === "en"}>English</option>
+					</select>
+				</div>
+
+				<!-- High contrast -->
+				<div class="col-span-2 flex items-center justify-between gap-4">
+					<div>
+						<span id="hc-label" class={labelCls}>{t.highContrast}</span>
+						<p class={hintCls}>{t.highContrastHint}</p>
+					</div>
+					<button
+						type="button"
+						id="hc-toggle"
+						role="switch"
+						aria-checked={cfg.hc ? "true" : "false"}
+						aria-labelledby="hc-label"
+						class={`group relative w-12 h-7 shrink-0 rounded-full cursor-pointer bg-(--field-bg) border border-(--switch-border) transition-colors duration-300 aria-checked:bg-(--switch-on-bg) aria-checked:border-(--switch-on-border) ${focusCls}`}
+					>
+						<span class="absolute top-0.5 left-0.5 size-5.5 rounded-full bg-(--knob) transition-all duration-300 group-aria-checked:left-5.5 group-aria-checked:bg-(--knob-on)"></span>
+					</button>
+				</div>
+			</div>
+
+			<p id="config-error" role="alert" class="text-center text-xs font-mono text-red-400 hidden mt-4"></p>
+
+			<!-- Footer -->
+			<div class="flex items-center gap-3 mt-4">
+				<a
+					href="/"
+					class={`font-mono text-[10px] uppercase tracking-wider flex items-center gap-1.5 py-2.5 no-underline text-(--muted) transition-colors duration-300 hover:text-(--muted-hover) active:text-(--muted-hover) ${focusCls}`}
+				>
+					<IconArrowLeft size={12} />
+					{t.backToDashboard}
+				</a>
+				<button
+					type="button"
+					id="save-btn"
+					class={`ml-auto px-8 py-2.5 rounded-lg font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer bg-(--btn-bg) border border-(--btn-border) text-(--btn-text) transition-all duration-300 hover:bg-(--btn-hover-bg) hover:border-(--btn-hover-border) hover:text-(--btn-hover-text) active:bg-(--btn-hover-bg) disabled:opacity-50 disabled:pointer-events-none ${focusCls}`}
+				>
+					{t.save}
+					<IconCheck size={13} />
+				</button>
+			</div>
+		</div>
+	</main>
+
+	<!--
+		Only the theme palettes live in CSS: the three color schemes are switched
+		by the data-theme attribute set at runtime, which Tailwind utilities can't
+		express per-theme. Everything structural is inline Tailwind referencing
+		these variables. Palette values mirror setup.astro.
+	-->
+	<style is:global>
+		#config-main {
+			--bg: #080b16;
+			--panel-bg: #0d1020;
+			--panel-border: rgba(120, 160, 230, 0.08);
+			--panel-shadow: rgba(0, 0, 0, 0.25);
+			--heading: rgba(210, 215, 240, 0.9);
+			--text: rgba(210, 215, 240, 0.9);
+			--eyebrow: rgba(120, 160, 230, 0.45);
+			--icon: rgba(120, 160, 230, 0.4);
+			--label: rgba(120, 160, 230, 0.35);
+			--hint: rgba(120, 160, 230, 0.25);
+			--muted: rgba(120, 160, 230, 0.35);
+			--muted-hover: rgba(120, 160, 230, 0.7);
+			--field-bg: rgba(120, 160, 230, 0.05);
+			--field-border: rgba(120, 160, 230, 0.12);
+			--field-focus: rgba(120, 160, 230, 0.35);
+			--seg-text: rgba(120, 160, 230, 0.45);
+			--active-bg: rgba(120, 160, 230, 0.14);
+			--active-border: rgba(120, 160, 230, 0.4);
+			--switch-border: rgba(120, 160, 230, 0.2);
+			--switch-on-bg: rgba(120, 160, 230, 0.2);
+			--switch-on-border: rgba(120, 160, 230, 0.45);
+			--knob: rgba(120, 160, 230, 0.35);
+			--knob-on: rgb(120, 160, 230);
+			--btn-bg: rgba(120, 160, 230, 0.05);
+			--btn-border: rgba(120, 160, 230, 0.12);
+			--btn-text: rgba(120, 160, 230, 0.55);
+			--btn-hover-bg: rgba(120, 160, 230, 0.12);
+			--btn-hover-border: rgba(120, 160, 230, 0.3);
+			--btn-hover-text: var(--heading);
+		}
+		#config-main[data-theme^="day"] {
+			--bg: #e8e0d4;
+			--panel-bg: #f0ebe2;
+			--panel-border: rgba(180, 95, 30, 0.12);
+			--panel-shadow: rgba(110, 78, 30, 0.08);
+			--heading: rgba(50, 35, 15, 0.94);
+			--text: rgba(50, 35, 15, 0.82);
+			--eyebrow: rgba(180, 95, 30, 0.6);
+			--icon: rgba(200, 140, 30, 0.65);
+			--label: rgba(180, 95, 30, 0.55);
+			--hint: rgba(180, 95, 30, 0.45);
+			--muted: rgba(180, 95, 30, 0.55);
+			--muted-hover: rgba(180, 95, 30, 0.9);
+			--field-bg: rgba(180, 95, 30, 0.05);
+			--field-border: rgba(180, 95, 30, 0.2);
+			--field-focus: rgba(110, 78, 30, 0.35);
+			--seg-text: rgba(180, 95, 30, 0.55);
+			--active-bg: rgba(200, 140, 30, 0.14);
+			--active-border: rgba(180, 95, 30, 0.45);
+			--switch-border: rgba(110, 78, 30, 0.2);
+			--switch-on-bg: rgba(110, 78, 30, 0.2);
+			--switch-on-border: rgba(110, 78, 30, 0.45);
+			--knob: rgba(110, 78, 30, 0.35);
+			--knob-on: rgb(200, 140, 30);
+			--btn-bg: rgba(180, 95, 30, 0.09);
+			--btn-border: rgba(180, 95, 30, 0.25);
+			--btn-text: rgba(180, 95, 30, 0.75);
+			--btn-hover-bg: rgba(180, 95, 30, 0.14);
+			--btn-hover-border: rgba(200, 140, 30, 0.4);
+			--btn-hover-text: rgba(180, 95, 30, 1);
+			background: linear-gradient(145deg, #e8e1d5, #e5dccf);
+		}
+		#config-main[data-theme="day-hc"] {
+			--bg: #ddd4c4;
+			--panel-bg: #e8e1d5;
+			--panel-border: rgba(150, 75, 15, 0.2);
+			--panel-shadow: rgba(90, 60, 18, 0.08);
+			--heading: rgba(35, 22, 5, 0.97);
+			--text: rgba(35, 22, 5, 0.9);
+			--eyebrow: rgba(150, 75, 15, 0.6);
+			--icon: rgba(170, 110, 15, 0.65);
+			--label: rgba(150, 75, 15, 0.55);
+			--hint: rgba(150, 75, 15, 0.45);
+			--muted: rgba(150, 75, 15, 0.55);
+			--muted-hover: rgba(150, 75, 15, 0.9);
+			--field-bg: rgba(150, 75, 15, 0.05);
+			--field-border: rgba(150, 75, 15, 0.2);
+			--field-focus: rgba(90, 60, 18, 0.35);
+			--seg-text: rgba(150, 75, 15, 0.55);
+			--active-bg: rgba(170, 110, 15, 0.14);
+			--active-border: rgba(150, 75, 15, 0.45);
+			--switch-border: rgba(90, 60, 18, 0.2);
+			--switch-on-bg: rgba(90, 60, 18, 0.2);
+			--switch-on-border: rgba(90, 60, 18, 0.45);
+			--knob: rgba(90, 60, 18, 0.35);
+			--knob-on: rgb(170, 110, 15);
+			--btn-bg: rgba(150, 75, 15, 0.09);
+			--btn-border: rgba(150, 75, 15, 0.25);
+			--btn-text: rgba(150, 75, 15, 0.75);
+			--btn-hover-bg: rgba(150, 75, 15, 0.14);
+			--btn-hover-border: rgba(170, 110, 15, 0.4);
+			--btn-hover-text: rgba(150, 75, 15, 1);
+			background: linear-gradient(145deg, #ddd5c6, #d9d0c0);
+		}
+	</style>
+
+	<script>
+		import { resolveTheme } from "@/lib/theme";
+
+		const main = document.getElementById("config-main")!;
+		resolveTheme(main);
+
+		// ── Night mode segmented control ──
+		const btnSchedule = document.getElementById("mode-schedule")!;
+		const btnSun = document.getElementById("mode-sun")!;
+		const nightStartField = document.getElementById("night-start-field")!;
+		const nightEndField = document.getElementById("night-end-field")!;
+		const sunHint = document.getElementById("sun-hint")!;
+		let themeMode = main.dataset.themeMode ?? "schedule";
+
+		function renderMode() {
+			const isSun = themeMode === "sun";
+			btnSchedule.setAttribute("aria-pressed", String(!isSun));
+			btnSun.setAttribute("aria-pressed", String(isSun));
+			for (const field of [nightStartField, nightEndField]) {
+				field.classList.toggle("opacity-35", isSun);
+				field.classList.toggle("pointer-events-none", isSun);
+			}
+			sunHint.classList.toggle("invisible", !isSun);
+		}
+		btnSchedule.addEventListener("click", () => { themeMode = "schedule"; renderMode(); });
+		btnSun.addEventListener("click", () => { themeMode = "sun"; renderMode(); });
+		renderMode();
+
+		// ── High contrast switch ──
+		const hcToggle = document.getElementById("hc-toggle")!;
+		hcToggle.addEventListener("click", () => {
+			hcToggle.setAttribute("aria-checked", hcToggle.getAttribute("aria-checked") === "true" ? "false" : "true");
+		});
+
+		// ── Timezone select ──
+		const tzSelect = document.getElementById("tz") as HTMLSelectElement;
+		const currentTz = tzSelect.dataset.value ?? "Europe/Berlin";
+		let zones: string[] = [];
+		try {
+			zones = Intl.supportedValuesOf("timeZone");
+		} catch {
+			zones = [];
+		}
+		if (!zones.includes(currentTz)) zones.unshift(currentTz);
+		for (const zone of zones) {
+			const opt = document.createElement("option");
+			opt.value = zone;
+			opt.textContent = zone.replaceAll("_", " ");
+			opt.selected = zone === currentTz;
+			opt.className = tzSelect.dataset.optionClass ?? "";
+			tzSelect.appendChild(opt);
+		}
+
+		// ── Save ──
+		const saveBtn = document.getElementById("save-btn") as HTMLButtonElement;
+		saveBtn.addEventListener("click", async () => {
+			const errorEl = document.getElementById("config-error")!;
+			saveBtn.disabled = true;
+			try {
+				const res = await fetch("/api/set-config", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						themeMode,
+						nightStart: Number((document.getElementById("night-start") as HTMLSelectElement).value),
+						nightEnd: Number((document.getElementById("night-end") as HTMLSelectElement).value),
+						hc: hcToggle.getAttribute("aria-checked") === "true",
+						tz: tzSelect.value,
+						lang: (document.getElementById("lang") as HTMLSelectElement).value,
+					}),
+				});
+				if (!res.ok) throw new Error(`HTTP ${res.status}`);
+				errorEl.classList.add("hidden");
+				window.location.href = "/";
+			} catch {
+				errorEl.textContent = main.dataset.errSave ?? "Error";
+				errorEl.classList.remove("hidden");
+				saveBtn.disabled = false;
+			}
+		});
+	</script>
+</Layout>

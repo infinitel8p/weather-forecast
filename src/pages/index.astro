@@ -11,12 +11,15 @@ import {
 	IconUvIndex,
 	IconEye,
 	IconCloud,
+	IconSettings,
 } from "@tabler/icons-react";
 import { fetchWeather } from "@/lib/weather-api";
 import { getTranslations } from "@/lib/i18n";
+import { getConfig, getCachedSun, cacheSunTimes, resolveServerTheme } from "@/lib/config";
 
 const env = import.meta.env;
-const t = getTranslations(env.LANGUAGE);
+const cfg = getConfig(Astro.cookies);
+const t = getTranslations(cfg.lang ?? env.LANGUAGE);
 const latCookie = Astro.cookies.get("lat");
 const lonCookie = Astro.cookies.get("lon");
 const cityCookie = Astro.cookies.get("city");
@@ -34,9 +37,15 @@ const { data: oneCall, error: apiError } = await fetchWeather(
 	lat, lon, env.OPENWEATHERMAP_API_KEY, apiVersion, t.owmLang
 );
 
+// Cache sun times so setup/config can resolve sun-mode theming too,
+// and pre-render the theme to avoid a night-palette flash on load.
+cacheSunTimes(Astro.cookies, oneCall?.current?.sunrise, oneCall?.current?.sunset);
+const sun = oneCall?.current ?? getCachedSun(Astro.cookies);
+const initialTheme = resolveServerTheme(cfg, sun);
+
 const time = new Date();
 const currentDate = time.toLocaleDateString(t.locale, {
-	timeZone: "Europe/Berlin",
+	timeZone: cfg.tz,
 	weekday: "long",
 	month: "long",
 	day: "numeric",
@@ -46,26 +55,26 @@ const currentDate = time.toLocaleDateString(t.locale, {
 });
 
 const hourly24 = oneCall?.hourly?.slice(0, 24) ?? [];
-const hourlyChartLabels = hourly24.map((h) => formatToBerlinTime(h.dt));
+const hourlyChartLabels = hourly24.map((h) => formatLocalTime(h.dt));
 const hourlyTemperatures = hourly24.map((h) => Math.round(h.temp));
 const hourlyPrecipitation = hourly24.map((h) => h.rain?.["1h"] ?? 0);
 const rawUVI = hourly24.map((h) => Math.round(h.uvi ?? 0));
 const hourlyUVIndex = rawUVI.some((v) => v > 0) ? rawUVI : [];
 
-function formatToBerlinTime(unixTimestamp) {
+function formatLocalTime(unixTimestamp) {
 	const date = new Date(unixTimestamp * 1000);
 	return date.toLocaleTimeString(t.locale, {
-		timeZone: "Europe/Berlin",
+		timeZone: cfg.tz,
 		hour: "2-digit",
 		minute: "2-digit",
 		hour12: false,
 	});
 }
 
-function formatToBerlinDate(unixTimestamp) {
+function formatLocalDate(unixTimestamp) {
 	const date = new Date(unixTimestamp * 1000);
 	return date.toLocaleDateString(t.locale, {
-		timeZone: "Europe/Berlin",
+		timeZone: cfg.tz,
 		weekday: "short",
 	});
 }
@@ -73,7 +82,18 @@ function formatToBerlinDate(unixTimestamp) {
 ---
 
 <Layout>
-	<main id="dashboard-main" class="flex flex-col h-screen w-screen overflow-hidden p-2 gap-1.5 relative">
+	<main
+		id="dashboard-main"
+		class="flex flex-col h-screen w-screen overflow-hidden p-2 gap-1.5 relative"
+		data-theme={initialTheme}
+		data-theme-mode={cfg.themeMode}
+		data-night-start={cfg.nightStart}
+		data-night-end={cfg.nightEnd}
+		data-hc={cfg.hc ? "1" : "0"}
+		data-tz={cfg.tz}
+		data-sunrise={sun?.sunrise}
+		data-sunset={sun?.sunset}
+	>
 		<!-- Da Vinci-inspired geometric construction — celestial, oceanic & mythological -->
 		<svg class="absolute inset-0 w-full h-full pointer-events-none davinci-geo" viewBox="0 0 800 480" preserveAspectRatio="xMidYMid slice" style="z-index: 0;" font-family="ui-monospace, monospace">
 			<defs>
@@ -607,14 +627,14 @@ function formatToBerlinDate(unixTimestamp) {
 					<IconSunrise size={32} className="detail-icon" />
 					<div class="detail-text">
 						<span class="detail-label">{t.sunrise}</span>
-						<span class="detail-value">{formatToBerlinTime(oneCall.current.sunrise)}</span>
+						<span class="detail-value">{formatLocalTime(oneCall.current.sunrise)}</span>
 					</div>
 				</div>
 				<div class="detail-item">
 					<IconSunset size={32} className="detail-icon" />
 					<div class="detail-text">
 						<span class="detail-label">{t.sunset}</span>
-						<span class="detail-value">{formatToBerlinTime(oneCall.current.sunset)}</span>
+						<span class="detail-value">{formatLocalTime(oneCall.current.sunset)}</span>
 					</div>
 				</div>
 				<div class="detail-item">
@@ -678,8 +698,8 @@ function formatToBerlinDate(unixTimestamp) {
 				temperatureData={hourlyTemperatures}
 				precipitationData={hourlyPrecipitation}
 				uviData={hourlyUVIndex}
-				sunrise={formatToBerlinTime(oneCall.current.sunrise)}
-				sunset={formatToBerlinTime(oneCall.current.sunset)}
+				sunrise={formatLocalTime(oneCall.current.sunrise)}
+				sunset={formatLocalTime(oneCall.current.sunset)}
 				tempLabel={t.tempLabel}
 				rainLabel={t.rainLabel}
 				uvLabel={t.uvLabel}
@@ -693,7 +713,7 @@ function formatToBerlinDate(unixTimestamp) {
 					?.slice(1, 7)
 					.map((item) => (
 						<SingleWeatherCard
-							title={formatToBerlinDate(item.dt)}
+							title={formatLocalDate(item.dt)}
 							temperature={Math.round(item.temp.day)}
 							icon={item.weather[0].icon}
 						/>
@@ -702,19 +722,23 @@ function formatToBerlinDate(unixTimestamp) {
 		</div>
 		</Fragment>)}
 
-		<span id="countdown" class="absolute left-2.5 bottom-1.5 font-mono text-[9px] dash-muted">
+		<span id="countdown" class="absolute left-2.5 bottom-1.5 z-1 font-mono text-[9px] dash-muted">
 			20:00
 		</span>
 
+		<a
+			href="/config"
+			class="absolute right-0 bottom-0 z-1 p-3 dash-muted opacity-50 transition-opacity duration-300 hover:opacity-100 active:opacity-100 focus-visible:opacity-100 focus-visible:outline-none"
+			aria-label={t.settings}
+		>
+			<IconSettings size={13} />
+		</a>
+
 		<script>
-			// Theme detection (day 06:00–21:59, night 22:00–05:59)
-			// Append ?hc to the URL for high-contrast day mode (e.g. on Raspberry Pi)
-			const dashMain = document.getElementById("dashboard-main");
-			const hour = new Date().getHours();
-			const isDay = hour >= 6 && hour <= 21;
-			const hc = new URLSearchParams(window.location.search).has("hc");
-			const dayTheme = hc ? "day-hc" : "day";
-			dashMain.setAttribute("data-theme", isDay ? dayTheme : "night");
+			import { resolveTheme } from "@/lib/theme";
+
+			const dashMain = document.getElementById("dashboard-main")!;
+			const { isDay, hc } = resolveTheme(dashMain);
 
 			const sonarColor = isDay ? (hc ? "rgb(150,75,15)" : "rgb(180,95,30)") : "rgb(56,189,168)";
 

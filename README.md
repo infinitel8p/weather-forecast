@@ -61,9 +61,20 @@ npm install
 npm run dev
 ```
 
+## Settings
+
+Open `/config` (or tap the small gear icon in the bottom-right corner of the dashboard) to adjust the dashboard:
+
+- **Night mode** - switch between day and night theme on a fixed hour schedule (default: night from 22:00 to 06:00) or automatically at sunrise/sunset for your location.
+- **Timezone** - used for all displayed dates and times and for the night mode schedule (default: Europe/Berlin). If night mode seems to switch at the wrong time, check this first - it also fixes devices whose system clock runs on UTC.
+- **Language** - German or English.
+- **High contrast** - a stronger variant of the day theme for small or low-quality screens (see below).
+
+Settings are stored as cookies in the browser that displays the dashboard, so they survive reboots of a kiosk setup.
+
 ## High-contrast mode
 
-For small or low-quality screens (like the Raspberry Pi 5" touchscreen), a high-contrast variant of the day theme is available. Append `?hc` to the URL to activate it:
+For small or low-quality screens (like the Raspberry Pi 5" touchscreen), a high-contrast variant of the day theme is available. Enable it on the `/config` page, or append `?hc` to the URL to force it for a single session:
 
 ```
 http://localhost:4321/?hc
